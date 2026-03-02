@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
+import { useNavigate, useSearchParams, Link } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -27,6 +27,8 @@ function startOAuth(provider: "github" | "google") {
 
 export function LoginPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectTo = searchParams.get("redirect") || "/projects"
   const setTokens = useAuthStore((state) => state.setTokens)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -45,7 +47,7 @@ export function LoginPage() {
     try {
       const result = await authApi.login({ email: data.email, password: data.password })
       setTokens(result.user, result.accessToken)
-      navigate("/projects")
+      navigate(redirectTo)
     } catch (err) {
       if (err instanceof ApiException) {
         if (err.code === "INVALID_CREDENTIALS") {

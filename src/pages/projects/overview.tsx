@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom"
 import { useProjectStore } from "@/store/projects"
 import { projectsApi, ApiException } from "@/lib/api"
 import { DocRenderer } from "@/components/projects/DocRenderer"
+import { SharePanel } from "@/components/projects/share-panel"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -38,6 +39,9 @@ export function ProjectOverviewPage() {
     const [exportMessage, setExportMessage] = useState<string | null>(null)
     const [githubReadme, setGithubReadme] = useState<string | null>(null)
     const [isReadmeLoading, setIsReadmeLoading] = useState(false)
+    const [showShare, setShowShare] = useState(false)
+
+    const isOwner = !project || project.shareRole === "owner"
 
     useEffect(() => {
         if (!id) return
@@ -214,6 +218,7 @@ export function ProjectOverviewPage() {
     }
 
     return (
+        <>
         <div className="space-y-6">
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
                 <Link to="/dashboard" className="hover:text-foreground flex items-center gap-1 transition-colors">
@@ -247,7 +252,23 @@ export function ProjectOverviewPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2 w-full md:w-auto flex-wrap">
-                    {(project.status === "failed") && (
+                    {/* Share button — owner only */}
+                    {isOwner && (
+                        <Button
+                            variant="outline"
+                            className="w-full md:w-auto"
+                            onClick={() => setShowShare(true)}
+                        >
+                            <Share2 className="mr-2 h-4 w-4" /> Share
+                        </Button>
+                    )}
+                    {/* Shared badge for non-owners */}
+                    {!isOwner && (
+                        <Badge variant="secondary" className="capitalize">
+                            {project?.shareRole} access
+                        </Badge>
+                    )}
+                    {(project.status === "failed") && isOwner && (
                         <Button onClick={handleRetry} disabled={!!actionLoading} className="w-full md:w-auto">
                             {actionLoading === "retry" ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -432,7 +453,7 @@ export function ProjectOverviewPage() {
                             Push to Notion
                         </Button>
                         <div className="border-t border-border pt-2 space-y-1">
-                            {project.status !== "archived" && project.status !== "analyzing" && (
+                            {isOwner && project.status !== "archived" && project.status !== "analyzing" && (
                                 <Button
                                     variant="ghost"
                                     className="w-full justify-start text-muted-foreground hover:text-foreground"
@@ -447,7 +468,7 @@ export function ProjectOverviewPage() {
                                     Archive Project
                                 </Button>
                             )}
-                            {project.status !== "analyzing" && (
+                            {isOwner && project.status !== "analyzing" && (
                                 <Button
                                     variant="ghost"
                                     className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
@@ -467,5 +488,17 @@ export function ProjectOverviewPage() {
                 </Card>
             </div>
         </div>
+
+        {/* Share Panel */}
+        {project && (
+            <SharePanel
+                open={showShare}
+                onOpenChange={setShowShare}
+                projectId={project.id}
+                projectName={project.name}
+                isOwner={isOwner}
+            />
+        )}
+    </>
     )
 }

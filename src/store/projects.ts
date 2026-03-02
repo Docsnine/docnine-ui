@@ -5,7 +5,7 @@
  * We map those to the UI status terms (analyzing/completed/failed/archived).
  */
 import { create } from "zustand";
-import { projectsApi, ApiProject, ApiProjectStatus } from "@/lib/api";
+import { projectsApi, sharingApi, ApiProject, ApiProjectStatus, ApiSharedProject } from "@/lib/api";
 
 // ── Status mapping ────────────────────────────────────────────────────────────
 
@@ -37,6 +37,7 @@ export interface Project {
   apiStatus: ApiProjectStatus; // raw status from API, needed for PATCH /archive
   createdAt: string;
   updatedAt: string;
+  shareRole: 'owner' | 'editor' | 'viewer'; // access level
   // Documentation fields (populated after a successful pipeline run)
   readme?: string;
   apiReference?: string;
@@ -46,7 +47,7 @@ export interface Project {
 }
 
 /** Convert an API project to the UI model. */
-export function fromApiProject(p: ApiProject): Project {
+export function fromApiProject(p: ApiProject, shareRole: 'owner' | 'editor' | 'viewer' = 'owner'): Project {
   return {
     id: p._id,
     name: p.meta?.name || p.repoName || p.repoUrl.split("/").pop() || p.repoUrl,
@@ -56,11 +57,27 @@ export function fromApiProject(p: ApiProject): Project {
     apiStatus: p.status,
     createdAt: p.createdAt,
     updatedAt: p.updatedAt,
+    shareRole,
     readme: p.output?.readme,
     apiReference: p.output?.apiReference,
     schemaDocs: p.output?.schemaDocs,
     internalDocs: p.output?.internalDocs,
     securityReport: p.output?.securityReport,
+  };
+}
+
+/** Convert a shared-project API response to the UI model. */
+export function fromSharedApiProject(p: ApiSharedProject): Project {
+  return {
+    id: p._id,
+    name: p.meta?.name || p.repoName || p.repoUrl.split("/").pop() || p.repoUrl,
+    repoOwner: p.repoOwner || "",
+    repoUrl: p.repoUrl,
+    status: mapApiStatus(p.status as ApiProjectStatus),
+    apiStatus: p.status as ApiProjectStatus,
+    createdAt: p.createdAt,
+    updatedAt: p.updatedAt,
+    shareRole: p.shareRole,
   };
 }
 
@@ -73,6 +90,11 @@ interface ProjectState {
   totalPages: number;
   isLoading: boolean;
   error: string | null;
+
+  // Shared-with-me
+  sharedProjects: Project[];
+  sharedLoading: boolean;
+  sharedError: string | null;
 
   /** Fetch (or refresh) the project list. */
   fetchProjects: (params?: {
@@ -108,6 +130,9 @@ interface ProjectState {
 
   /** Update a project in the local cache (e.g. after SSE stream completes). */
   updateLocalProject: (id: string, changes: Partial<Project>) => void;
+
+  /** Fetch all projects shared with the current user. */
+  fetchSharedProjects: () => Promise<void>;
 }
 
 export const useProjectStore = create<ProjectState>((set, get) => ({
@@ -117,6 +142,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   totalPages: 1,
   isLoading: false,
   error: null,
+  sharedProjects: [],
+  sharedLoading: false,
+  sharedError: null,
 
   fetchProjects: async (params = {}) => {
     set({ isLoading: true, error: null });
@@ -175,7 +203,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   getProject: async (id) => {
     const data = await projectsApi.get(id);
-    const project = fromApiProject(data.project);
+    const project = fromApiProject(data.project, data.shareRole ?? 'owner');
 
     // Update cache
     set((state) => {
@@ -214,5 +242,18 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         p.id === id ? { ...p, ...changes } : p,
       ),
     }));
+  },
+
+  fetchSharedProjects: async () => {
+    set({ sharedLoading: true, sharedError: null });
+    try {
+      const data = await sharingApi.getSharedProjects();
+      set({
+        sharedProjects: data.projects.map(fromSharedApiProject),
+        sharedLoading: false,
+      });
+    } catch (err: any) {
+      set({ sharedLoading: false, sharedError: err?.message ?? "Failed to load shared projects." });
+    }
   },
 }));

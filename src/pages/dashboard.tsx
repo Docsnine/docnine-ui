@@ -22,6 +22,9 @@ import {
     Archive,
     Trash2,
     RefreshCw,
+    Users2,
+    Eye,
+    Pencil,
 } from "lucide-react"
 
 // Debounces value changes by `delay` ms to avoid hammering the API on every keystroke
@@ -51,7 +54,7 @@ const SORT_API_MAP: Record<string, string> = {
 }
 
 export function DashboardPage() {
-    const { projects, total, totalPages, page, isLoading, error, fetchProjects, deleteProject, archiveProject, retryProject } =
+    const { projects, total, totalPages, page, isLoading, error, fetchProjects, deleteProject, archiveProject, retryProject, sharedProjects, sharedLoading, fetchSharedProjects } =
         useProjectStore()
     const navigate = useNavigate()
 
@@ -78,7 +81,8 @@ export function DashboardPage() {
 
     useEffect(() => {
         doFetch()
-    }, [doFetch])
+        fetchSharedProjects()
+    }, [doFetch, fetchSharedProjects])
 
     // Reset page to 1 whenever filters (not page) change.
     useEffect(() => {
@@ -390,6 +394,91 @@ export function DashboardPage() {
             )}
 
             <NewProjectModal open={isNewProjectModalOpen} onOpenChange={setIsNewProjectModalOpen} />
+
+            {/* ── Shared with Me ────────────────────────────────── */}
+            {(sharedLoading || sharedProjects.length > 0) && (
+                <div className="space-y-4 pt-4 border-t border-border">
+                    <div className="flex items-center gap-2">
+                        <Users2 className="h-5 w-5 text-muted-foreground" />
+                        <h2 className="text-xl font-semibold">Shared with Me</h2>
+                        <span className="text-sm text-muted-foreground">
+                            ({sharedProjects.length})
+                        </span>
+                    </div>
+
+                    {sharedLoading ? (
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            {Array.from({ length: 3 }).map((_, i) => (
+                                <Card key={i} className="flex flex-col shadow-none">
+                                    <CardHeader className="pb-4">
+                                        <Skeleton className="h-5 w-3/4" />
+                                        <Skeleton className="h-4 w-1/2 mt-1" />
+                                    </CardHeader>
+                                    <CardContent className="flex-1">
+                                        <Skeleton className="h-6 w-24" />
+                                    </CardContent>
+                                    <CardFooter className="pt-4 border-t border-border/50">
+                                        <Skeleton className="h-4 w-full" />
+                                    </CardFooter>
+                                </Card>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            {sharedProjects.map((project) => (
+                                <Card
+                                    key={project.id}
+                                    className="flex flex-col transition-all shadow-none hover:shadow-md hover:border-primary/20"
+                                >
+                                    <CardHeader className="pb-4">
+                                        <div className="flex items-start justify-between gap-2">
+                                            <div className="space-y-1 flex-1 min-w-0">
+                                                <CardTitle className="text-lg line-clamp-1" title={project.name}>
+                                                    <Link
+                                                        to={`/projects/${project.id}`}
+                                                        className="hover:underline hover:text-primary"
+                                                    >
+                                                        {project.name}
+                                                    </Link>
+                                                </CardTitle>
+                                                <div className="flex items-center text-sm text-muted-foreground">
+                                                    <Github className="mr-1 h-3 w-3 shrink-0" />
+                                                    <span className="truncate max-w-[200px]" title={project.repoUrl}>
+                                                        {project.repoOwner}/{project.name}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <Badge variant="secondary" className="flex items-center gap-1 text-xs shrink-0">
+                                                {project.shareRole === "editor" ? (
+                                                    <><Pencil className="h-3 w-3" /> Editor</>
+                                                ) : (
+                                                    <><Eye className="h-3 w-3" /> Viewer</>
+                                                )}
+                                            </Badge>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="flex-1">
+                                        <div className="flex items-center justify-between">
+                                            {getStatusBadge(project.status)}
+                                        </div>
+                                    </CardContent>
+                                    <CardFooter className="pt-4 border-t border-border/50 bg-muted/20 text-xs text-muted-foreground flex justify-between">
+                                        <span>
+                                            {formatDistanceToNow(new Date(project.updatedAt), { addSuffix: true })}
+                                        </span>
+                                        <Link
+                                            to={`/projects/${project.id}`}
+                                            className="font-medium text-primary hover:underline"
+                                        >
+                                            View Details
+                                        </Link>
+                                    </CardFooter>
+                                </Card>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     )
 }

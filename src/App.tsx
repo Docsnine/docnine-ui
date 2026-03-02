@@ -22,6 +22,7 @@ import { Loader2 } from "lucide-react"
 import { TermsPage } from "@/pages/terms"
 import { PrivacyPage } from "@/pages/privacy"
 import { ContactPage } from "@/pages/contact"
+import { AcceptInvitePage } from "@/pages/auth/accept-invite"
 
 /**
  * ProtectedRoute — redirects unauthenticated users to /login.
@@ -111,6 +112,7 @@ function AppRoutes() {
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/contact" element={<ContactPage />} />
+      <Route path="/share/accept/:token" element={<AcceptInvitePage />} />
 
       {/* Protected Routes — nested under DashboardLayout */}
       <Route

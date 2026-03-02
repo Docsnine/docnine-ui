@@ -371,6 +371,7 @@ export interface ProjectGetResponse {
   effectiveOutput: ApiProjectOutput;
   editedSections: ApiProjectEditedSection[];
   lastSyncedCommit: string;
+  shareRole: 'owner' | 'editor' | 'viewer';
 }
 
 export interface PipelineEvent {
@@ -573,6 +574,75 @@ export const attachmentsApi = {
     apiFetch<void>(`/projects/${projectId}/attachments/${attachmentId}`, {
       method: 'DELETE',
     }),
+}
+
+// ── Sharing ───────────────────────────────────────────────────────────────
+
+export type ShareRole = 'owner' | 'editor' | 'viewer'
+export type ShareStatus = 'pending' | 'accepted' | 'revoked'
+
+export interface ApiShare {
+  _id: string
+  projectId: string
+  inviteeEmail: string
+  inviteeUser: { _id: string; name?: string; email?: string } | null
+  role: 'viewer' | 'editor'
+  status: ShareStatus
+  createdAt: string
+  updatedAt: string
+  expiresAt: string
+}
+
+export interface ApiSharedProject {
+  _id: string
+  repoUrl: string
+  repoOwner: string
+  repoName: string
+  status: string
+  meta?: { name?: string }
+  createdAt: string
+  updatedAt: string
+  shareRole: 'viewer' | 'editor'
+}
+
+export const sharingApi = {
+  /** Invite one or more users to a project. */
+  invite: (projectId: string, invites: { email: string; role: 'viewer' | 'editor' }[]) =>
+    apiFetch<{ results: Array<{ email: string; status: string; reason?: string; share?: ApiShare }> }>(
+      `/projects/${projectId}/share`,
+      { method: 'POST', body: JSON.stringify({ invites }) },
+    ),
+
+  /** List all current access entries for a project (owner only). */
+  listAccess: (projectId: string) =>
+    apiFetch<{ shares: ApiShare[] }>(`/projects/${projectId}/share`),
+
+  /** Change the role of a share entry (owner only). */
+  changeRole: (projectId: string, shareId: string, role: 'viewer' | 'editor') =>
+    apiFetch<{ share: ApiShare }>(`/projects/${projectId}/share/${shareId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ role }),
+    }),
+
+  /** Revoke access (owner only). */
+  revokeAccess: (projectId: string, shareId: string) =>
+    apiFetch<void>(`/projects/${projectId}/share/${shareId}`, { method: 'DELETE' }),
+
+  /** Resend a pending invitation (owner only). */
+  resendInvite: (projectId: string, shareId: string) =>
+    apiFetch<{ share: ApiShare }>(`/projects/${projectId}/share/${shareId}/resend`, { method: 'POST' }),
+
+  /** Cancel a pending invite (owner only). */
+  cancelInvite: (projectId: string, shareId: string) =>
+    apiFetch<void>(`/projects/${projectId}/share/${shareId}/cancel`, { method: 'DELETE' }),
+
+  /** Accept an invite using the token from the email link (invitee must be logged in). */
+  acceptInvite: (token: string) =>
+    apiFetch<{ projectId: string; role: string }>(`/projects/share/accept/${token}`, { method: 'POST' }),
+
+  /** Get all projects shared with the current user. */
+  getSharedProjects: () =>
+    apiFetch<{ projects: ApiSharedProject[] }>('/projects/shared'),
 }
 
 // ── Chat ──────────────────────────────────────────────────────────────────

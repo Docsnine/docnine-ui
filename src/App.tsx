@@ -19,6 +19,9 @@ import { SettingsPage } from "@/pages/settings"
 import { useAuthStore } from "@/store/auth"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Loader2 } from "lucide-react"
+import { TermsPage } from "@/pages/terms"
+import { PrivacyPage } from "@/pages/privacy"
+import { ContactPage } from "@/pages/contact"
 
 /**
  * ProtectedRoute — redirects unauthenticated users to /login.
@@ -105,6 +108,9 @@ function AppRoutes() {
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       {/* OAuth social login callback */}
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/contact" element={<ContactPage />} />
 
       {/* Protected Routes — nested under DashboardLayout */}
       <Route

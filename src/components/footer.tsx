@@ -1,5 +1,6 @@
 import { Github, MessageSquare, Twitter } from 'lucide-react'
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { useTheme } from './theme-provider';
 
 function Footer() {
@@ -59,8 +60,8 @@ function Footer() {
                             <ul className="space-y-4 text-muted-foreground">
                                 <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
                                 <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
-                                <li><a href="#" className="hover:text-foreground transition-colors">Contact</a></li>
-                                <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
+                                <li><Link to="/contact" className="hover:text-foreground transition-colors">Contact</Link></li>
+                                <li><Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link></li>
                             </ul>
                         </div>
                     </div>
@@ -68,8 +69,8 @@ function Footer() {
                     <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
                         <p>© 2026 Docnine. MIT License.</p>
                         <div className="flex items-center gap-6">
-                            <a href="#" className="hover:text-foreground transition-colors">Terms</a>
-                            <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
+                            <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+                            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
                             <a href="#" className="hover:text-foreground transition-colors">Cookies</a>
                         </div>
                     </div>

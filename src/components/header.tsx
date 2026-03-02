@@ -38,7 +38,8 @@ function TopHeader() {
                 <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
                     <a href="#features" className="hover:text-foreground transition-colors">Features</a>
                     <a href="#docs" className="hover:text-foreground transition-colors">Docs</a>
-                    <a href="#github" className="hover:text-foreground transition-colors">GitHub</a>
+                    <a href="https://github.com/Docsnine" target='__blank' className="hover:text-foreground transition-colors">GitHub</a>
+                    <Link to="/contact" className="hover:text-foreground transition-colors">Contact Us</Link>
                 </div>
 
                 <div className="flex items-center gap-4">

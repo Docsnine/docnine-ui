@@ -32,7 +32,7 @@ export function LandingPage() {
         <h1 className="text-[48px] leading-[48px] sm:text-[72px] sm:leading-[72px] md:text-[96px] md:leading-[96px] font-bold tracking-tight mb-8">
           <span className="text-foreground">Documentation</span>
           <br />
-          <span className="text-primary">That Writes Itself.</span>
+          <span className="text-primary">That Evolves.</span>
         </h1>
 
         {/* Subheadline */}

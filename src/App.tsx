@@ -46,6 +46,15 @@ function AppRoutes() {
   const { initAuth, initialized } = useAuthStore()
 
   useEffect(() => {
+    // If we're running inside a popup (e.g. the GitHub OAuth completion page),
+    // do NOT call initAuth(). The popup postMessages to the parent and closes
+    // immediately — consuming the refresh token here would rotate it and
+    // trigger the server's refresh-token-reuse detection, which invalidates
+    // the parent window's session entirely (the user would be kicked to /login).
+    if (window.opener && !window.opener.closed) {
+      useAuthStore.setState({ initialized: true })
+      return
+    }
     // Attempt silent session restore from the httpOnly refresh-token cookie.
     initAuth()
   }, [initAuth])

@@ -1,6 +1,7 @@
 import TopHeader from "@/components/header"
 import Footer from "@/components/footer"
 import BackgroundGrid from "@/components/ui/background-grid"
+import CTA from "@/components/CTA"
 
 export function PrivacyPage() {
     return (
@@ -12,7 +13,7 @@ export function PrivacyPage() {
             <TopHeader />
 
             <main className="relative z-10 py-20 px-4">
-                <div className="container mx-auto max-w-3xl">
+                <div className="container mx-auto max-w-3xl mb-24">
                     {/* Page heading */}
                     <div className="mb-12">
                         <p className="text-sm font-medium text-primary uppercase tracking-widest mb-3">Legal</p>
@@ -124,8 +125,8 @@ export function PrivacyPage() {
                                 Depending on your jurisdiction, you may have the right to access, correct, or delete
                                 your personal data; restrict or object to processing; or request data portability.
                                 To exercise any of these rights, contact us at{" "}
-                                <a href="mailto:hello@docnine.com" className="text-primary hover:underline">
-                                    hello@docnine.com
+                                <a href="mailto:hseal419@gmail.com" className="text-primary hover:underline">
+                                    hseal419@gmail.com
                                 </a>
                                 .
                             </p>
@@ -152,14 +153,17 @@ export function PrivacyPage() {
                             <h2 className="text-xl font-semibold text-foreground mb-3">11. Contact</h2>
                             <p>
                                 Privacy questions or data requests? Email us at{" "}
-                                <a href="mailto:hello@docnine.com" className="text-primary hover:underline">
-                                    hello@docnine.com
+                                <a href="mailto:hseal419@gmail.com" className="text-primary hover:underline">
+                                    hseal419@gmail.com
                                 </a>
                                 .
                             </p>
                         </section>
                     </div>
                 </div>
+
+                {/* CTA Section */}
+                <CTA />
             </main>
 
             <Footer />

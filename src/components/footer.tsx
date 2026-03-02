@@ -21,16 +21,16 @@ function Footer() {
                                 />
                             </div>
                             <p className="text-muted-foreground leading-relaxed max-w-sm mb-8">
-                                Open-source team chat with AI assistance. Built for modern collaboration.
+                                Documentation that Works as Hard as You Do.
                             </p>
                             <div className="flex items-center gap-4">
-                                <a href="#" className="flex items-center justify-center w-10 h-10 rounded-full bg-[#0a0a0a] border border-border text-muted-foreground hover:text-foreground transition-colors">
+                                <a href="#" className="flex items-center justify-center w-10 h-10 rounded-full bg-primary border border-border text-primary-foreground hover:text-foreground transition-colors">
                                     <Github className="h-4 w-4" />
                                 </a>
-                                <a href="#" className="flex items-center justify-center w-10 h-10 rounded-full bg-[#0a0a0a] border border-border text-muted-foreground hover:text-foreground transition-colors">
+                                <a href="#" className="flex items-center justify-center w-10 h-10 rounded-full bg-primary border border-border text-primary-foreground hover:text-foreground transition-colors">
                                     <Twitter className="h-4 w-4" />
                                 </a>
-                                <a href="#" className="flex items-center justify-center w-10 h-10 rounded-full bg-[#0a0a0a] border border-border text-muted-foreground hover:text-foreground transition-colors">
+                                <a href="#" className="flex items-center justify-center w-10 h-10 rounded-full bg-primary border border-border text-primary-foreground hover:text-foreground transition-colors">
                                     <MessageSquare className="h-4 w-4" />
                                 </a>
                             </div>
@@ -49,7 +49,6 @@ function Footer() {
                             <h4 className="font-bold text-sm tracking-wider uppercase text-foreground mb-6">Resources</h4>
                             <ul className="space-y-4 text-muted-foreground">
                                 <li><a href="#" className="hover:text-foreground transition-colors">Documentation</a></li>
-                                <li><a href="#" className="hover:text-foreground transition-colors">API Reference</a></li>
                                 <li><a href="#" className="hover:text-foreground transition-colors">GitHub</a></li>
                                 <li><a href="#" className="hover:text-foreground transition-colors">Community</a></li>
                             </ul>
@@ -59,7 +58,6 @@ function Footer() {
                             <h4 className="font-bold text-sm tracking-wider uppercase text-foreground mb-6">Company</h4>
                             <ul className="space-y-4 text-muted-foreground">
                                 <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
-                                <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
                                 <li><Link to="/contact" className="hover:text-foreground transition-colors">Contact</Link></li>
                                 <li><Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link></li>
                             </ul>

@@ -15,11 +15,11 @@ function TopHeader() {
             <div className="border-b border-border bg-muted/30">
                 <div className="container mx-auto px-4 h-10 flex items-center justify-between text-xs sm:text-sm">
                     <div className="flex items-center gap-4 text-muted-foreground">
-                        <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" /> hello@docnine.com</span>
+                        <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" /> hseal419@gmail.com</span>
                         <span className="hidden sm:flex items-center gap-1.5"><MessageSquare className="h-3.5 w-3.5" /> @docnine</span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <span className="hidden md:inline-flex text-primary font-medium">✨ New: AI Chat Assistant is now live!</span>
+                        <span className="hidden md:inline-flex text-primary font-medium">✨ Now in beta — AI-generated docs for any GitHub repo</span>
                         <ThemeToggle />
                     </div>
                 </div>
@@ -28,11 +28,13 @@ function TopHeader() {
             {/* Bottom Section */}
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <img
-                        src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
-                        alt="Docnine Logo"
-                        className="h-8 w-10 w-auto"
-                    />
+                    <Link to="/" className="flex items-center gap-3">
+                        <img
+                            src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
+                            alt="Docnine Logo"
+                            className="h-8 w-10 w-auto"
+                        />
+                    </Link>
                 </div>
 
                 <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">

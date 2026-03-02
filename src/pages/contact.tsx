@@ -6,6 +6,7 @@ import TopHeader from "@/components/header"
 import Footer from "@/components/footer"
 import BackgroundGrid from "@/components/ui/background-grid"
 import { Github, Mail, MessageSquare, Send, Twitter } from "lucide-react"
+import CTA from "@/components/CTA"
 
 export function ContactPage() {
     const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" })
@@ -37,8 +38,8 @@ export function ContactPage() {
 
             <TopHeader />
 
-            <main className="relative z-10 py-20 px-4">
-                <div className="container mx-auto max-w-5xl">
+            <main className="relative z-10 pt-20 px-4">
+                <div className="container mx-auto max-w-5xl mb-24">
                     {/* Page heading */}
                     <div className="mb-16 text-center">
                         <p className="text-sm font-medium text-primary uppercase tracking-widest mb-3">Get in touch</p>
@@ -63,10 +64,10 @@ export function ContactPage() {
                                         <div>
                                             <p className="text-sm font-medium text-foreground">Email</p>
                                             <a
-                                                href="mailto:hello@docnine.com"
+                                                href="mailto:hseal419@gmail.com"
                                                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
                                             >
-                                                hello@docnine.com
+                                                hseal419@gmail.com
                                             </a>
                                         </div>
                                     </li>
@@ -199,7 +200,7 @@ export function ContactPage() {
                                 {status === "error" && (
                                     <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                                         <span>❌</span>
-                                        <span>Something went wrong. Please email us directly at hello@docnine.com.</span>
+                                        <span>Something went wrong. Please email us directly at hseal419@gmail.com.</span>
                                     </div>
                                 )}
 
@@ -222,6 +223,9 @@ export function ContactPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* CTA Section */}
+                <CTA />
             </main>
 
             <Footer />

@@ -85,7 +85,7 @@ export function ForgotPasswordPage() {
                                 {error && <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">{error}</div>}
                                 <div className="space-y-2">
                                     <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="m@example.com" {...register("email")} />
+                                    <Input id="email" type="email" placeholder="example@example.com" {...register("email")} />
                                     {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
                                 </div>
                             </CardContent>

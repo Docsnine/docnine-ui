@@ -28,11 +28,11 @@ import { cn } from "@/lib/utils"
 type Severity = "info" | "success" | "warning" | "error"
 
 function eventSeverity(ev: PipelineEvent): Severity {
-  if (ev.step === "done")           return "success"
-  if (ev.step === "error")          return "error"
-  if (ev.status === "error")        return "error"
-  if (ev.status === "warning")      return "warning"
-  if (ev.step === "security")       return "warning"
+  if (ev.step === "done") return "success"
+  if (ev.step === "error") return "error"
+  if (ev.status === "error") return "error"
+  if (ev.status === "warning") return "warning"
+  if (ev.step === "security") return "warning"
   return "info"
 }
 
@@ -40,24 +40,24 @@ function eventMessage(ev: PipelineEvent): string {
   if (ev.step === "done") return "Pipeline completed successfully."
   if (ev.step === "error") return `Pipeline error: ${ev.msg ?? ev.detail ?? "Unknown error"}`
   const parts: string[] = []
-  if (ev.step)   parts.push(`[${ev.step}]`)
-  if (ev.msg)    parts.push(ev.msg)
+  if (ev.step) parts.push(`[${ev.step}]`)
+  if (ev.msg) parts.push(ev.msg)
   if (ev.detail) parts.push(ev.detail)
   return parts.join(" — ") || "Processing…"
 }
 
 const SEV_ICON: Record<Severity, React.ReactNode> = {
-  info:    <Info      className="h-3.5 w-3.5 text-blue-500   shrink-0" />,
-  success: <CheckCircle2   className="h-3.5 w-3.5 text-green-500  shrink-0" />,
-  warning: <AlertCircle  className="h-3.5 w-3.5 text-yellow-500 shrink-0" />,
-  error:   <AlertCircle  className="h-3.5 w-3.5 text-red-500   shrink-0" />,
+  info: <Info className="h-3.5 w-3.5 text-blue-500   shrink-0" />,
+  success: <CheckCircle2 className="h-3.5 w-3.5 text-green-500  shrink-0" />,
+  warning: <AlertCircle className="h-3.5 w-3.5 text-yellow-500 shrink-0" />,
+  error: <AlertCircle className="h-3.5 w-3.5 text-red-500   shrink-0" />,
 }
 
 const SEV_ROW: Record<Severity, string> = {
-  info:    "",
+  info: "",
   success: "bg-green-500/5",
   warning: "bg-yellow-500/5",
-  error:   "bg-red-500/5 border-l-2 border-red-500/40",
+  error: "bg-red-500/5 border-l-2 border-red-500/40",
 }
 
 // ── Per-project expandable events list ──────────────────────────────────────
@@ -106,7 +106,7 @@ function ProjectEventLog({ projectId }: { projectId: string }) {
     <div className="divide-y divide-border/40 max-h-72 overflow-y-auto">
       {events.map((ev, i) => {
         const sev = eventSeverity(ev)
-        const ts  = ev.ts ? new Date(ev.ts) : null
+        const ts = ev.ts ? new Date(ev.ts) : null
         return (
           <div key={i} className={cn("flex items-start gap-2.5 px-4 py-2 text-xs font-mono", SEV_ROW[sev])}>
             <span className="mt-0.5">{SEV_ICON[sev]}</span>
@@ -129,10 +129,10 @@ function ProjectActivityRow({ project }: { project: ApiProject }) {
   const uiStatus = mapApiStatus(project.status)
 
   const statusConfig = {
-    completed: { icon: <CheckCircle2 className="h-4 w-4 text-green-500" />, badge: "success" as const,     label: "Completed" },
-    analyzing: { icon: <Loader2      className="h-4 w-4 text-yellow-500 animate-spin" />, badge: "warning" as const,     label: "Analyzing" },
-    failed:    { icon: <AlertCircle  className="h-4 w-4 text-red-500"   />, badge: "destructive" as const, label: "Failed"    },
-    archived:  { icon: <Archive      className="h-4 w-4 text-muted-foreground" />,      badge: "secondary" as const,   label: "Archived"  },
+    completed: { icon: <CheckCircle2 className="h-4 w-4 text-green-500" />, badge: "success" as const, label: "Completed" },
+    analyzing: { icon: <Loader2 className="h-4 w-4 text-yellow-500 animate-spin" />, badge: "warning" as const, label: "Analyzing" },
+    failed: { icon: <AlertCircle className="h-4 w-4 text-red-500" />, badge: "destructive" as const, label: "Failed" },
+    archived: { icon: <Archive className="h-4 w-4 text-muted-foreground" />, badge: "secondary" as const, label: "Archived" },
   }
 
   const cfg = statusConfig[uiStatus] ?? { icon: <Clock className="h-4 w-4" />, badge: "secondary" as const, label: project.status }
@@ -184,7 +184,7 @@ function ProjectActivityRow({ project }: { project: ApiProject }) {
           )}
 
           {expanded
-            ? <ChevronDown  className="h-4 w-4 text-muted-foreground" />
+            ? <ChevronDown className="h-4 w-4 text-muted-foreground" />
             : <ChevronRight className="h-4 w-4 text-muted-foreground" />
           }
         </div>
@@ -202,19 +202,19 @@ function ProjectActivityRow({ project }: { project: ApiProject }) {
 
 // ── Status filter buttons ────────────────────────────────────────────────────
 const STATUS_FILTERS = [
-  { key: "",         label: "All"       },
-  { key: "running",  label: "Running"   },
-  { key: "done",     label: "Completed" },
-  { key: "error",    label: "Failed"    },
-  { key: "archived", label: "Archived"  },
+  { key: "", label: "All" },
+  { key: "running", label: "Running" },
+  { key: "done", label: "Completed" },
+  { key: "error", label: "Failed" },
+  { key: "archived", label: "Archived" },
 ] as const
 
 // ── Main page ────────────────────────────────────────────────────────────────
 export function LogsPage() {
   const [projects, setProjects] = useState<ApiProject[]>([])
-  const [total, setTotal]       = useState(0)
+  const [total, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError]       = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<string>("")
 
   const load = useCallback(async () => {
@@ -235,8 +235,8 @@ export function LogsPage() {
 
   useEffect(() => { load() }, [load])
 
-  const runningCount  = projects.filter((p) => p.status === "running" || p.status === "queued").length
-  const failedCount   = projects.filter((p) => p.status === "error").length
+  const runningCount = projects.filter((p) => p.status === "running" || p.status === "queued").length
+  const failedCount = projects.filter((p) => p.status === "error").length
 
   return (
     <div className="space-y-6">

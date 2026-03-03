@@ -27,6 +27,7 @@ import {
     RefreshCw,
     ArrowRight,
 } from "lucide-react"
+import TopBar from "@/components/projects/top-bar"
 
 // ── Security grade colour ────────────────────────────────────────────────────
 function gradeColour(grade?: string) {
@@ -261,149 +262,143 @@ export function DocumentationsPage() {
     const totalModels = completedProjects.reduce((s, p) => s + (p.stats?.models ?? 0), 0)
 
     return (
-        <div className="space-y-6">
+        <div>
             {/* Header */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Documentation</h1>
-                    <p className="text-muted-foreground mt-3">
-                        All documented projects across your account.
-                        {!isLoading && completedProjects.length > 0 && (
-                            <span className="text-xs"> ({completedProjects.length} documented)</span>
-                        )}
-                    </p>
-                </div>
+            <TopBar title="Documentation" description="All documented projects across your account.">
                 <Button variant="outline" size="sm" onClick={loadProjects} className="gap-2 shrink-0">
                     <RefreshCw className="h-4 w-4" />
                     Refresh
                 </Button>
-            </div>
-
-            {/* Stats bar */}
-            {!isLoading && completedProjects.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {[
-                        { label: "Documented projects", value: completedProjects.length, icon: BookOpen },
-                        { label: "Files analysed", value: totalFiles, icon: FileCode },
-                        { label: "API endpoints", value: totalEndpoints, icon: Network },
-                        { label: "Data models", value: totalModels, icon: Database },
-                    ].map(({ label, value, icon: Icon }) => (
-                        <div key={label} className="bg-card border border-border rounded-xl p-4 flex items-center gap-3">
-                            <div className="rounded-lg bg-primary/10 p-2">
-                                <Icon className="h-4 w-4 text-primary" />
+            </TopBar>
+            
+            {/* content */}
+            <div className="space-y-6">
+                {/* Stats bar */}
+                {!isLoading && completedProjects.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        {[
+                            { label: "Documented projects", value: completedProjects.length, icon: BookOpen },
+                            { label: "Files analysed", value: totalFiles, icon: FileCode },
+                            { label: "API endpoints", value: totalEndpoints, icon: Network },
+                            { label: "Data models", value: totalModels, icon: Database },
+                        ].map(({ label, value, icon: Icon }) => (
+                            <div key={label} className="bg-card border border-border rounded-xl p-4 flex items-center gap-3">
+                                <div className="rounded-lg bg-primary/10 p-2">
+                                    <Icon className="h-4 w-4 text-primary" />
+                                </div>
+                                <div>
+                                    <div className="text-2xl font-bold">{value.toLocaleString()}</div>
+                                    <div className="text-xs text-muted-foreground">{label}</div>
+                                </div>
                             </div>
-                            <div>
-                                <div className="text-2xl font-bold">{value.toLocaleString()}</div>
-                                <div className="text-xs text-muted-foreground">{label}</div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Search */}
-            {!isLoading && completedProjects.length > 0 && (
-                <div className="relative max-w-sm">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="Search by name, language, or tech..."
-                        className="pl-9"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                </div>
-            )}
-
-            {/* Error */}
-            {error && (
-                <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                    <AlertTriangle className="h-4 w-4 shrink-0" />
-                    {error}
-                </div>
-            )}
-
-            {/* Loading skeleton */}
-            {isLoading && (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="border border-border rounded-xl p-5 space-y-3">
-                            <Skeleton className="h-5 w-2/3" />
-                            <Skeleton className="h-3 w-full" />
-                            <div className="grid grid-cols-3 gap-2">
-                                <Skeleton className="h-12" />
-                                <Skeleton className="h-12" />
-                                <Skeleton className="h-12" />
-                            </div>
-                            <Skeleton className="h-8" />
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Empty state */}
-            {!isLoading && !error && completedProjects.length === 0 && <EmptyState />}
-
-            {/* Completed projects grid */}
-            {!isLoading && filteredCompleted.length > 0 && (
-                <section>
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {filteredCompleted.map((p) => (
-                            <DocProjectCard key={p._id} project={p} />
                         ))}
                     </div>
-                    {search && filteredCompleted.length === 0 && (
-                        <p className="text-center text-muted-foreground py-12">No projects match "{search}".</p>
-                    )}
-                </section>
-            )}
+                )}
 
-            {/* In-progress / error projects */}
-            {!isLoading && inProgressProjects.length > 0 && (
-                <section>
-                    <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                        <Layers className="h-4 w-4 text-muted-foreground" />
-                        Other projects
-                    </h2>
-                    <div className="space-y-2">
-                        {inProgressProjects.map((p) => {
-                            const uiStatus = mapApiStatus(p.status)
-                            return (
-                                <div key={p._id} className="flex items-center justify-between bg-card border border-border rounded-lg px-4 py-3 gap-4">
-                                    <div className="flex items-center gap-3 min-w-0">
-                                        <Github className="h-4 w-4 text-muted-foreground shrink-0" />
-                                        <span className="font-medium text-sm truncate">
-                                            {p.repoOwner}/{p.repoName}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-2 shrink-0">
-                                        <Badge
-                                            variant={
-                                                uiStatus === "analyzing" ? "warning"
-                                                    : uiStatus === "failed" ? "destructive"
-                                                        : uiStatus === "archived" ? "secondary"
-                                                            : "default"
-                                            }
-                                            className="text-xs"
-                                        >
-                                            {p.status}
-                                        </Badge>
-                                        {uiStatus === "analyzing" && (
-                                            <Link to={`/projects/${p._id}/live`} className="text-xs text-primary hover:underline">
-                                                View live
-                                            </Link>
-                                        )}
-                                        {(uiStatus === "failed" || uiStatus === "archived") && (
-                                            <Link to={`/projects/${p._id}`} className="text-xs text-primary hover:underline flex items-center gap-1">
-                                                Details <ArrowRight className="h-3 w-3" />
-                                            </Link>
-                                        )}
-                                    </div>
-                                </div>
-                            )
-                        })}
+                {/* Search */}
+                {!isLoading && completedProjects.length > 0 && (
+                    <div className="relative max-w-sm">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search by name, language, or tech..."
+                            className="pl-9"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
                     </div>
-                </section>
-            )}
+                )}
+
+                {/* Error */}
+                {error && (
+                    <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                        <AlertTriangle className="h-4 w-4 shrink-0" />
+                        {error}
+                    </div>
+                )}
+
+                {/* Loading skeleton */}
+                {isLoading && (
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} className="border border-border rounded-xl p-5 space-y-3">
+                                <Skeleton className="h-5 w-2/3" />
+                                <Skeleton className="h-3 w-full" />
+                                <div className="grid grid-cols-3 gap-2">
+                                    <Skeleton className="h-12" />
+                                    <Skeleton className="h-12" />
+                                    <Skeleton className="h-12" />
+                                </div>
+                                <Skeleton className="h-8" />
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Empty state */}
+                {!isLoading && !error && completedProjects.length === 0 && <EmptyState />}
+
+                {/* Completed projects grid */}
+                {!isLoading && filteredCompleted.length > 0 && (
+                    <section>
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {filteredCompleted.map((p) => (
+                                <DocProjectCard key={p._id} project={p} />
+                            ))}
+                        </div>
+                        {search && filteredCompleted.length === 0 && (
+                            <p className="text-center text-muted-foreground py-12">No projects match "{search}".</p>
+                        )}
+                    </section>
+                )}
+
+                {/* In-progress / error projects */}
+                {!isLoading && inProgressProjects.length > 0 && (
+                    <section>
+                        <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                            <Layers className="h-4 w-4 text-muted-foreground" />
+                            Other projects
+                        </h2>
+                        <div className="space-y-2">
+                            {inProgressProjects.map((p) => {
+                                const uiStatus = mapApiStatus(p.status)
+                                return (
+                                    <div key={p._id} className="flex items-center justify-between bg-card border border-border rounded-lg px-4 py-3 gap-4">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <Github className="h-4 w-4 text-muted-foreground shrink-0" />
+                                            <span className="font-medium text-sm truncate">
+                                                {p.repoOwner}/{p.repoName}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <Badge
+                                                variant={
+                                                    uiStatus === "analyzing" ? "warning"
+                                                        : uiStatus === "failed" ? "destructive"
+                                                            : uiStatus === "archived" ? "secondary"
+                                                                : "default"
+                                                }
+                                                className="text-xs"
+                                            >
+                                                {p.status}
+                                            </Badge>
+                                            {uiStatus === "analyzing" && (
+                                                <Link to={`/projects/${p._id}/live`} className="text-xs text-primary hover:underline">
+                                                    View live
+                                                </Link>
+                                            )}
+                                            {(uiStatus === "failed" || uiStatus === "archived") && (
+                                                <Link to={`/projects/${p._id}`} className="text-xs text-primary hover:underline flex items-center gap-1">
+                                                    Details <ArrowRight className="h-3 w-3" />
+                                                </Link>
+                                            )}
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </section>
+                )}
+            </div>
         </div>
     )
 }

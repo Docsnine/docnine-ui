@@ -19,11 +19,11 @@ import { SettingsPage } from "@/pages/settings"
 import { useAuthStore } from "@/store/auth"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Loader2 } from "lucide-react"
-import { TermsPage } from "@/pages/terms"
-import { PrivacyPage } from "@/pages/privacy"
-import { ContactPage } from "@/pages/contact"
+import { TermsPage } from "@/pages/guest/terms"
+import { PrivacyPage } from "@/pages/guest/privacy"
+import { ContactPage } from "@/pages/guest/contact"
 import { AcceptInvitePage } from "@/pages/auth/accept-invite"
-import { GithubOAuthCompletePage } from "@/pages/github-oauth-complete"
+import { GithubOAuthCompletePage } from "@/components/projects/github-oauth-complete"
 
 /**
  * ProtectedRoute — redirects unauthenticated users to /login.
@@ -40,17 +40,40 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 /**
+ * PublicOnlyRoute — redirects already-authenticated users to /projects.
+ * Used for landing, login, and signup so authenticated users don't see
+ * the marketing / auth pages again.
+ */
+function PublicOnlyRoute({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+
+  if (isAuthenticated) {
+    return <Navigate to="/projects" replace />
+  }
+
+  return <>{children}</>
+}
+
+/**
  * AppRoutes — separated so that useSearchParams works inside Router context.
  */
 function AppRoutes() {
   const { initAuth, initialized } = useAuthStore()
 
   useEffect(() => {
-    // Never call initAuth() when rendering /github/oauth/complete.
-    // That page writes its result to localStorage then calls window.close().
-    // If initAuth() ran here it would call POST /auth/refresh, rotating
-    // the refresh-token cookie and causing REFRESH_TOKEN_REUSED in the
-    // still-open parent tab → parent gets logged out.
+    /**
+     * Important: Do NOT call initAuth() on the /github/oauth/complete page. 
+     * That page is loaded in a popup by the GitHub OAuth flow, and its sole purpose 
+     * is to receive the OAuth result from GitHub, write it to localStorage, and then 
+     * close itself. If we called initAuth() there, 
+     * it would immediately make a POST /auth/refresh request, which would rotate the 
+     * refresh token in the httpOnly cookie. This would cause the still-open parent 
+     * tab (where the user initiated the login) to have its refresh token invalidated, 
+     * leading to a REFRESH_TOKEN_REUSED error and logging the user out just as they're 
+     * trying to log in. By skipping initAuth() on this specific page, 
+     * we allow the OAuth flow to complete successfully without interfering 
+     * with the parent tab's session.
+     */
     const isOAuthCompletePage = window.location.pathname === '/github/oauth/complete'
     if (isOAuthCompletePage) {
       useAuthStore.setState({ initialized: true })
@@ -73,10 +96,10 @@ function AppRoutes() {
 
   return (
     <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
+      {/* Public-only Routes — redirect authenticated users to /projects */}
+      <Route path="/" element={<PublicOnlyRoute><LandingPage /></PublicOnlyRoute>} />
+      <Route path="/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
+      <Route path="/signup" element={<PublicOnlyRoute><SignupPage /></PublicOnlyRoute>} />
       <Route path="/verify" element={<VerifyPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />

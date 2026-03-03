@@ -58,14 +58,18 @@ export function GithubOAuthCompletePage() {
 
         // 4. Fallback: window.close() is a no-op if we are NOT a popup
         //    (the main tab navigated through GitHub because the popup was
-        //    blocked). In that case redirect to /projects after a short wait.
+        //    blocked). In that case redirect to /projects after a short wait
+        //    so the user lands on the dashboard and the modal re-check works.
+        //    Use 800 ms so the parent tab's poll has two cycles to read
+        //    localStorage before we navigate away from this page.
         const fallback = setTimeout(() => {
+            // Only navigate if this window is still open (not a popup that closed)
             const qs = new URLSearchParams()
             if (status) qs.set("github", status)
             if (user)   qs.set("user", user)
             if (msg)    qs.set("msg", msg)
             window.location.replace(`/projects?${qs.toString()}`)
-        }, 400)
+        }, 800)
 
         return () => clearTimeout(fallback)
     }, []) // eslint-disable-line react-hooks/exhaustive-deps

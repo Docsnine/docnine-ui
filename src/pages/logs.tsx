@@ -23,6 +23,7 @@ import {
   ArrowRight,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import TopBar from "@/components/projects/top-bar"
 
 // ── Event severity helpers ───────────────────────────────────────────────────
 type Severity = "info" | "success" | "warning" | "error"
@@ -239,104 +240,93 @@ export function LogsPage() {
   const failedCount = projects.filter((p) => p.status === "error").length
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-            Activity Log
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Pipeline execution history and event traces for all projects.
-            {!isLoading && (
-              <span className="text-xs ml-2">({total} total)</span>
-            )}
-          </p>
-        </div>
+    <div>
+      <TopBar title="Activity Log" description="Pipeline execution history and event traces for all projects.">
         <Button variant="outline" size="sm" onClick={load} className="gap-2 shrink-0">
           <RefreshCw className="h-4 w-4" />
           Refresh
         </Button>
-      </div>
-
-      {/* Status filter */}
-      <div className="flex flex-wrap gap-2">
-        {STATUS_FILTERS.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setStatusFilter(key)}
-            className={cn(
-              "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border",
-              statusFilter === key
-                ? "bg-primary text-primary-foreground border-primary"
-                : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 bg-card"
-            )}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {/* Error */}
-      {error && (
-        <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          <AlertTriangle className="h-4 w-4 shrink-0" />
-          {error}
-        </div>
-      )}
-
-      {/* Loading skeleton */}
-      {isLoading && (
-        <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="border border-border rounded-xl p-4 flex items-center gap-4">
-              <Skeleton className="h-4 w-4 rounded-full" />
-              <div className="flex-1 space-y-2">
-                <Skeleton className="h-4 w-48" />
-                <Skeleton className="h-3 w-32" />
-              </div>
-              <Skeleton className="h-5 w-20" />
-            </div>
+      </TopBar>
+      <div className="space-y-6">
+        {/* Status filter */}
+        <div className="flex flex-wrap gap-2">
+          {STATUS_FILTERS.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setStatusFilter(key)}
+              className={cn(
+                "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border",
+                statusFilter === key
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 bg-card"
+              )}
+            >
+              {label}
+            </button>
           ))}
         </div>
-      )}
 
-      {/* Empty state */}
-      {!isLoading && !error && projects.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="rounded-full bg-muted p-5 mb-5">
-            <Terminal className="h-10 w-10 text-muted-foreground" />
+        {/* Error */}
+        {error && (
+          <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+            {error}
           </div>
-          <h2 className="text-xl font-semibold">No activity yet</h2>
-          <p className="text-muted-foreground mt-2">
-            {statusFilter
-              ? `No projects with status "${statusFilter}".`
-              : "Create a project to see pipeline events here."
-            }
-          </p>
-          {!statusFilter && (
-            <Button asChild className="mt-5 gap-2">
-              <Link to="/dashboard">
-                <Github className="h-4 w-4" />
-                Go to Dashboard
-              </Link>
-            </Button>
-          )}
-        </div>
-      )}
+        )}
 
-      {/* Project rows */}
-      {!isLoading && projects.length > 0 && (
-        <div className="space-y-3">
-          {projects.map((p) => (
-            <ProjectActivityRow key={p._id} project={p} />
-          ))}
-        </div>
-      )}
+        {/* Loading skeleton */}
+        {isLoading && (
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="border border-border rounded-xl p-4 flex items-center gap-4">
+                <Skeleton className="h-4 w-4 rounded-full" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-48" />
+                  <Skeleton className="h-3 w-32" />
+                </div>
+                <Skeleton className="h-5 w-20" />
+              </div>
+            ))}
+          </div>
+        )}
 
-      <p className="text-xs text-muted-foreground text-center pb-2">
-        Events are stored up to the last 200 per project.
-      </p>
+        {/* Empty state */}
+        {!isLoading && !error && projects.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="rounded-full bg-muted p-5 mb-5">
+              <Terminal className="h-10 w-10 text-muted-foreground" />
+            </div>
+            <h2 className="text-xl font-semibold">No activity yet</h2>
+            <p className="text-muted-foreground mt-2">
+              {statusFilter
+                ? `No projects with status "${statusFilter}".`
+                : "Create a project to see pipeline events here."
+              }
+            </p>
+            {!statusFilter && (
+              <Button asChild className="mt-5 gap-2">
+                <Link to="/dashboard">
+                  <Github className="h-4 w-4" />
+                  Go to Dashboard
+                </Link>
+              </Button>
+            )}
+          </div>
+        )}
+
+        {/* Project rows */}
+        {!isLoading && projects.length > 0 && (
+          <div className="space-y-3">
+            {projects.map((p) => (
+              <ProjectActivityRow key={p._id} project={p} />
+            ))}
+          </div>
+        )}
+
+        <p className="text-xs text-muted-foreground text-center pb-2">
+          Events are stored up to the last 200 per project.
+        </p>
+      </div>
     </div>
   )
 }

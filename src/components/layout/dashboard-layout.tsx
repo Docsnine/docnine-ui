@@ -1,6 +1,6 @@
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom"
+import { useState, useRef, useEffect } from "react"
+import { Link, Outlet, useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { BookOpen, Github, Search, FolderKanban, User, Settings, LogOut, BookDown, Command, TerminalIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAuthStore } from "@/store/auth"
 import { authApi } from "@/lib/api"
@@ -11,8 +11,44 @@ import { useTheme } from "../theme-provider"
 export function DashboardLayout() {
   const location = useLocation()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { user, clearAuth } = useAuthStore()
-  const { theme } = useTheme();
+
+  const searchValue = searchParams.get("q") ?? ""
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    if (!location.pathname.startsWith("/projects")) {
+      navigate(`/projects?q=${encodeURIComponent(val)}`)
+      return
+    }
+    setSearchParams(
+      (prev) => {
+        if (val) prev.set("q", val)
+        else prev.delete("q")
+        return prev
+      },
+      { replace: true },
+    )
+  }
+  const { theme } = useTheme()
+
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const initials = user?.name
+    ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase()
+    : "?"
 
   const navLinks = [
     { name: "Projects", href: "/projects", icon: FolderKanban },
@@ -40,13 +76,13 @@ export function DashboardLayout() {
     <div className="min-h-screen bg-muted/30">
       {/* Top Navbar */}
       <header className="sticky top-0 z-40 w-full border-b border-border bg-background">
-        <div className="flex h-14 items-center justify-between px-6">
+        <div className="flex h-14 items-center justify-between container mx-auto max-w-7xl p-6">
           <div className="flex items-center gap-4">
             <Link to="/projects" className="flex items-center gap-2 font-semibold text-primary">
               <img
                 src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
                 alt="Docnine Logo"
-                className="h-8 w-auto"
+                className="h-7 w-auto"
               />
             </Link>
             <div className="h-4 w-px bg-border" />
@@ -66,26 +102,55 @@ export function DashboardLayout() {
               <Input
                 type="search"
                 placeholder="Search projects..."
-                className="w-full bg-muted/50 pl-9 focus-visible:border-primary border-border"
+                className="w-full bg-muted/50 pl-9 border-border focus:ring-0 focus-visible:ring-1"
+                value={searchValue}
+                onChange={handleSearchChange}
               />
             </div>
 
-            {/* User indicator */}
-            {user && (
-              <span className="hidden md:block text-sm text-muted-foreground max-w-[150px] truncate" title={user.email}>
-                {user.name}
-              </span>
-            )}
+            {/* Avatar dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setDropdownOpen((o) => !o)}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-semibold ring-2 ring-transparent hover:ring-primary/40 transition-all focus:outline-none"
+                title={user?.email ?? "Account"}
+              >
+                {initials}
+              </button>
 
-            <ThemeToggle />
-            <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
-              <LogOut className="h-4 w-4 text-muted-foreground" />
-            </Button>
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-52 rounded-lg border border-border bg-background shadow-lg z-50 py-1">
+                  {/* Name + email */}
+                  <div className="px-4 py-3 border-b border-border">
+                    <p className="text-sm font-medium truncate">{user?.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                  </div>
+
+                  {/* Theme toggle row */}
+                  <div className="flex items-center justify-between px-4 text-sm text-muted-foreground text-sm">
+                    <span>Theme</span>
+                    <ThemeToggle />
+                  </div>
+
+                  {/* Divider */}
+                  <div className="border-t border-border my-1" />
+
+                  {/* Logout */}
+                  <button
+                    onClick={() => { setDropdownOpen(false); handleLogout() }}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Log out
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Sub-nav */}
-        <div className="flex h-12 items-center justify-between px-6 border-t border-border/90 bg-background/50 backdrop-blur-sm">
+        <div className="flex h-12 items-center justify-between border-t border-border/90 bg-background/50 backdrop-blur-sm container mx-auto max-w-7xl p-6">
           <nav className="flex items-center gap-6">
             {navLinks.map((link) => {
               const Icon = link.icon
@@ -131,13 +196,13 @@ export function DashboardLayout() {
         </div>
       </header>
 
-      <main className="container mx-auto p-6">
+      <main className="container mx-auto max-w-7xl p-6">
         <Outlet />
       </main>
 
-      <footer className="relative z-10 border-t border-border px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+      <footer className="relative z-10 border-t border-border">
+        <div className="container mx-auto max-w-6xl p-6">
+          <div className="flex flex-col md:flex-row items-center justify-between text-sm text-muted-foreground">
             <p>© 2026 Docnine. MIT License.</p>
             <div className="flex items-center gap-6">
               <a href="#" className="hover:text-foreground transition-colors">Terms</a>

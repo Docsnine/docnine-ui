@@ -136,6 +136,9 @@ export function NewProjectModal({ open, onOpenChange, openToGithubStep }: NewPro
     // GitHub connection
     const [githubConnected, setGithubConnected] = useState(false)
     const [githubUsername, setGithubUsername] = useState("")
+    // True while the initial status check is in-flight — disables the GitHub
+    // button so the user can't start OAuth before we know they're already connected.
+    const [githubStatusLoading, setGithubStatusLoading] = useState(false)
 
     // Org/account selection — persisted in localStorage across opens
     const [orgs, setOrgs] = useState<GitHubOrg[]>([])
@@ -152,15 +155,22 @@ export function NewProjectModal({ open, onOpenChange, openToGithubStep }: NewPro
 
     const form = useForm<ManualProjectFormValues>({ resolver: zodResolver(manualProjectSchema) })
 
-    // Check GitHub connection whenever the modal opens
+    // Check GitHub connection every time the modal opens.
+    // If already connected, jump straight to the repo picker so the user
+    // never has to click through a redundant "Connect GitHub" step.
     useEffect(() => {
         if (!open) return
+        setGithubStatusLoading(true)
         githubApi.getStatus().then((s) => {
             setGithubConnected(s.connected)
             if (s.githubUsername) setGithubUsername(s.githubUsername)
-            // If opened after OAuth callback and GitHub is now connected, skip straight to repo picker
-            if (openToGithubStep && s.connected) setStep("github")
-        }).catch(() => { /* not connected */ })
+            // Always auto-advance when connected — not just after an OAuth callback.
+            if (s.connected) setStep("github")
+        }).catch(() => {
+            setGithubConnected(false)
+        }).finally(() => {
+            setGithubStatusLoading(false)
+        })
     }, [open])
 
     // Load orgs + first page of repos when entering the github step
@@ -241,78 +251,119 @@ export function NewProjectModal({ open, onOpenChange, openToGithubStep }: NewPro
         if (githubConnected) { setStep("github"); return }
         setIsConnecting(true)
         setApiError(null)
+
+        // CRITICAL: open the popup IMMEDIATELY — before any await.
+        // Browsers only allow window.open() inside a synchronous user-gesture.
+        // On Vercel the API round-trip adds enough latency to expire the gesture,
+        // silently blocking the popup and forcing main-tab navigation instead.
+        const width = 620, height = 720
+        const left = Math.round(window.screenX + (window.outerWidth - width) / 2)
+        const top  = Math.round(window.screenY + (window.outerHeight - height) / 2)
+        // Unique name prevents reusing a stale cross-origin popup (SecurityError).
+        const popupName = `github-oauth-${Date.now()}`
+        const popup = window.open(
+            "",          // blank — navigated below once we have the URL
+            popupName,
+            `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`,
+        )
+
+        let data: { url: string } | null = null
         try {
-            const data = await githubApi.getOAuthStartUrl()
-
-            // Open a popup instead of navigating away — preserves the session
-            // (access token stays in memory) and avoids full page reload on return.
-            const width = 620, height = 720
-            const left = Math.round(window.screenX + (window.outerWidth - width) / 2)
-            const top  = Math.round(window.screenY + (window.outerHeight - height) / 2)
-            const popup = window.open(
-                data.url,
-                "github-oauth",
-                `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`,
-            )
-
-            if (!popup || popup.closed) {
-                // Popup was blocked — fall back to full-page navigation
-                window.location.href = data.url
-                return
-            }
-
-            // Listen for postMessage sent by /github/oauth/complete
-            const onMessage = (event: MessageEvent) => {
-                if (event.origin !== window.location.origin) return
-                if (event.data?.type !== "github-oauth-complete") return
-                window.removeEventListener("message", onMessage)
-                clearInterval(pollClosed)
-                setIsConnecting(false)
-
-                if (event.data.status === "connected") {
-                    githubApi.getStatus().then((s) => {
-                        if (s.connected) {
-                            setGithubConnected(true)
-                            if (s.githubUsername) setGithubUsername(s.githubUsername)
-                            setStep("github")
-                        } else {
-                            setApiError("GitHub connected but status could not be confirmed. Please try again.")
-                        }
-                    }).catch(() => setApiError("Failed to verify GitHub connection."))
-                } else {
-                    setApiError(event.data.msg ?? "GitHub connection failed. Please try again.")
-                }
-            }
-            window.addEventListener("message", onMessage)
-
-            // Fallback: popup closed without sending a postMessage.
-            // This happens when COOP headers (set by github.com) sever
-            // window.opener, causing the popup to close silently.
-            // Check GitHub status directly so we don't miss a successful connect.
-            const pollClosed = setInterval(() => {
-                if (popup.closed) {
-                    clearInterval(pollClosed)
-                    window.removeEventListener("message", onMessage)
-                    // Don't just stop — check if the connection actually succeeded.
-                    githubApi.getStatus().then((s) => {
-                        if (s.connected) {
-                            setGithubConnected(true)
-                            if (s.githubUsername) setGithubUsername(s.githubUsername)
-                            setStep("github")
-                        }
-                        // If not connected the user likely dismissed/cancelled — stay put.
-                    }).catch(() => {
-                        // Status check failed — silently reset.
-                    }).finally(() => {
-                        setIsConnecting(false)
-                    })
-                }
-            }, 500)
-
+            data = await githubApi.getOAuthStartUrl()
         } catch (err: any) {
+            if (popup && !popup.closed) popup.close()
             setApiError(err instanceof ApiException ? err.message : "Failed to start GitHub OAuth.")
             setIsConnecting(false)
+            return
         }
+
+        // Clear any stale result from a previous OAuth attempt.
+        localStorage.removeItem("__docnine_github_oauth_result")
+
+        if (!popup || popup.closed) {
+            // Popup was blocked — fall back to full-page navigation.
+            window.location.href = data.url
+            return
+        }
+
+        // Navigate the already-open popup to the GitHub OAuth URL.
+        try {
+            popup.location.href = data.url
+        } catch {
+            // SecurityError: popup navigated cross-origin before we could set location.
+            popup.close()
+            window.location.href = data.url
+            return
+        }
+
+        let settled = false
+
+        const cleanup = (poll: ReturnType<typeof setInterval>) => {
+            clearInterval(poll)
+            clearTimeout(maxWaitTimer)
+            window.removeEventListener("message", onMessage)
+            localStorage.removeItem("__docnine_github_oauth_result")
+        }
+
+        const applyConnected = (s: { connected: boolean; githubUsername?: string }) => {
+            if (s.connected) {
+                setGithubConnected(true)
+                if (s.githubUsername) setGithubUsername(s.githubUsername)
+                setStep("github")
+            } else {
+                setApiError("GitHub connected but status could not be confirmed. Please try again.")
+            }
+        }
+
+        const finish = (status: string, user?: string | null, msg?: string | null) => {
+            if (settled) return
+            settled = true
+            cleanup(poll)
+            setIsConnecting(false)
+
+            if (status === "connected") {
+                githubApi.getStatus().then(applyConnected).catch(() => setApiError("Failed to verify GitHub connection."))
+            } else if (status === "error") {
+                setApiError(msg ?? "GitHub connection failed. Please try again.")
+            }
+            // "cancelled" or unknown → just stop the loading spinner
+        }
+
+        // Fast path: postMessage when opener is still reachable.
+        const onMessage = (event: MessageEvent) => {
+            if (event.origin !== window.location.origin) return
+            if (event.data?.type !== "github-oauth-complete") return
+            finish(event.data.status, event.data.user, event.data.msg)
+        }
+        window.addEventListener("message", onMessage)
+
+        // Safety net: give up after 5 minutes.
+        const maxWaitTimer = setTimeout(() => {
+            if (!settled) finish("cancelled")
+        }, 5 * 60 * 1000)
+
+        // Primary reliable path: poll localStorage.
+        const poll = setInterval(() => {
+            const raw = localStorage.getItem("__docnine_github_oauth_result")
+            if (raw) {
+                try {
+                    const { status, user, msg } = JSON.parse(raw)
+                    finish(status, user, msg)
+                    return
+                } catch { /* malformed — ignore */ }
+            }
+
+            if (!popup.closed) return
+
+            // Popup closed without a localStorage result — ask the server directly.
+            if (settled) return
+            settled = true
+            cleanup(poll)
+            setIsConnecting(false)
+            githubApi.getStatus().then((s) => {
+                if (s.connected) applyConnected(s)
+            }).catch(() => { /* silently stop */ })
+        }, 300)
     }
 
     const onSubmitManual = async (values: ManualProjectFormValues) => {
@@ -386,11 +437,11 @@ export function NewProjectModal({ open, onOpenChange, openToGithubStep }: NewPro
                     <div className="grid gap-4 py-4">
                         <button
                             onClick={handleConnectGithub}
-                            disabled={isConnecting}
-                            className="flex items-center gap-4 rounded-lg border border-border p-4 text-left transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
+                            disabled={isConnecting || githubStatusLoading}
+                            className="flex items-center gap-4 rounded-lg border border-border p-4 text-left transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                {isConnecting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Github className="h-5 w-5" />}
+                                {(isConnecting || githubStatusLoading) ? <Loader2 className="h-5 w-5 animate-spin" /> : <Github className="h-5 w-5" />}
                             </div>
                             <div>
                                 <div className="flex items-center gap-2">
@@ -398,9 +449,11 @@ export function NewProjectModal({ open, onOpenChange, openToGithubStep }: NewPro
                                     {githubConnected && <CheckCircle2 className="h-4 w-4 text-green-500" />}
                                 </div>
                                 <p className="text-sm text-muted-foreground">
-                                    {githubConnected
-                                        ? `Connected as @${githubUsername}. Browse your repositories.`
-                                        : "Import repositories directly from your account."}
+                                    {githubStatusLoading
+                                        ? "Checking connection…"
+                                        : githubConnected
+                                            ? `Connected as @${githubUsername}. Browse your repositories.`
+                                            : "Import repositories directly from your account."}
                                 </p>
                             </div>
                         </button>

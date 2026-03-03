@@ -24,6 +24,7 @@ import { PrivacyPage } from "@/pages/guest/privacy"
 import { ContactPage } from "@/pages/guest/contact"
 import { AcceptInvitePage } from "@/pages/auth/accept-invite"
 import { GithubOAuthCompletePage } from "@/components/projects/github-oauth-complete"
+import { PublicPortalPage } from "@/pages/docs/public-portal"
 
 /**
  * ProtectedRoute — redirects unauthenticated users to /login.
@@ -111,6 +112,8 @@ function AppRoutes() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/share/accept/:token" element={<AcceptInvitePage />} />
       <Route path="/github/oauth/complete" element={<GithubOAuthCompletePage />} />
+      {/* Public documentation portal — no auth required */}
+      <Route path="/docs/:slug" element={<PublicPortalPage />} />
 
       {/* Protected Routes — nested under DashboardLayout */}
       <Route

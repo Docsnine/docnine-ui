@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import { useProjectStore, mapApiStatus } from "@/store/projects"
-import { projectsApi, versionsApi, ApiException, ApiProject, ApiShare, sharingApi, type ApiProjectEditedSection } from "@/lib/api"
+import { projectsApi, versionsApi, ApiException, ApiProject, ApiShare, sharingApi, portalApi, type ApiPortal, type ApiProjectEditedSection } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -34,6 +34,7 @@ import {
   FileDown,
   GitBranch,
   BookMarked,
+  Globe,
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import Markdown from "react-markdown"
@@ -46,6 +47,7 @@ import { VersionHistoryPanel } from "@/components/projects/version-history-panel
 import { OtherDocsPanel } from "@/components/projects/other-docs-panel"
 import { useDocTrackerStore } from "@/store/doc-tracker"
 import { useAuthStore } from "@/store/auth"
+import { PortalSettingsModal } from "@/components/projects/portal-settings-modal"
 
 // ── Status-change modal ───────────────────────────────────────────────────────
 interface StatusChangeModalProps {
@@ -353,6 +355,11 @@ export function DocumentationViewerPage() {
   const [projectMembers, setProjectMembers] = useState<ApiShare[]>([])
   const [loadingMembers, setLoadingMembers] = useState(false)
 
+  // Portal
+  const [portal, setPortal] = useState<ApiPortal | null>(null)
+  const [portalModalOpen, setPortalModalOpen] = useState(false)
+  const [isOwner, setIsOwner] = useState(false)
+
   // Editable content per tab (initialized from project data)
   const [editedContent, setEditedContent] = useState<Record<DocTab, string>>({
     readme: "",
@@ -372,6 +379,14 @@ export function DocumentationViewerPage() {
         setProject(data.project);
         setEffectiveOutput(data.effectiveOutput);
         setEditedSections((data.editedSections as ApiProjectEditedSection[]) ?? []);
+        const owner = data.shareRole === 'owner'
+        setIsOwner(owner)
+        // Fetch portal settings for owners
+        if (owner) {
+          portalApi.get(data.project._id)
+            .then((r) => setPortal(r.portal))
+            .catch(() => { })
+        }
         setEditedContent({
           readme: data.effectiveOutput?.readme ?? "",
           api: data.effectiveOutput?.apiReference ?? "",
@@ -740,6 +755,19 @@ export function DocumentationViewerPage() {
             )
           })()}
 
+          {/* ── Primary: Portal Publish button (owners only) ── */}
+          {isOwner && id && (
+            <Button
+              variant={portal?.isPublished ? "default" : "outline"}
+              size="sm"
+              onClick={() => setPortalModalOpen(true)}
+              className="gap-1.5"
+            >
+              <Globe className={cn("h-4 w-4", portal?.isPublished && "animate-none")} />
+              <span className="hidden sm:inline">{portal?.isPublished ? "Published" : "Publish"}</span>
+            </Button>
+          )}
+
           {/* ── More dropdown (History + exports) ── */}
           <div className="relative group">
             <Button variant="outline" size="sm" disabled={!!actionLoading} className="gap-1.5">
@@ -962,6 +990,17 @@ export function DocumentationViewerPage() {
           accepting={acceptingAI}
           onClose={() => setShowStaleDiff(false)}
           onAcceptAI={handleAcceptAI}
+        />
+      )}
+
+      {/* Portal settings modal */}
+      {isOwner && id && (
+        <PortalSettingsModal
+          isOpen={portalModalOpen}
+          onClose={() => setPortalModalOpen(false)}
+          projectId={id}
+          initialPortal={portal}
+          onPublishChange={(updated) => setPortal(updated)}
         />
       )}
 

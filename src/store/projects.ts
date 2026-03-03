@@ -126,6 +126,7 @@ interface ProjectState {
     editedSections: any;
     effectiveOutput: any;
     lastSyncedCommit: string;
+    shareRole: 'owner' | 'editor' | 'viewer';
   }>;
 
   /** Update a project in the local cache (e.g. after SSE stream completes). */
@@ -228,11 +229,13 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       editedSections: data.editedSections,
       effectiveOutput: data.effectiveOutput,
       lastSyncedCommit: data.lastSyncedCommit,
+      shareRole: data.shareRole ?? 'owner',
     } as {
       project: ApiProject;
       editedSections: any;
       effectiveOutput: any;
       lastSyncedCommit: string;
+      shareRole: 'owner' | 'editor' | 'viewer';
     };
   },
 

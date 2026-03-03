@@ -711,3 +711,128 @@ export const chatApi = {
   reset: (projectId: string) =>
     apiFetch<void>(`/projects/${projectId}/chat`, { method: 'DELETE' }),
 }
+
+// ── Public Documentation Portal ──────────────────────────────────────────
+
+export type PortalSectionVisibility = 'public' | 'internal' | 'coming_soon'
+export type PortalAccessMode = 'public' | 'password'
+
+export type PortalSectionKey = 'readme' | 'internalDocs' | 'apiReference' | 'schemaDocs' | 'securityReport'
+
+export interface PortalSectionConfig {
+  sectionKey: PortalSectionKey
+  visibility: PortalSectionVisibility
+}
+
+export interface PortalFooterLink {
+  label: string
+  href: string
+}
+
+export interface PortalBranding {
+  logo?: string
+  favicon?: string
+  primaryColor?: string
+  bgColor?: string
+  accentColor?: string
+  headerText?: string
+  footerText?: string
+  footerLinks?: PortalFooterLink[]
+}
+
+export interface ApiPortal {
+  _id?: string
+  projectId?: string
+  slug: string
+  isPublished: boolean
+  accessMode: PortalAccessMode
+  branding: PortalBranding
+  sections: PortalSectionConfig[]
+  seoTitle?: string
+  seoDescription?: string
+  customDomain?: string
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface PublicPortalData {
+  portal: ApiPortal
+  project: {
+    repoOwner: string
+    repoName: string
+    meta: ApiProjectMeta
+    techStack: string[]
+  }
+  protected: boolean
+  /** null when password-protected and not yet verified */
+  content: Record<PortalSectionKey, string | null> | null
+  /** null when password-protected and not yet verified */
+  sectionVisibility: Record<PortalSectionKey, PortalSectionVisibility> | null
+}
+
+export const PORTAL_SECTION_LABELS: Record<PortalSectionKey, string> = {
+  readme: 'README',
+  internalDocs: 'Internal Docs',
+  apiReference: 'API Reference',
+  schemaDocs: 'Schema Docs',
+  securityReport: 'Security Report',
+}
+
+export const PORTAL_SECTION_KEYS: PortalSectionKey[] = [
+  'readme',
+  'internalDocs',
+  'apiReference',
+  'schemaDocs',
+  'securityReport',
+]
+
+// ── Owner portal API ──────────────────────────────────────────
+
+export const portalApi = {
+  /** Get portal settings for a project (owner only). Returns null portal if not set up yet. */
+  get: (projectId: string) =>
+    apiFetch<{ portal: ApiPortal | null }>(`/projects/${projectId}/portal`),
+
+  /** Create or update portal settings (owner only). */
+  update: (projectId: string, data: {
+    branding?: PortalBranding
+    sections?: PortalSectionConfig[]
+    seoTitle?: string
+    seoDescription?: string
+    customDomain?: string
+    accessMode?: PortalAccessMode
+    password?: string | null
+  }) =>
+    apiFetch<{ portal: ApiPortal }>(`/projects/${projectId}/portal`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  /** Toggle the portal between published and unpublished. */
+  togglePublish: (projectId: string) =>
+    apiFetch<{ portal: ApiPortal }>(`/projects/${projectId}/portal/publish`, {
+      method: 'POST',
+    }),
+}
+
+// ── Public portal API (no auth required) ─────────────────────
+
+export const publicPortalApi = {
+  /**
+   * Fetch a public portal by slug.
+   * Pass `password` for password-protected portals.
+   */
+  get: (slug: string, password?: string) => {
+    const headers: Record<string, string> = {}
+    if (password) headers['x-portal-password'] = password
+    return apiFetch<PublicPortalData>(`/portal/${slug}`, { skipAuth: true, headers })
+  },
+
+  /** Verify a portal password. Returns { valid: true } or throws ApiException. */
+  auth: (slug: string, password: string) =>
+    apiFetch<{ valid: boolean }>(`/portal/${slug}/auth`, {
+      method: 'POST',
+      skipAuth: true,
+      body: JSON.stringify({ password }),
+    }),
+}

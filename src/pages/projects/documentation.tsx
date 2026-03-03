@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import { useProjectStore, mapApiStatus } from "@/store/projects"
-import { projectsApi, versionsApi, ApiException, ApiProject, type ApiProjectEditedSection } from "@/lib/api"
+import { projectsApi, versionsApi, ApiException, ApiProject, ApiShare, sharingApi, type ApiProjectEditedSection } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import {
   ArrowLeft,
   Book,
@@ -14,7 +14,6 @@ import {
   Database,
   BookOpen,
   Menu,
-  Download,
   AlertTriangle,
   Edit3,
   Bot,
@@ -29,16 +28,134 @@ import {
   Loader2,
   Info,
   FileCode,
-  ExternalLink,
-  History,
   Eye,
+  MoreHorizontal,
+  FileClock,
+  FileDown,
+  GitBranch,
+  BookMarked,
 } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import Markdown from "react-markdown"
 import { cn } from "@/lib/utils"
+import { Input } from "@/components/ui/input"
 import { AIChatPanel } from "@/components/projects/ai-chat"
 import { DocRenderer } from "@/components/projects/DocRenderer"
+import { DocStatusDot, DOC_STATUS_ORDER, DOC_STATUS_CONFIG } from "@/components/projects/doc-status"
 import { VersionHistoryPanel } from "@/components/projects/version-history-panel"
 import { OtherDocsPanel } from "@/components/projects/other-docs-panel"
+import { useDocTrackerStore } from "@/store/doc-tracker"
+import { useAuthStore } from "@/store/auth"
+
+// ── Status-change modal ───────────────────────────────────────────────────────
+interface StatusChangeModalProps {
+  isOpen: boolean
+  onClose: () => void
+  pendingStatus: import("@/store/doc-tracker").DocStatus | null
+  onConfirm: (note: string, taggedMember?: string) => void
+  members: ApiShare[]
+  loadingMembers: boolean
+}
+
+function StatusChangeModal({ isOpen, onClose, pendingStatus, onConfirm, members, loadingMembers }: StatusChangeModalProps) {
+  const [note, setNote] = useState("")
+  const [tagged, setTagged] = useState<string>("")
+
+  // reset fields each time the modal opens
+  useEffect(() => {
+    if (isOpen) { setNote(""); setTagged("") }
+  }, [isOpen])
+
+  if (!pendingStatus) return null
+  const cfg = DOC_STATUS_CONFIG[pendingStatus]
+  const isChangesRequested = pendingStatus === "changes_requested"
+  const Icon = cfg.icon
+
+  const activeMembers = members.filter((m) => m.status === "accepted")
+
+  return (
+    <Dialog open={isOpen} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Icon className={cn("h-4 w-4 shrink-0", cfg.iconClass)} />
+            Set status to "{cfg.label}"
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4 py-2">
+          {/* Note */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">Message <span className="text-muted-foreground font-normal">(optional)</span></label>
+            <textarea
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary resize-none min-h-[80px] placeholder:text-muted-foreground"
+              placeholder={isChangesRequested ? "Describe what needs to change..." : "Add a note for this status change..."}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+          </div>
+
+          {/* Tag member — only for changes_requested */}
+          {isChangesRequested && (
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Assign to <span className="text-muted-foreground font-normal">(optional)</span></label>
+              {loadingMembers ? (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Loader2 className="h-3 w-3 animate-spin" /> Loading members...
+                </div>
+              ) : activeMembers.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No invited members yet.</p>
+              ) : (
+                <div className="space-y-1">
+                  {activeMembers.map((m) => {
+                    const display = m.inviteeUser?.name ?? m.inviteeEmail
+                    const val = m.inviteeEmail
+                    return (
+                      <label
+                        key={m._id}
+                        className={cn(
+                          "flex items-center gap-2.5 rounded-md border px-3 py-2 text-sm cursor-pointer transition-colors",
+                          tagged === val
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:bg-muted",
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          name="tagged-member"
+                          className="h-3.5 w-3.5 accent-primary"
+                          checked={tagged === val}
+                          onChange={() => setTagged(tagged === val ? "" : val)}
+                          onClick={() => { if (tagged === val) setTagged("") }}
+                        />
+                        <div className="h-6 w-6 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+                          <span className="text-[10px] font-semibold text-primary">{display[0].toUpperCase()}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-medium truncate">{display}</div>
+                          {m.inviteeUser?.name && <div className="text-xs text-muted-foreground truncate">{m.inviteeEmail}</div>}
+                        </div>
+                        <span className="ml-auto text-[10px] text-muted-foreground capitalize">{m.role}</span>
+                      </label>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" size="sm" onClick={onClose}>Cancel</Button>
+          <Button size="sm" onClick={() => onConfirm(note.trim(), tagged || undefined)}>
+            <Icon className="h-3.5 w-3.5 mr-1.5 shrink-0" />
+            {cfg.label}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 // ── Tab definitions ──────────────────────────────────────────────────────────
 type DocTab = "readme" | "api" | "schema" | "internal" | "security" | "other_docs"
@@ -200,6 +317,8 @@ function MarkdownToolbar({ onInsert }: { onInsert: (prefix: string, suffix?: str
 export function DocumentationViewerPage() {
   const { id } = useParams<{ id: string }>()
   const { getProjectData } = useProjectStore()
+  const { getEntry: getDocEntry, setStatus: setDocStatus, setAssignee: setDocAssignee } = useDocTrackerStore()
+  const { user } = useAuthStore()
 
   type EffectiveOutput = {
     readme?: string;
@@ -225,6 +344,14 @@ export function DocumentationViewerPage() {
   const [showStaleDiff, setShowStaleDiff] = useState(false)
   const [staleSummary, setStaleSummary] = useState<string | null>(null)
   const [acceptingAI, setAcceptingAI] = useState(false)
+
+  // Status-change modal
+  const [statusModal, setStatusModal] = useState<{
+    open: boolean
+    pendingStatus: import("@/store/doc-tracker").DocStatus | null
+  }>({ open: false, pendingStatus: null })
+  const [projectMembers, setProjectMembers] = useState<ApiShare[]>([])
+  const [loadingMembers, setLoadingMembers] = useState(false)
 
   // Editable content per tab (initialized from project data)
   const [editedContent, setEditedContent] = useState<Record<DocTab, string>>({
@@ -526,49 +653,37 @@ export function DocumentationViewerPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Export message */}
+          {/* Export / action feedback message */}
           {exportMessage && (
             <span className={`text-xs px-2 py-1 rounded ${exportMessage.startsWith("✅") ? "bg-green-50 text-green-700 border border-green-200" : "bg-destructive/10 text-destructive"}`}>
               {exportMessage}
             </span>
           )}
 
+          {/* ── Primary: Edit / Cancel / Save ── */}
           {activeTab !== "security" && activeTab !== "other_docs" && (
             isEditMode ? (
               <>
                 <Button variant="outline" size="sm" onClick={handleCancelEdit}>
-                  <X className="mr-2 h-4 w-4" /> Cancel
+                  <X className="h-4 w-4" />
+                  <span className="hidden sm:inline ml-1.5">Cancel</span>
                 </Button>
                 <Button size="sm" onClick={handleSave} disabled={actionLoading === "save"}>
                   {actionLoading === "save"
-                    ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    : <Save className="mr-2 h-4 w-4" />}
-                  Save
+                    ? <Loader2 className="h-4 w-4 animate-spin" />
+                    : <Save className="h-4 w-4" />}
+                  <span className="hidden sm:inline ml-1.5">Save</span>
                 </Button>
               </>
             ) : (
               <Button variant="outline" size="sm" onClick={() => setIsEditMode(true)}>
-                <Edit3 className="mr-2 h-4 w-4" /> Edit
+                <Edit3 className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1.5">Edit</span>
               </Button>
             )
           )}
-          <Button
-            variant={isHistoryOpen ? "default" : "outline"}
-            size="sm"
-            disabled={!activeSectionName}
-            onClick={() => {
-              setIsHistoryOpen((o) => !o)
-              if (isChatOpen) setIsChatOpen(false)
-            }}
-            title={activeSectionName ? undefined : "History not available for this section"}
-          >
-            <History className="mr-2 h-4 w-4" /> History
-            {activeSectionName && (versionCounts[activeSectionName] ?? 0) > 0 && (
-              <span className="ml-1 text-[10px] font-mono opacity-70">
-                ({versionCounts[activeSectionName]})
-              </span>
-            )}
-          </Button>
+
+          {/* ── Primary: Ask AI ── */}
           <Button
             variant={isChatOpen ? "default" : "outline"}
             size="sm"
@@ -577,28 +692,100 @@ export function DocumentationViewerPage() {
               if (isHistoryOpen) setIsHistoryOpen(false)
             }}
           >
-            <Bot className="mr-2 h-4 w-4" /> Ask AI
+            <Bot className="h-4 w-4" />
+            <span className="hidden sm:inline ml-1.5">Ask AI</span>
           </Button>
 
-          {/* Export dropdown */}
+          {/* ── Primary: Status selector ── */}
+          {activeSectionName && id && (() => {
+            const currentStatus = getDocEntry(id, activeSectionName)?.status ?? "draft"
+            const cfg = DOC_STATUS_CONFIG[currentStatus]
+            const StatusIcon = cfg.icon
+            return (
+              <div className="relative group/status">
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  <StatusIcon className={cn("h-4 w-4", cfg.iconClass)} />
+                  <span className="hidden sm:inline">{cfg.label}</span>
+                </Button>
+                <div className="absolute left-0 top-9 z-50 hidden group-hover/status:flex flex-col w-48 rounded-lg border border-border bg-popover shadow-lg text-sm overflow-hidden bg-secondary">
+                  {DOC_STATUS_ORDER.map((s) => {
+                    const c = DOC_STATUS_CONFIG[s]
+                    return (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => {
+                          // load members once per project
+                          if (projectMembers.length === 0 && !loadingMembers) {
+                            setLoadingMembers(true)
+                            sharingApi.listAccess(id)
+                              .then((r) => setProjectMembers(r.shares))
+                              .catch(() => { })
+                              .finally(() => setLoadingMembers(false))
+                          }
+                          setStatusModal({ open: true, pendingStatus: s })
+                        }}
+                        className={cn(
+                          "flex items-center gap-2.5 px-3 py-2 text-xs transition-colors hover:bg-muted text-left",
+                          s === currentStatus && "bg-muted font-medium",
+                        )}
+                      >
+                        <c.icon className={cn("h-3.5 w-3.5 shrink-0", c.iconClass)} />
+                        <span>{c.label}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })()}
+
+          {/* ── More dropdown (History + exports) ── */}
           <div className="relative group">
-            <Button variant="outline" size="sm" disabled={!!actionLoading}>
-              {actionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
-              Export
+            <Button variant="outline" size="sm" disabled={!!actionLoading} className="gap-1.5">
+              {actionLoading
+                ? <Loader2 className="h-4 w-4 animate-spin" />
+                : <MoreHorizontal className="h-4 w-4" />}
             </Button>
-            <div className="absolute right-0 top-9 z-50 hidden group-hover:block w-44 rounded-md border border-border bg-popover shadow-md text-sm overflow-hidden">
-              <button className="flex w-full items-center gap-2 px-3 py-2 hover:bg-muted transition-colors" onClick={handleExportPdf}>
-                <Download className="h-4 w-4" /> PDF
+
+            <div className="absolute right-0 top-9 z-50 hidden group-hover:flex flex-col w-52 rounded-lg border border-border bg-popover shadow-lg text-sm overflow-hidden bg-secondary">
+              {/* History */}
+              <button
+                className={cn(
+                  "flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors",
+                  !activeSectionName && "opacity-40 pointer-events-none",
+                  isHistoryOpen && "bg-muted font-medium",
+                )}
+                onClick={() => {
+                  setIsHistoryOpen((o) => !o)
+                  if (isChatOpen) setIsChatOpen(false)
+                }}
+                disabled={!activeSectionName}
+              >
+                <FileClock className="h-4 w-4 text-muted-foreground shrink-0" />
+                <span className="flex-1 text-left">History</span>
+                {activeSectionName && (versionCounts[activeSectionName] ?? 0) > 0 && (
+                  <span className="text-[10px] font-mono px-1 py-0.5 rounded bg-muted-foreground/15 text-muted-foreground">
+                    {versionCounts[activeSectionName]}
+                  </span>
+                )}
               </button>
-              <button className="flex w-full items-center gap-2 px-3 py-2 hover:bg-muted transition-colors" onClick={handleExportYaml}>
-                <FileCode className="h-4 w-4" /> GitHub Actions YAML
+
+              <div className="mx-3 my-1 border-t border-border" />
+              <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Export</div>
+
+              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={handleExportPdf}>
+                <FileDown className="h-4 w-4 text-muted-foreground shrink-0" /> PDF
               </button>
-              <button className="flex w-full items-center gap-2 px-3 py-2 hover:bg-muted transition-colors" onClick={handleExportNotion}>
-                <ExternalLink className="h-4 w-4" /> Push to Notion
+              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={handleExportYaml}>
+                <GitBranch className="h-4 w-4 text-muted-foreground shrink-0" /> GitHub Actions YAML
               </button>
-              <button className="flex w-full items-center gap-2 px-3 py-2 hover:bg-muted transition-colors" onClick={handleExportGoogleDocs}>
+              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={handleExportNotion}>
+                <BookMarked className="h-4 w-4 text-muted-foreground shrink-0" /> Push to Notion
+              </button>
+              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={handleExportGoogleDocs}>
                 <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="#4285F4" opacity=".3" /><path d="M14 2v6h6" fill="none" stroke="#4285F4" strokeWidth="1.5" /><path d="M16 13H8M16 17H8M10 9H8" fill="none" stroke="#4285F4" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                Export to Google Docs
+                Google Docs
               </button>
             </div>
           </div>
@@ -639,6 +826,10 @@ export function DocumentationViewerPage() {
                   >
                     <Icon className="h-4 w-4 shrink-0" />
                     <span className="flex-1 text-left truncate">{tab.label}</span>
+                    {sectionName && (() => {
+                      const de = getDocEntry(id ?? "", sectionName)
+                      return de && de.status !== "draft" ? <DocStatusDot status={de.status} /> : null
+                    })()}
                     {isStale && (
                       <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" title="Stale — AI has newer content" />
                     )}
@@ -654,6 +845,7 @@ export function DocumentationViewerPage() {
                 <p className="text-xs text-muted-foreground px-3 pt-2">No documentation available yet.</p>
               )}
             </nav>
+
           </div>
         )}
 
@@ -772,6 +964,21 @@ export function DocumentationViewerPage() {
           onAcceptAI={handleAcceptAI}
         />
       )}
+
+      {/* Status-change modal */}
+      <StatusChangeModal
+        isOpen={statusModal.open}
+        pendingStatus={statusModal.pendingStatus}
+        members={projectMembers}
+        loadingMembers={loadingMembers}
+        onClose={() => setStatusModal({ open: false, pendingStatus: null })}
+        onConfirm={(note, taggedMember) => {
+          if (!id || !activeSectionName || !statusModal.pendingStatus) return
+          setDocStatus(id, activeSectionName, statusModal.pendingStatus, user?.name ?? user?.email, note || undefined)
+          if (taggedMember) setDocAssignee(id, activeSectionName, taggedMember)
+          setStatusModal({ open: false, pendingStatus: null })
+        }}
+      />
     </div>
   )
 }

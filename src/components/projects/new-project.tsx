@@ -28,12 +28,6 @@ import { githubApi, GitHubOrg, GitHubRepo, ApiException } from "@/lib/api"
 import { OrgAccountPicker } from "@/components/projects/org-account-picker"
 import { cn } from "@/lib/utils"
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Organisation selection persistence
-// Saves the last-selected org login (or "" for personal account) in
-// localStorage so it is pre-selected the next time the modal opens.
-// ─────────────────────────────────────────────────────────────────────────────
-
 const SELECTED_ORG_KEY = "docnine:selected-org"
 
 function readSavedOrg(): string | null {
@@ -250,13 +244,8 @@ export function NewProjectModal({ open, onOpenChange, openToGithubStep }: NewPro
         try {
             const data = await githubApi.getOAuthStartUrl()
 
-            // Clear any stale result from a previous OAuth attempt.
-            localStorage.removeItem("__docnine_github_oauth_result")
-
-            // Open a popup. The popup writes its result to localStorage
-            // (github-oauth-complete.tsx) which we poll below.
-            // This survives COOP-severed window.opener AND Chrome 88+
-            // clearing window.name on cross-origin navigation.
+            // Open a popup instead of navigating away — preserves the session
+            // (access token stays in memory) and avoids full page reload on return.
             const width = 620, height = 720
             const left = Math.round(window.screenX + (window.outerWidth - width) / 2)
             const top  = Math.round(window.screenY + (window.outerHeight - height) / 2)
@@ -267,24 +256,20 @@ export function NewProjectModal({ open, onOpenChange, openToGithubStep }: NewPro
             )
 
             if (!popup || popup.closed) {
-                // Popup was blocked — fall back to full-page navigation.
-                // github-oauth-complete.tsx will write to localStorage and then
-                // location.replace('/projects') since window.close() is a no-op.
+                // Popup was blocked — fall back to full-page navigation
                 window.location.href = data.url
                 return
             }
 
-            let settled = false
-
-            const finish = (status: string, user?: string | null, msg?: string | null) => {
-                if (settled) return
-                settled = true
-                clearInterval(poll)
+            // Listen for postMessage sent by /github/oauth/complete
+            const onMessage = (event: MessageEvent) => {
+                if (event.origin !== window.location.origin) return
+                if (event.data?.type !== "github-oauth-complete") return
                 window.removeEventListener("message", onMessage)
-                localStorage.removeItem("__docnine_github_oauth_result")
+                clearInterval(pollClosed)
                 setIsConnecting(false)
 
-                if (status === "connected") {
+                if (event.data.status === "connected") {
                     githubApi.getStatus().then((s) => {
                         if (s.connected) {
                             setGithubConnected(true)
@@ -294,36 +279,35 @@ export function NewProjectModal({ open, onOpenChange, openToGithubStep }: NewPro
                             setApiError("GitHub connected but status could not be confirmed. Please try again.")
                         }
                     }).catch(() => setApiError("Failed to verify GitHub connection."))
-                } else if (status === "error") {
-                    setApiError(msg ?? "GitHub connection failed. Please try again.")
+                } else {
+                    setApiError(event.data.msg ?? "GitHub connection failed. Please try again.")
                 }
-                // status === undefined means popup was closed by the user (cancelled)
-            }
-
-            // Fast path: postMessage when opener is still reachable.
-            const onMessage = (event: MessageEvent) => {
-                if (event.origin !== window.location.origin) return
-                if (event.data?.type !== "github-oauth-complete") return
-                finish(event.data.status, event.data.user, event.data.msg)
             }
             window.addEventListener("message", onMessage)
 
-            // Reliable path: poll localStorage (works even when COOP severs the
-            // opener and Chrome 88+ clears window.name cross-origin).
-            const poll = setInterval(() => {
-                // Check localStorage result written by github-oauth-complete.tsx.
-                const raw = localStorage.getItem("__docnine_github_oauth_result")
-                if (raw) {
-                    try {
-                        const { status, user, msg } = JSON.parse(raw)
-                        finish(status, user, msg)
-                        return
-                    } catch { /* malformed — ignore */ }
+            // Fallback: popup closed without sending a postMessage.
+            // This happens when COOP headers (set by github.com) sever
+            // window.opener, causing the popup to close silently.
+            // Check GitHub status directly so we don't miss a successful connect.
+            const pollClosed = setInterval(() => {
+                if (popup.closed) {
+                    clearInterval(pollClosed)
+                    window.removeEventListener("message", onMessage)
+                    // Don't just stop — check if the connection actually succeeded.
+                    githubApi.getStatus().then((s) => {
+                        if (s.connected) {
+                            setGithubConnected(true)
+                            if (s.githubUsername) setGithubUsername(s.githubUsername)
+                            setStep("github")
+                        }
+                        // If not connected the user likely dismissed/cancelled — stay put.
+                    }).catch(() => {
+                        // Status check failed — silently reset.
+                    }).finally(() => {
+                        setIsConnecting(false)
+                    })
                 }
-
-                // Popup was closed without writing a result (user cancelled).
-                if (popup.closed) finish("cancelled")
-            }, 300)
+            }, 500)
 
         } catch (err: any) {
             setApiError(err instanceof ApiException ? err.message : "Failed to start GitHub OAuth.")

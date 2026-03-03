@@ -47,19 +47,12 @@ function AppRoutes() {
 
   useEffect(() => {
     // Never call initAuth() when rendering /github/oauth/complete.
-    //
-    // That page handles 3 cases (see github-oauth-complete.tsx for detail):
-    //   1. Normal popup (opener intact)  → postMessage + close
-    //   2. Popup with severed opener     → window.name check + close
-    //   3. Main-tab fallback             → location.replace('/projects')
-    //
-    // In cases 1 & 2 the popup closes immediately — initAuth() must not run
-    // because firing POST /auth/refresh would rotate the cookie and cause
-    // REFRESH_TOKEN_REUSED in the still-open parent tab → logout.
-    // In case 3 we skip here too, then initAuth() runs properly on the
-    // subsequent hard load of /projects.
+    // That page writes its result to localStorage then calls window.close().
+    // If initAuth() ran here it would call POST /auth/refresh, rotating
+    // the refresh-token cookie and causing REFRESH_TOKEN_REUSED in the
+    // still-open parent tab → parent gets logged out.
     const isOAuthCompletePage = window.location.pathname === '/github/oauth/complete'
-    if ((window.opener && !window.opener.closed) || isOAuthCompletePage) {
+    if (isOAuthCompletePage) {
       useAuthStore.setState({ initialized: true })
       return
     }

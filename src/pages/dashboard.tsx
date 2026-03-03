@@ -8,7 +8,7 @@ import { Select } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { NewProjectModal } from "@/components/projects/new-project-modal"
+import { NewProjectModal } from "@/components/projects/new-project"
 import {
     Search,
     Plus,

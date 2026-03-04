@@ -24,9 +24,10 @@ import { TermsPage } from "@/pages/guest/terms"
 import { PrivacyPage } from "@/pages/guest/privacy"
 import { ContactPage } from "@/pages/guest/contact"
 import { AcceptInvitePage } from "@/pages/auth/accept-invite"
+
 import { GithubOAuthCompletePage } from "@/components/projects/github-oauth-complete"
 import { PublicPortalPage } from "@/pages/docs/public-portal"
-import { PlatformDocsPage } from "@/pages/platform-docs"
+import { PlatformDocsPage } from "@/pages/docs"
 
 /**
  * Forwards the /billing route plus any Flutterwave callback params
@@ -136,7 +137,7 @@ function AppRoutes() {
       <Route path="/pricing" element={<PricingPage />} />
 
       {/* Platform documentation — no auth required */}
-      <Route path="/platform-docs" element={<PlatformDocsPage />} />
+      <Route path="/docs" element={<PlatformDocsPage />} />
 
       {/* Protected Routes — nested under DashboardLayout */}
       <Route

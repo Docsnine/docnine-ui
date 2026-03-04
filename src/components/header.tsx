@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Button } from './ui/button'
 import { Link } from 'react-router-dom'
 import { ThemeToggle } from './theme-toggle'
-import { Mail, MessageSquare, Menu, X } from 'lucide-react'
+import { Mail, MessageSquare, Menu, X, Sparkles } from 'lucide-react'
 import { useTheme } from './theme-provider'
 import ApplicationLogo from './logo'
 
@@ -20,7 +20,10 @@ function TopHeader({ className }: { className?: string }) {
                         <span className="hidden sm:flex items-center gap-1.5"><MessageSquare className="h-3.5 w-3.5" /> @docnine</span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <span className="hidden md:inline-flex text-primary font-medium">✨ Now in beta — Documentation that Works as Hard as You Do.</span>
+                        <span className="hidden md:inline-flex items-center gap-1.5 text-primary font-medium">
+                            <Sparkles className="h-3.5 w-3.5" />
+                            Now in beta — Documentation that Works as Hard as You Do.
+                        </span>
                         <ThemeToggle />
                     </div>
                 </div>
@@ -33,7 +36,7 @@ function TopHeader({ className }: { className?: string }) {
 
                 {/* Desktop links */}
                 <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-                    <Link to="/platform-docs" className="hover:text-foreground transition-colors">Docs</Link>
+                    <Link to="/docs" className="hover:text-foreground transition-colors">Docs</Link>
                     <a href="https://github.com/Docsnine" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors">GitHub</a>
                     <a href="/pricing" className="hover:text-foreground transition-colors">Pricing</a>
                     <Link to="/contact" className="hover:text-foreground transition-colors">Contact Us</Link>
@@ -69,7 +72,7 @@ function TopHeader({ className }: { className?: string }) {
                 <div className="md:hidden border-t border-border bg-background px-4 pb-4">
                     <nav className="flex flex-col gap-1 mt-3">
                         <a href="#features" onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Features</a>
-                        <Link to="/platform-docs" onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Docs</Link>
+                        <Link to="/docs" onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Docs</Link>
                         <a href="https://github.com/Docsnine" target="_blank" rel="noreferrer" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">GitHub</a>
                         <Link to="/contact" onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Contact Us</Link>
                         <div className="mt-2 pt-2 border-t border-border">

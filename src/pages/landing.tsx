@@ -17,9 +17,6 @@ export function LandingPage() {
       {/* Top Left Glow */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/5 blur-[120px] pointer-events-none z-0" />
 
-      {/* Center Cyan Glow */}
-      <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
-
       <TopHeader />
 
       {/* Hero Section */}

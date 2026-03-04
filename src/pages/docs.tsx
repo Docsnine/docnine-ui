@@ -1,5 +1,5 @@
 /**
- * Platform Documentation Page — /platform-docs
+ * Platform Documentation Page — /docs
  *
  * Covers:
  *  - Getting started

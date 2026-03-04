@@ -35,14 +35,14 @@ const PLAN_ACCENT: Record<string, string> = {
     free: "text-muted-foreground",
     starter: "text-blue-400",
     pro: "text-primary",
-    team: "text-amber-400",
+    team: "text-primary",
 }
 
 const PLAN_BTN: Record<string, string> = {
     free: "",
-    starter: "bg-blue-600 hover:bg-blue-700 text-white",
+    starter: "bg-foreground text-background",
     pro: "bg-primary hover:bg-primary/90 text-white",
-    team: "bg-amber-500 hover:bg-amber-600 text-white",
+    team: "bg-background border border-border text-white",
 }
 
 // Feature comparison rows shown at the bottom of the page
@@ -111,6 +111,7 @@ function PlanCard({
                 <Icon className={cn("h-5 w-5", accent)} />
                 <span className="font-semibold">{plan.name}</span>
             </div>
+
             <p className="mb-5 text-sm text-muted-foreground leading-relaxed">
                 {plan.tagline}
             </p>
@@ -129,7 +130,7 @@ function PlanCard({
                     <p className="mt-1 text-xs text-muted-foreground">
                         Billed ${plan.prices.annualTotal}/year
                         {plan.prices.savingsPercent > 0 && (
-                            <span className="ml-1 text-green-400 font-medium">
+                            <span className="ml-1 text-primary font-medium">
                                 (Save {plan.prices.savingsPercent}%)
                             </span>
                         )}
@@ -197,7 +198,7 @@ function FeatureLine({ label }: { label: string }) {
 // ── Comparison table ─────────────────────────────────────────────────────────
 function ComparisonTable({ plans }: { plans: BillingPlan[] }) {
     return (
-        <div className="overflow-x-auto border-border z-10 scale-[1.02] rounded-2xl border bg-card p-6 transition-all">
+        <div className="overflow-x-auto border-border z-10 rounded-2xl border bg-card p-6 transition-all">
             <table className="w-full text-sm">
                 <thead>
                     <tr className="border-b border-border">
@@ -308,24 +309,23 @@ export function PricingPage() {
 
     return (
         <div className="relative min-h-screen bg-background text-foreground overflow-hidden font-sans">
-            {/* <BackgroundGrid /> */}
+            <div className="absolute inset-x-0 top-0 h-1/2 overflow-hidden pointer-events-none">
+                <BackgroundGrid />
+            </div>
 
             {/* Top Left Glow */}
             <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
 
-            {/* Center Cyan Glow */}
-            <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
-
             <TopHeader />
 
             {/* Hero */}
-            <div className="mx-auto z-10 max-w-5xl px-6 pt-16 pb-12 text-center">
+            <div className="mx-auto relative z-10 max-w-5xl px-6 pt-16 pb-12 text-center">
                 <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
                     Simple, transparent pricing
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
                     Start free. Upgrade when you're ready.
-                    <span className="ml-1 text-green-400 font-medium">
+                    <span className="ml-1 text-primary font-medium">
                         14-day free trial on all paid plans.
                     </span>
                 </p>
@@ -352,7 +352,7 @@ export function PricingPage() {
                         )}
                     >
                         Annual
-                        <Badge className="ml-1.5 bg-green-500/10 text-green-400 border-green-500/20 text-[10px] px-1.5 py-0">
+                        <Badge className="ml-1.5 bg-green-500/10 text-primary border-green-500/20 text-[10px] px-1.5 py-0">
                             Save up to 20%
                         </Badge>
                     </span>
@@ -360,7 +360,7 @@ export function PricingPage() {
             </div>
 
             {/* Plan cards */}
-            <div className="mx-auto max-w-5xl px-6 pb-16">
+            <div className="mx-auto max-w-6xl px-6 pb-16 relative z-10">
                 {error && (
                     <p className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400 text-center">
                         {error}
@@ -392,6 +392,7 @@ export function PricingPage() {
                                 <h2 className="mb-8 text-center text-2xl font-bold">
                                     Full plan comparison
                                 </h2>
+
                                 <ComparisonTable plans={plans} />
                             </div>
                         )}

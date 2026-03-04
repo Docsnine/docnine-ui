@@ -391,7 +391,7 @@ export function PlatformDocsPage() {
 
                         <H3 id="what-is-docnine">What is Docnine?</H3>
                         <p className="text-muted-foreground leading-relaxed mb-4">
-                            Docnine is an AI-powered documentation platform that reads your GitHub repositories and generates structured, human-readable documentation — automatically. It covers your README, internal developer guides, API reference, database schema, and security audit in one unified place.
+                            Docnine is an AI-powered documentation platform. It uses a multi-agent pipeline to scan GitHub repositories and generate structured documentation — automatically. It covers your README, internal developer guides, API reference, database schema, and security audit in one unified place.
                         </p>
                         <p className="text-muted-foreground leading-relaxed">
                             Once generated, you can edit any section, chat directly with your codebase, publish a public documentation portal, and export to PDF, YAML, Notion, or Google Docs.

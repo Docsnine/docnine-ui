@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useParams, Link } from "react-router-dom"
 import { useProjectStore, mapApiStatus } from "@/store/projects"
 import { projectsApi, versionsApi, ApiException, ApiProject, ApiShare, sharingApi, portalApi, apiSpecApi, type ApiPortal, type ApiSpec, type ApiProjectEditedSection } from "@/lib/api"
@@ -353,6 +353,30 @@ export function DocumentationViewerPage() {
   const [acceptingAI, setAcceptingAI] = useState(false)
 
   // Status-change modal
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false)
+  const statusDropdownRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!statusDropdownOpen) return
+    const handler = (e: MouseEvent) => {
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) {
+        setStatusDropdownOpen(false)
+      }
+    }
+    document.addEventListener("click", handler)
+    return () => document.removeEventListener("click", handler)
+  }, [statusDropdownOpen])
+  const [moreDropdownOpen, setMoreDropdownOpen] = useState(false)
+  const moreDropdownRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!moreDropdownOpen) return
+    const handler = (e: MouseEvent) => {
+      if (moreDropdownRef.current && !moreDropdownRef.current.contains(e.target as Node)) {
+        setMoreDropdownOpen(false)
+      }
+    }
+    document.addEventListener("click", handler)
+    return () => document.removeEventListener("click", handler)
+  }, [moreDropdownOpen])
   const [statusModal, setStatusModal] = useState<{
     open: boolean
     pendingStatus: import("@/store/doc-tracker").DocStatus | null
@@ -685,7 +709,7 @@ export function DocumentationViewerPage() {
   return (
     <div>
       {/* Top bar */}
-      <div className="md:flex items-center justify-between border-b border-border/90 bg-background/50 backdrop-blur-sm container mx-auto max-w-7xl pb-6">
+      <div className="relative z-50 md:flex items-center justify-between border-b border-border/90 bg-background/50 backdrop-blur-sm container mx-auto max-w-7xl pb-6">
         <div className="flex items-center">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Documentation</h1>
@@ -742,41 +766,53 @@ export function DocumentationViewerPage() {
             const currentStatus = getDocEntry(id, activeSectionName)?.status ?? "draft"
             const cfg = DOC_STATUS_CONFIG[currentStatus]
             const StatusIcon = cfg.icon
+
             return (
-              <div className="relative group/status">
-                <Button variant="outline" size="sm" className="gap-1.5">
+              <div className="relative" ref={statusDropdownRef}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5"
+                  onClick={() => setStatusDropdownOpen((o) => !o)}
+                >
                   <StatusIcon className={cn("h-4 w-4", cfg.iconClass)} />
                   <span className="hidden sm:inline">{cfg.label}</span>
                 </Button>
-                <div className="absolute left-0 top-9 z-50 hidden group-hover/status:flex flex-col w-48 rounded-lg border border-border bg-popover shadow-lg text-sm overflow-hidden bg-secondary">
-                  {DOC_STATUS_ORDER.map((s) => {
-                    const c = DOC_STATUS_CONFIG[s]
-                    return (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => {
-                          // load members once per project
-                          if (projectMembers.length === 0 && !loadingMembers) {
-                            setLoadingMembers(true)
-                            sharingApi.listAccess(id)
-                              .then((r) => setProjectMembers(r.shares))
-                              .catch(() => { })
-                              .finally(() => setLoadingMembers(false))
-                          }
-                          setStatusModal({ open: true, pendingStatus: s })
-                        }}
-                        className={cn(
-                          "flex items-center gap-2.5 px-3 py-2 text-sm transition-colors hover:bg-muted text-left",
-                          s === currentStatus && "bg-muted font-medium",
-                        )}
-                      >
-                        <c.icon className={cn("h-3.5 w-3.5 shrink-0", c.iconClass)} />
-                        <span>{c.label}</span>
-                      </button>
-                    )
-                  })}
-                </div>
+
+                {statusDropdownOpen && (
+                  <div className="absolute left-0 top-9 z-50 flex flex-col w-48 rounded-lg border border-border bg-background shadow-lg text-sm overflow-hidden">
+                    {DOC_STATUS_ORDER.map((s) => {
+                      const c = DOC_STATUS_CONFIG[s]
+                      return (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => {
+                            setStatusDropdownOpen(false)
+
+                            // load members once per project
+                            if (projectMembers.length === 0 && !loadingMembers) {
+                              setLoadingMembers(true)
+                              sharingApi.listAccess(id)
+                                .then((r) => setProjectMembers(r.shares))
+                                .catch(() => { })
+                                .finally(() => setLoadingMembers(false))
+                            }
+
+                            setStatusModal({ open: true, pendingStatus: s })
+                          }}
+                          className={cn(
+                            "flex items-center gap-2.5 px-3 py-2 text-sm transition-colors hover:bg-muted text-left",
+                            s === currentStatus && "bg-muted font-medium",
+                          )}
+                        >
+                          <c.icon className={cn("h-3.5 w-3.5 shrink-0", c.iconClass)} />
+                          <span>{c.label}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
             )
           })()}
@@ -796,62 +832,73 @@ export function DocumentationViewerPage() {
           )}
 
           {/* ── More dropdown (History + exports) ── */}
-          <div className="relative group">
-            <Button variant="outline" size="sm" disabled={!!actionLoading} className="gap-1.5">
+          <div className="relative" ref={moreDropdownRef}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!!actionLoading}
+              className="gap-1.5"
+              onClick={() => setMoreDropdownOpen((o) => !o)}
+            >
               {actionLoading
                 ? <Loader2 className="h-4 w-4 animate-spin" />
                 : <MoreHorizontal className="h-4 w-4" />}
             </Button>
 
-            <div className="absolute right-0 top-9 z-50 hidden group-hover:flex flex-col w-52 rounded-lg border border-border bg-popover shadow-lg text-sm overflow-hidden bg-secondary">
-              {/* History */}
-              <button
-                className={cn(
-                  "flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors",
-                  !activeSectionName && "opacity-40 pointer-events-none",
-                  isHistoryOpen && "bg-muted font-medium",
-                )}
-                onClick={() => requirePlan("Version History", "starter", "Access the full version history for each documentation section.", () => {
-                  setIsHistoryOpen((o) => !o)
-                  if (isChatOpen) setIsChatOpen(false)
-                })}
-                disabled={!activeSectionName}
-              >
-                <FileClock className="h-4 w-4 text-muted-foreground shrink-0" />
-                <span className="flex-1 text-left">History</span>
-                {activeSectionName && (versionCounts[activeSectionName] ?? 0) > 0 && (
-                  <span className="text-[10px] font-mono px-1 py-0.5 rounded bg-muted-foreground/15 text-muted-foreground">
-                    {versionCounts[activeSectionName]}
-                  </span>
-                )}
-              </button>
+            {moreDropdownOpen && (
+              <div className="absolute right-0 top-9 z-50 flex flex-col w-62 rounded-lg border border-border bg-background shadow-lg text-sm overflow-hidden">
+                {/* History */}
+                <button
+                  className={cn(
+                    "flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors",
+                    !activeSectionName && "opacity-40 pointer-events-none",
+                    isHistoryOpen && "bg-muted font-medium",
+                  )}
+                  onClick={() => {
+                    setMoreDropdownOpen(false)
+                    requirePlan("Version History", "starter", "Access the full version history for each documentation section.", () => {
+                      setIsHistoryOpen((o) => !o)
+                      if (isChatOpen) setIsChatOpen(false)
+                    })
+                  }}
+                  disabled={!activeSectionName}
+                >
+                  <FileClock className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="flex-1 text-left">History</span>
+                  {activeSectionName && (versionCounts[activeSectionName] ?? 0) > 0 && (
+                    <span className="text-[10px] font-mono px-1 py-0.5 rounded bg-muted-foreground/15 text-muted-foreground">
+                      {versionCounts[activeSectionName]}
+                    </span>
+                  )}
+                </button>
 
-              <div className="mx-3 my-1 border-t border-border" />
-              <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Export</div>
+                <div className="mx-3 my-1 border-t border-border" />
+                <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Export</div>
 
-              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => requirePlan("PDF Export", "starter", "Export your documentation as a PDF file.", handleExportPdf)}>
-                <FileDown className="h-4 w-4 text-muted-foreground shrink-0" /> PDF
-                {!meetsMinPlan(subscription, "starter") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
-              </button>
-              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => requirePlan("GitHub Actions Export", "team", "Export your documentation as a GitHub Actions YAML workflow.", handleExportYaml)}>
-                <GitBranch className="h-4 w-4 text-muted-foreground shrink-0" /> GitHub Actions YAML
-                {!meetsMinPlan(subscription, "team") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
-              </button>
-              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => requirePlan("Notion Export", "team", "Push your documentation directly to Notion.", handleExportNotion)}>
-                <BookMarked className="h-4 w-4 text-muted-foreground shrink-0" /> Push to Notion
-                {!meetsMinPlan(subscription, "team") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
-              </button>
-              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => requirePlan("Google Docs Export", "pro", "Export your documentation to Google Docs.", handleExportGoogleDocs)}>
-                <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="#4285F4" opacity=".3" /><path d="M14 2v6h6" fill="none" stroke="#4285F4" strokeWidth="1.5" /><path d="M16 13H8M16 17H8M10 9H8" fill="none" stroke="#4285F4" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                Google Docs
-                {!meetsMinPlan(subscription, "pro") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
-              </button>
-            </div>
+                <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => { setMoreDropdownOpen(false); requirePlan("PDF Export", "starter", "Export your documentation as a PDF file.", handleExportPdf) }}>
+                  <FileDown className="h-4 w-4 text-muted-foreground shrink-0" /> PDF
+                  {!meetsMinPlan(subscription, "starter") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
+                </button>
+                <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => { setMoreDropdownOpen(false); requirePlan("GitHub Actions Export", "team", "Export your documentation as a GitHub Actions YAML workflow.", handleExportYaml) }}>
+                  <GitBranch className="h-4 w-4 text-muted-foreground shrink-0" /> GitHub Actions (YAML)
+                  {!meetsMinPlan(subscription, "team") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
+                </button>
+                <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => { setMoreDropdownOpen(false); requirePlan("Notion Export", "team", "Push your documentation directly to Notion.", handleExportNotion) }}>
+                  <BookMarked className="h-4 w-4 text-muted-foreground shrink-0" /> Push to Notion
+                  {!meetsMinPlan(subscription, "team") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
+                </button>
+                <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => { setMoreDropdownOpen(false); requirePlan("Google Docs Export", "pro", "Export your documentation to Google Docs.", handleExportGoogleDocs) }}>
+                  <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="#4285F4" opacity=".3" /><path d="M14 2v6h6" fill="none" stroke="#4285F4" strokeWidth="1.5" /><path d="M16 13H8M16 17H8M10 9H8" fill="none" stroke="#4285F4" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                  Google Docs
+                  {!meetsMinPlan(subscription, "pro") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col h-[calc(100vh-8rem)] max-w-7xl mx-auto">
+      <div className="flex flex-col h-[calc(100vh-8rem)] max-w-7xl mx-auto z-10">
         {/* Main layout: sidebar + content + chat */}
         <div className="flex flex-1 overflow-hidden border border-border rounded-2xl bg-card mt-6">
           {/* Sidebar */}
@@ -1103,7 +1150,6 @@ export function DocumentationViewerPage() {
         )}
 
         {/* Status-change modal */}
-        {/* API Spec import modal (FT4) */}
         {id && (
           <ApiSpecImportModal
             projectId={id}

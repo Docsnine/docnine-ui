@@ -1207,11 +1207,29 @@ export const billingApi = {
     ),
 
   /**
-   * Returns a direct URL to download the invoice PDF.
-   * Use as an anchor href — the browser will stream the PDF.
+   * Fetches the invoice PDF with the current Bearer token and triggers a
+   * browser download via a temporary object URL.
    */
-  downloadInvoicePdfUrl: (id: string) =>
-    `${API_BASE}/billing/invoices/${id}/pdf`,
+  downloadInvoicePdf: async (id: string): Promise<void> => {
+    const token = getAccessToken()
+    const res = await fetch(`${API_BASE}/billing/invoices/${id}/pdf`, {
+      credentials: 'include',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}))
+      throw new Error(json?.error?.message ?? 'Failed to download invoice')
+    }
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `invoice-${id}.pdf`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  },
 
   /** Update company name / VAT number on a paid invoice. */
   updateInvoiceDetails: (

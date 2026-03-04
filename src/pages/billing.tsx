@@ -1029,6 +1029,7 @@ function BillingHistoryCard() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [detailsInvoice, setDetailsInvoice] = useState<InvoiceData | null>(null)
+    const [downloadingId, setDownloadingId] = useState<string | null>(null)
 
     const load = useCallback(
         async (p: number) => {
@@ -1110,16 +1111,21 @@ function BillingHistoryCard() {
                                                             variant="ghost"
                                                             size="icon"
                                                             className="h-7 w-7"
-                                                            asChild
+                                                            disabled={downloadingId === inv._id}
+                                                            onClick={async () => {
+                                                                setDownloadingId(inv._id)
+                                                                try {
+                                                                    await billingApi.downloadInvoicePdf(inv._id)
+                                                                } catch (err) {
+                                                                    console.error("Invoice download failed:", err)
+                                                                } finally {
+                                                                    setDownloadingId(null)
+                                                                }
+                                                            }}
                                                         >
-                                                            <a
-                                                                href={billingApi.downloadInvoicePdfUrl(inv._id)}
-                                                                download
-                                                                target="_blank"
-                                                                rel="noreferrer"
-                                                            >
-                                                                <Download className="h-3.5 w-3.5" />
-                                                            </a>
+                                                            {downloadingId === inv._id
+                                                                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                                                : <Download className="h-3.5 w-3.5" />}
                                                         </Button>
                                                     )}
                                                     <Button

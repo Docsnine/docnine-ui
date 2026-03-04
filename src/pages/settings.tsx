@@ -149,7 +149,6 @@ function GitHubCard() {
                                     </p>
                                 )}
                             </div>
-                            <Badge variant="success" className="ml-auto">Active</Badge>
                         </div>
 
                         {status.scopes && status.scopes.length > 0 && (
@@ -280,7 +279,6 @@ jobs:
                     </div>
                     <p className="text-xs text-muted-foreground">
                         Add this URL as a GitHub repository webhook (push events, content-type: application/json).
-                        Set the same secret as <code className="text-[10px] bg-muted px-1 py-0.5 rounded">WEBHOOK_SECRET</code> in your backend environment.
                     </p>
                 </div>
 
@@ -639,7 +637,7 @@ function NotionCard() {
                                 <Input
                                     id="notion-api-key"
                                     type={showKey ? "text" : "password"}
-                                    placeholder="secret_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                    placeholder="secret_xxxxxxxxxxxxxxxxxx"
                                     value={apiKey}
                                     onChange={(e) => setApiKey(e.target.value)}
                                     className="pr-10 font-mono text-sm"
@@ -662,14 +660,14 @@ function NotionCard() {
                             <Input
                                 id="notion-page-id"
                                 type="text"
-                                placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                placeholder="xxxxxxxxxxxxxxxxxxxxxxxxx"
                                 value={parentPageId}
                                 onChange={(e) => setParentPageId(e.target.value)}
                                 className="font-mono text-sm"
                                 required
                             />
                             <p className="text-xs text-muted-foreground">
-                                The 32-character ID from your Notion page URL. Exported docs will be created as sub-pages here.
+                                The 32-character ID from your Notion page URL.
                             </p>
                         </div>
 

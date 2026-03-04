@@ -316,7 +316,7 @@ const components: Components = {
         return (
             <code
                 className={cn(
-                    "inline rounded bg-muted/80 border border-border/50",
+                    "inline rounded bg-muted/80 border border-border/50 z-10",
                     "px-[0.4em] py-[0.1em] text-[0.84em] font-mono font-medium",
                     "text-foreground/90 break-words",
                     className
@@ -329,7 +329,7 @@ const components: Components = {
 
     table({ children }) {
         return (
-            <div className="my-6 w-full overflow-x-auto rounded-xl border border-border">
+            <div className="my-6 w-full overflow-x-auto rounded-xl border border-border z-10">
                 <table className="w-full min-w-full border-collapse text-sm">
                     {children}
                 </table>
@@ -438,7 +438,7 @@ const components: Components = {
     blockquote({ children }) {
         return (
             <blockquote
-                className="my-6 pl-5 pr-4 py-0.5 border-l-[3px] border-primary/50
+                className="my-6 pl-5 z-10 pr-4 py-0.5 border-l-[3px] border-primary/50
                    bg-primary/[0.04] rounded-r-lg text-foreground/70 italic
                    [&>p]:my-3"
             >
@@ -451,7 +451,7 @@ const components: Components = {
 
     hr() {
         return (
-            <div className="my-5 flex items-center gap-3">
+            <div className="my-5 flex items-center gap-3 z-10">
                 <div className="flex-1 h-px bg-border" />
                 <div className="flex gap-1">
                     <span className="h-1 w-1 rounded-full bg-border" />

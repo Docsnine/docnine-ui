@@ -178,30 +178,6 @@ function DocProjectCard({ project }: { project: ApiProject }) {
                         )}
                     </div>
                 )}
-
-                {/* Available doc sections */}
-                <div className="flex flex-wrap gap-1.5">
-                    {DOC_SECTIONS.map(({ key, label, icon: Icon }) => {
-                        const entry = getEntry(project._id, key)
-                        const overdue = isOverdue(project._id, key)
-                        return (
-                            <span
-                                key={key}
-                                className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md bg-muted/60 text-muted-foreground"
-                                title={entry ? `${label}: ${entry.status.replace(/_/g, ' ')}` : label}
-                            >
-                                <Icon className="h-2.5 w-2.5" />
-                                {label}
-                                {entry && entry.status !== "draft" && (
-                                    <DocStatusDot status={entry.status} />
-                                )}
-                                {overdue && (
-                                    <span className="h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" title="Overdue" />
-                                )}
-                            </span>
-                        )
-                    })}
-                </div>
             </CardContent>
 
             <CardFooter className="pt-3 border-t border-border flex items-center gap-2">
@@ -334,53 +310,55 @@ export function DocumentationsPage() {
                     </div>
                 )}
 
-                {/* Search */}
-                {!isLoading && completedProjects.length > 0 && (
-                    <div className="relative max-w-sm">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search by name, language, or tech..."
-                            className="pl-9"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
-                )}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    {/* Search */}
+                    {!isLoading && completedProjects.length > 0 && (
+                        <div className="relative max-w-sm">
+                            <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search by name, language, or tech..."
+                                className="pl-9 rounded-2xl"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
+                    )}
 
-                {/* Status filter pills */}
-                {!isLoading && completedProjects.length > 0 && (
-                    <div className="flex flex-wrap gap-2 items-center">
-                        <button
-                            onClick={() => setStatusFilter("all")}
-                            className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${statusFilter === "all"
-                                ? "bg-primary text-primary-foreground border-primary"
-                                : "border-border text-muted-foreground hover:border-muted-foreground"
-                                }`}
-                        >
-                            All
-                        </button>
-                        {DOC_STATUS_ORDER.map((status) => {
-                            const activeCount = completedProjects.filter((p) =>
-                                SECTION_KEYS.some((k) => getEntry(p._id, k)?.status === status)
-                            ).length
-                            if (activeCount === 0) return null
-                            const isActive = statusFilter === status
-                            return (
-                                <button
-                                    key={status}
-                                    onClick={() => setStatusFilter(isActive ? "all" : status)}
-                                    className={`inline-flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full border transition-colors ${isActive
-                                        ? "bg-primary text-primary-foreground border-primary"
-                                        : "border-border text-muted-foreground hover:border-muted-foreground"
-                                        }`}
-                                >
-                                    <DocStatusBadge status={status} compact />
-                                    <span className="font-tabular">{activeCount}</span>
-                                </button>
-                            )
-                        })}
-                    </div>
-                )}
+                    {/* Status filter pills */}
+                    {!isLoading && completedProjects.length > 0 && (
+                        <div className="flex flex-wrap gap-2 items-center">
+                            <button
+                                onClick={() => setStatusFilter("all")}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${statusFilter === "all"
+                                    ? "bg-primary text-primary-foreground border-primary"
+                                    : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 bg-card"
+                                    }`}
+                            >
+                                All
+                            </button>
+                            {DOC_STATUS_ORDER.map((status) => {
+                                const activeCount = completedProjects.filter((p) =>
+                                    SECTION_KEYS.some((k) => getEntry(p._id, k)?.status === status)
+                                ).length
+                                if (activeCount === 0) return null
+                                const isActive = statusFilter === status
+                                return (
+                                    <button
+                                        key={status}
+                                        onClick={() => setStatusFilter(isActive ? "all" : status)}
+                                        className={`inline-flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full border transition-colors ${isActive
+                                            ? "bg-primary text-primary-foreground border-primary"
+                                            : "border-border text-muted-foreground hover:border-muted-foreground"
+                                            }`}
+                                    >
+                                        <DocStatusBadge status={status} compact />
+                                        <span className="font-tabular">{activeCount}</span>
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    )}
+                </div>
 
                 {/* Error */}
                 {error && (

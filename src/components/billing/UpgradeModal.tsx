@@ -90,12 +90,6 @@ export function UpgradeModal({
             <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
                 <DialogContent className="max-w-md">
                     <DialogHeader>
-                        <div className="mb-2 flex items-center gap-2">
-                            <planInfo.Icon className={cn("h-5 w-5", planInfo.colour)} />
-                            <Badge variant="outline" className={cn("border-current", planInfo.colour)}>
-                                {planInfo.name} Plan Required
-                            </Badge>
-                        </div>
                         <DialogTitle className="text-lg">
                             Unlock <span className={planInfo.colour}>{featureName}</span>
                         </DialogTitle>

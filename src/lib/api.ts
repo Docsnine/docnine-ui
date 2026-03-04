@@ -170,6 +170,7 @@ export interface User {
   githubUsername?: string
   googleId?: string
   googleUsername?: string
+  role?: 'user' | 'super-admin'
   createdAt: string
 }
 
@@ -1221,4 +1222,90 @@ export const billingApi = {
       method: 'PATCH',
       body: JSON.stringify(data),
     }),
+}
+
+// ---------------------------------------------------------------------------
+// ── Admin (super-admin only) ─────────────────────────────────────────────
+// ---------------------------------------------------------------------------
+
+export interface AdminStats {
+  totalUsers: number
+  totalProjects: number
+  newUsersLast30Days: number
+  newProjectsLast30Days: number
+  planBreakdown: Record<string, number>
+  estimatedMRR: number
+  paidSubscriptions: number
+}
+
+export interface AdminUser {
+  _id: string
+  name: string
+  email: string
+  role: string
+  provider: string
+  createdAt: string
+  subscription: { plan: string; status: string; billingCycle?: string | null }
+}
+
+export interface AdminProject {
+  _id: string
+  name: string
+  repoOwner: string
+  repoName: string
+  createdAt: string
+  userId: { _id: string; name: string; email: string } | null
+}
+
+export interface AdminSubscription {
+  _id: string
+  plan: string
+  status: string
+  billingCycle: string | null
+  createdAt: string
+  userId: { _id: string; name: string; email: string } | null
+}
+
+export interface Pagination {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
+
+export const adminApi = {
+  getStats: () =>
+    apiFetch<AdminStats>('/admin/stats'),
+
+  listUsers: (params?: { page?: number; limit?: number; search?: string }) => {
+    const q = new URLSearchParams()
+    if (params?.page) q.set('page', String(params.page))
+    if (params?.limit) q.set('limit', String(params.limit))
+    if (params?.search) q.set('search', params.search)
+    return apiFetch<{ users: AdminUser[]; pagination: Pagination }>(`/admin/users?${q}`)
+  },
+
+  deleteUser: (id: string) =>
+    apiFetch<null>(`/admin/users/${id}`, { method: 'DELETE' }),
+
+  listProjects: (params?: { page?: number; limit?: number; search?: string; userId?: string }) => {
+    const q = new URLSearchParams()
+    if (params?.page) q.set('page', String(params.page))
+    if (params?.limit) q.set('limit', String(params.limit))
+    if (params?.search) q.set('search', params.search)
+    if (params?.userId) q.set('userId', params.userId)
+    return apiFetch<{ projects: AdminProject[]; pagination: Pagination }>(`/admin/projects?${q}`)
+  },
+
+  deleteProject: (id: string) =>
+    apiFetch<null>(`/admin/projects/${id}`, { method: 'DELETE' }),
+
+  listSubscriptions: (params?: { page?: number; limit?: number; plan?: string; status?: string }) => {
+    const q = new URLSearchParams()
+    if (params?.page) q.set('page', String(params.page))
+    if (params?.limit) q.set('limit', String(params.limit))
+    if (params?.plan) q.set('plan', params.plan)
+    if (params?.status) q.set('status', params.status)
+    return apiFetch<{ subscriptions: AdminSubscription[]; pagination: Pagination }>(`/admin/subscriptions?${q}`)
+  },
 }

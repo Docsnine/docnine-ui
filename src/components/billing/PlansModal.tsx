@@ -42,14 +42,14 @@ const PLAN_ACCENT: Record<string, string> = {
     free: "text-muted-foreground",
     starter: "text-blue-400",
     pro: "text-primary",
-    team: "text-amber-400",
+    team: "text-primary",
 }
 
 const PLAN_BTN: Record<string, string> = {
     free: "",
-    starter: "bg-blue-600 hover:bg-blue-700 text-white border-transparent",
+    starter: "bg-primary hover:bg-primary/90 text-white border-transparent",
     pro: "bg-primary hover:bg-primary/90 text-white border-transparent",
-    team: "bg-amber-500 hover:bg-amber-600 text-white border-transparent",
+    team: "bg-primary hover:bg-primary/90 text-white border-transparent",
 }
 
 // ── Mini plan card ─────────────────────────────────────────────────────────
@@ -112,7 +112,7 @@ function MiniPlanCard({
                     <p className="mt-0.5 text-[11px] text-muted-foreground">
                         ${plan.prices.annualTotal}/yr
                         {plan.prices.savingsPercent > 0 && (
-                            <span className="ml-1 text-green-400 font-medium">
+                            <span className="ml-1 text-primary font-medium">
                                 (Save {plan.prices.savingsPercent}%)
                             </span>
                         )}
@@ -171,7 +171,7 @@ function MiniPlanCard({
 function FeatureLine({ label }: { label: string }) {
     return (
         <li className="flex items-center gap-1.5">
-            <Check className="h-3 w-3 shrink-0 text-green-500" />
+            <Check className="h-3 w-3 shrink-0 text-primary" />
             {label}
         </li>
     )
@@ -244,7 +244,7 @@ export function PlansModal({ open, onClose }: PlansModalProps) {
                         <Switch checked={annual} onCheckedChange={setAnnual} aria-label="Toggle annual billing" />
                         <span className={cn("text-sm font-medium transition-colors", annual ? "text-foreground" : "text-muted-foreground")}>
                             Annual
-                            <Badge className="ml-1.5 bg-green-500/10 text-green-400 border-green-500/20 text-[10px] px-1.5 py-0">
+                            <Badge className="ml-1.5 bg-primary/10 text-green-400 border-primary/20 text-[10px] px-1.5 py-0">
                                 Save up to 20%
                             </Badge>
                         </span>

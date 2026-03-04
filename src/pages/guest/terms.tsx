@@ -50,8 +50,8 @@ export function TermsPage() {
                                 You must provide accurate and complete information when creating an account. You are
                                 responsible for maintaining the confidentiality of your credentials and for all
                                 activities that occur under your account. Notify us immediately at{" "}
-                                <a href="mailto:hseal419@gmail.com" className="text-primary hover:underline">
-                                    hseal419@gmail.com
+                                <a href="mailto:docnineai@gmail.com" className="text-primary hover:underline">
+                                    docnineai@gmail.com
                                 </a>{" "}
                                 if you suspect unauthorised use of your account.
                             </p>
@@ -128,8 +128,8 @@ export function TermsPage() {
                             <h2 className="text-xl font-semibold text-foreground mb-3">11. Contact</h2>
                             <p>
                                 Questions about these Terms? Reach us at{" "}
-                                <a href="mailto:hseal419@gmail.com" className="text-primary hover:underline">
-                                    hseal419@gmail.com
+                                <a href="mailto:docnineai@gmail.com" className="text-primary hover:underline">
+                                    docnineai@gmail.com
                                 </a>
                                 .
                             </p>

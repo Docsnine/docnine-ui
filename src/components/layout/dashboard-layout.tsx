@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { Link, Outlet, useLocation, useNavigate, useSearchParams } from "react-router-dom"
-import { BookOpen, Github, Search, FolderKanban, User, Settings, LogOut, BookDown, TerminalIcon, Menu, X } from "lucide-react"
+import { BookOpen, Github, Search, FolderKanban, User, Settings, LogOut, BookDown, TerminalIcon, Menu, X, ShieldAlert } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useAuthStore } from "@/store/auth"
 import { useSubscriptionStore } from "@/store/subscription"
@@ -155,6 +155,19 @@ export function DashboardLayout() {
                     <span>Theme</span>
                     <ThemeToggle />
                   </div>
+                  {user?.role === 'super-admin' && (
+                    <>
+                      <div className="border-t border-border my-1" />
+                      <Link
+                        to="/admin"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+                      >
+                        <ShieldAlert className="h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    </>
+                  )}
                   <div className="border-t border-border my-1" />
                   <button
                     onClick={() => { setDropdownOpen(false); handleLogout() }}

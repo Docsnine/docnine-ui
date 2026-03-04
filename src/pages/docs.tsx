@@ -872,7 +872,7 @@ NOTION_PARENT_PAGE_ID=your_page_id_here`} />
                         <H3 id="contact-support">Contact us</H3>
                         <div className="grid sm:grid-cols-2 gap-4 my-4">
                             <a
-                                href="mailto:hseal419@gmail.com"
+                                href="mailto:docnineai@gmail.com"
                                 className="flex items-center gap-3 rounded-xl border border-border p-4 hover:bg-muted transition-colors group"
                             >
                                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
@@ -880,7 +880,7 @@ NOTION_PARENT_PAGE_ID=your_page_id_here`} />
                                 </div>
                                 <div>
                                     <p className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">Email support</p>
-                                    <p className="text-xs text-muted-foreground">hseal419@gmail.com</p>
+                                    <p className="text-xs text-muted-foreground">docnineai@gmail.com</p>
                                 </div>
                             </a>
                             <a

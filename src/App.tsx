@@ -28,6 +28,7 @@ import { AcceptInvitePage } from "@/pages/auth/accept-invite"
 import { GithubOAuthCompletePage } from "@/components/projects/github-oauth-complete"
 import { PublicPortalPage } from "@/pages/docs/public-portal"
 import { PlatformDocsPage } from "@/pages/docs"
+import { SuperAdminPage } from "@/pages/admin/super-admin"
 
 /**
  * Forwards the /billing route plus any Flutterwave callback params
@@ -66,6 +67,19 @@ function PublicOnlyRoute({ children }: { children: React.ReactNode }) {
   if (isAuthenticated) {
     return <Navigate to="/projects" replace />
   }
+
+  return <>{children}</>
+}
+
+/**
+ * AdminRoute — requires authentication + super-admin role.
+ * Redirects regular users to /projects.
+ */
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, user } = useAuthStore()
+
+  if (!isAuthenticated || !user) return <Navigate to="/login" replace />
+  if (user.role !== 'super-admin') return <Navigate to="/projects" replace />
 
   return <>{children}</>
 }
@@ -158,6 +172,7 @@ function AppRoutes() {
         <Route path="profile" element={<ProfilePage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="billing" element={<BillingRedirect />} />
+        <Route path="admin" element={<AdminRoute><SuperAdminPage /></AdminRoute>} />
       </Route>
 
       {/* Fallback */}

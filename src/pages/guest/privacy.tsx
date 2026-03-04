@@ -125,8 +125,8 @@ export function PrivacyPage() {
                                 Depending on your jurisdiction, you may have the right to access, correct, or delete
                                 your personal data; restrict or object to processing; or request data portability.
                                 To exercise any of these rights, contact us at{" "}
-                                <a href="mailto:hseal419@gmail.com" className="text-primary hover:underline">
-                                    hseal419@gmail.com
+                                <a href="mailto:docnineai@gmail.com" className="text-primary hover:underline">
+                                    docnineai@gmail.com
                                 </a>
                                 .
                             </p>
@@ -153,8 +153,8 @@ export function PrivacyPage() {
                             <h2 className="text-xl font-semibold text-foreground mb-3">11. Contact</h2>
                             <p>
                                 Privacy questions or data requests? Email us at{" "}
-                                <a href="mailto:hseal419@gmail.com" className="text-primary hover:underline">
-                                    hseal419@gmail.com
+                                <a href="mailto:docnineai@gmail.com" className="text-primary hover:underline">
+                                    docnineai@gmail.com
                                 </a>
                                 .
                             </p>

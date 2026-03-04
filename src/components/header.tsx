@@ -16,7 +16,7 @@ function TopHeader({ className }: { className?: string }) {
             <div className="border-b border-border bg-muted/30">
                 <div className="container mx-auto px-4 h-10 flex items-center justify-between text-xs sm:text-sm">
                     <div className="flex items-center gap-4 text-muted-foreground">
-                        <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" /> hseal419@gmail.com</span>
+                        <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" /> docnineai@gmail.com</span>
                         <span className="hidden sm:flex items-center gap-1.5"><MessageSquare className="h-3.5 w-3.5" /> @docnine</span>
                     </div>
                     <div className="flex items-center gap-4">

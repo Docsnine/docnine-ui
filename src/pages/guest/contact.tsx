@@ -64,10 +64,10 @@ export function ContactPage() {
                                         <div>
                                             <p className="text-sm font-medium text-foreground">Email</p>
                                             <a
-                                                href="mailto:hseal419@gmail.com"
+                                                href="mailto:docnineai@gmail.com"
                                                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
                                             >
-                                                hseal419@gmail.com
+                                                docnineai@gmail.com
                                             </a>
                                         </div>
                                     </li>
@@ -200,7 +200,7 @@ export function ContactPage() {
                                 {status === "error" && (
                                     <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                                         <span>❌</span>
-                                        <span>Something went wrong. Please email us directly at hseal419@gmail.com.</span>
+                                        <span>Something went wrong. Please email us directly at docnineai@gmail.com.</span>
                                     </div>
                                 )}
 

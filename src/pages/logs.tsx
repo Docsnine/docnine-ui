@@ -242,7 +242,7 @@ export function LogsPage() {
   return (
     <div>
       <TopBar title="Activity Log" description="Pipeline execution history and event traces for all projects.">
-        <Button variant="outline" size="sm" onClick={load} className="gap-2 shrink-0">
+        <Button variant="outline" size="sm" onClick={load} className="gap-2 shrink-0 rounded-2xl">
           <RefreshCw className="h-4 w-4" />
           Refresh
         </Button>

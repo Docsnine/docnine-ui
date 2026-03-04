@@ -2,6 +2,8 @@ import { useState, useEffect } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 import { useProjectStore } from "@/store/projects"
 import { projectsApi, ApiException } from "@/lib/api"
+import { useSubscriptionStore, meetsMinPlan } from "@/store/subscription"
+import { UpgradeModal } from "@/components/billing/UpgradeModal"
 import { DocRenderer } from "@/components/projects/DocRenderer"
 import { SharePanel } from "@/components/projects/share-panel"
 import { Button } from "@/components/ui/button"
@@ -25,6 +27,7 @@ import {
     Trash2,
     ExternalLink,
     FileCode,
+    Lock,
 } from "lucide-react"
 
 export function ProjectOverviewPage() {
@@ -42,6 +45,19 @@ export function ProjectOverviewPage() {
     const [showShare, setShowShare] = useState(false)
 
     const isOwner = !project || project.shareRole === "owner"
+
+    // Subscription gates
+    const { subscription } = useSubscriptionStore()
+    const [upgradeOpen, setUpgradeOpen] = useState(false)
+    const [upgradeFeature, setUpgradeFeature] = useState<{ name: string; plan: string; description?: string }>({ name: "", plan: "starter" })
+    function requirePlan(featureName: string, plan: string, description: string, cb: () => void) {
+        if (!meetsMinPlan(subscription, plan)) {
+            setUpgradeFeature({ name: featureName, plan, description })
+            setUpgradeOpen(true)
+            return
+        }
+        cb()
+    }
 
     useEffect(() => {
         if (!id) return
@@ -257,9 +273,11 @@ export function ProjectOverviewPage() {
                         <Button
                             variant="outline"
                             className="w-full md:w-auto"
-                            onClick={() => setShowShare(true)}
+                            onClick={() => requirePlan("Share & Collaborate", "starter", "Share your project with team members and collaborators.", () => setShowShare(true))}
                         >
-                            <Share2 className="mr-2 h-4 w-4" /> Share
+                            <Share2 className="mr-2 h-4 w-4" />
+                            {!meetsMinPlan(subscription, "starter") && <Lock className="h-3.5 w-3.5 mr-1 opacity-50" />}
+                            Share
                         </Button>
                     )}
                     {/* Shared badge for non-owners */}
@@ -417,7 +435,7 @@ export function ProjectOverviewPage() {
                             variant="outline"
                             className="w-full justify-start"
                             disabled={project.status !== "completed" || !!actionLoading}
-                            onClick={handleExportPdf}
+                            onClick={() => requirePlan("PDF Export", "starter", "Export your documentation as a PDF file.", handleExportPdf)}
                         >
                             {actionLoading === "pdf" ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -425,12 +443,13 @@ export function ProjectOverviewPage() {
                                 <Download className="mr-2 h-4 w-4" />
                             )}
                             Export to PDF
+                            {!meetsMinPlan(subscription, "starter") && <Lock className="h-3.5 w-3.5 ml-auto opacity-40" />}
                         </Button>
                         <Button
                             variant="outline"
                             className="w-full justify-start"
                             disabled={project.status !== "completed" || !!actionLoading}
-                            onClick={handleExportYaml}
+                            onClick={() => requirePlan("GitHub Actions Export", "team", "Export your documentation as a GitHub Actions YAML workflow.", handleExportYaml)}
                         >
                             {actionLoading === "yaml" ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -438,12 +457,13 @@ export function ProjectOverviewPage() {
                                 <FileCode className="mr-2 h-4 w-4" />
                             )}
                             Export GitHub Actions YAML
+                            {!meetsMinPlan(subscription, "team") && <Lock className="h-3.5 w-3.5 ml-auto opacity-40" />}
                         </Button>
                         <Button
                             variant="outline"
                             className="w-full justify-start"
                             disabled={project.status !== "completed" || !!actionLoading}
-                            onClick={handleExportNotion}
+                            onClick={() => requirePlan("Notion Export", "team", "Push your documentation directly to Notion.", handleExportNotion)}
                         >
                             {actionLoading === "notion" ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -451,6 +471,7 @@ export function ProjectOverviewPage() {
                                 <ExternalLink className="mr-2 h-4 w-4" />
                             )}
                             Push to Notion
+                            {!meetsMinPlan(subscription, "team") && <Lock className="h-3.5 w-3.5 ml-auto opacity-40" />}
                         </Button>
                         <div className="border-t border-border pt-2 space-y-1">
                             {isOwner && project.status !== "archived" && project.status !== "analyzing" && (
@@ -458,7 +479,7 @@ export function ProjectOverviewPage() {
                                     variant="ghost"
                                     className="w-full justify-start text-muted-foreground hover:text-foreground"
                                     disabled={!!actionLoading}
-                                    onClick={handleArchive}
+                                    onClick={() => requirePlan("Archive Project", "starter", "Archive projects to keep your workspace organised.", handleArchive)}
                                 >
                                     {actionLoading === "archive" ? (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -466,6 +487,7 @@ export function ProjectOverviewPage() {
                                         <Archive className="mr-2 h-4 w-4" />
                                     )}
                                     Archive Project
+                                    {!meetsMinPlan(subscription, "starter") && <Lock className="h-3.5 w-3.5 ml-auto opacity-40" />}
                                 </Button>
                             )}
                             {isOwner && project.status !== "analyzing" && (
@@ -499,6 +521,14 @@ export function ProjectOverviewPage() {
                 isOwner={isOwner}
             />
         )}
+
+        <UpgradeModal
+            open={upgradeOpen}
+            onClose={() => setUpgradeOpen(false)}
+            featureName={upgradeFeature.name}
+            requiredPlan={upgradeFeature.plan}
+            description={upgradeFeature.description}
+        />
     </>
     )
 }

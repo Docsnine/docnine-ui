@@ -205,7 +205,7 @@ function DocProjectCard({ project }: { project: ApiProject }) {
             </CardContent>
 
             <CardFooter className="pt-3 border-t border-border flex items-center gap-2">
-                <Button asChild size="sm" className="flex-1 gap-1.5">
+                <Button asChild size="sm" className="flex-1 gap-1.5 rounded-4xl">
                     <Link to={`/projects/${project._id}/docs`}>
                         <BookOpen className="h-3.5 w-3.5" />
                         View Docs
@@ -304,7 +304,7 @@ export function DocumentationsPage() {
         <div>
             {/* Header */}
             <TopBar title="Documentation" description="All documented projects across your account.">
-                <Button variant="outline" size="sm" onClick={loadProjects} className="gap-2 shrink-0">
+                <Button variant="outline" size="sm" onClick={loadProjects} className="gap-2 shrink-0 rounded-2xl">
                     <RefreshCw className="h-4 w-4" />
                     Refresh
                 </Button>
@@ -353,8 +353,8 @@ export function DocumentationsPage() {
                         <button
                             onClick={() => setStatusFilter("all")}
                             className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${statusFilter === "all"
-                                    ? "bg-primary text-primary-foreground border-primary"
-                                    : "border-border text-muted-foreground hover:border-muted-foreground"
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "border-border text-muted-foreground hover:border-muted-foreground"
                                 }`}
                         >
                             All
@@ -370,8 +370,8 @@ export function DocumentationsPage() {
                                     key={status}
                                     onClick={() => setStatusFilter(isActive ? "all" : status)}
                                     className={`inline-flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full border transition-colors ${isActive
-                                            ? "bg-primary text-primary-foreground border-primary"
-                                            : "border-border text-muted-foreground hover:border-muted-foreground"
+                                        ? "bg-primary text-primary-foreground border-primary"
+                                        : "border-border text-muted-foreground hover:border-muted-foreground"
                                         }`}
                                 >
                                     <DocStatusBadge status={status} compact />

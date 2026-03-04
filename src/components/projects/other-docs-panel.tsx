@@ -27,11 +27,14 @@ import {
     Check,
     AlertCircle,
     ChevronDown,
+    Lock,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { attachmentsApi, ApiAttachment, getAccessToken, API_BASE } from "@/lib/api"
+import { useSubscriptionStore, meetsMinPlan } from "@/store/subscription"
+import { UpgradeModal } from "@/components/billing/UpgradeModal"
 
 // ── File type helpers ──────────────────────────────────────────────────────
 
@@ -435,6 +438,22 @@ export function OtherDocsPanel({ projectId }: OtherDocsPanelProps) {
     const [error, setError] = useState<string | null>(null)
     const [uploading, setUploading] = useState<{ file: File; progress: "pending" | "done" | "error" }[]>([])
 
+    // Subscription limits
+    const { subscription } = useSubscriptionStore()
+    const maxFileSizeMb = subscription?.limits?.maxFileSizeMb ?? 10
+    const maxAttachments = subscription?.limits?.attachmentsPerProject ?? null // null = unlimited
+    const [upgradeOpen, setUpgradeOpen] = useState(false)
+    const [upgradeFeature, setUpgradeFeature] = useState<{ name: string; plan: string; description?: string }>({ name: "", plan: "starter" })
+
+    function requirePlan(featureName: string, plan: string, description: string, cb: () => void) {
+        if (!meetsMinPlan(subscription, plan)) {
+            setUpgradeFeature({ name: featureName, plan, description })
+            setUpgradeOpen(true)
+            return
+        }
+        cb()
+    }
+
     // Load attachments on mount
     useEffect(() => {
         let cancelled = false
@@ -448,10 +467,20 @@ export function OtherDocsPanel({ projectId }: OtherDocsPanelProps) {
     }, [projectId])
 
     async function handleFiles(files: File[]) {
-        const MAX = 10 * 1024 * 1024
+        // Check per-plan attachment count limit
+        if (maxAttachments !== null && attachments.length >= maxAttachments) {
+            requirePlan(
+                "More Attachments",
+                "starter",
+                `Your plan allows up to ${maxAttachments} attachment${maxAttachments === 1 ? "" : "s"} per project. Upgrade to attach unlimited files.`,
+                () => { /* noop — modal will show */ },
+            )
+            return
+        }
+        const MAX = maxFileSizeMb * 1024 * 1024
         const valid = files.filter((f) => {
             if (f.size > MAX) {
-                setError(`"${f.name}" exceeds the 10 MB limit and was skipped.`)
+                setError(`"${f.name}" exceeds the ${maxFileSizeMb} MB limit and was skipped. Upgrade your plan for a higher file size limit.`)
                 return false
             }
             return true
@@ -503,14 +532,22 @@ export function OtherDocsPanel({ projectId }: OtherDocsPanelProps) {
                         Attach supplementary files — requirements, specs, and reference materials.
                     </p>
                 </div>
-                <label className="inline-flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border border-border bg-muted/40 hover:bg-muted/70 transition-colors text-sm font-medium text-foreground shrink-0">
+                <label
+                    className={`inline-flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border border-border bg-muted/40 hover:bg-muted/70 transition-colors text-sm font-medium text-foreground shrink-0 ${maxAttachments !== null && attachments.length >= maxAttachments ? "opacity-60" : ""}`}
+                    onClick={maxAttachments !== null && attachments.length >= maxAttachments ? (e) => {
+                        e.preventDefault()
+                        requirePlan("More Attachments", "starter", `Your plan allows up to ${maxAttachments} attachment${maxAttachments === 1 ? "" : "s"} per project. Upgrade to attach unlimited files.`, () => {})
+                    } : undefined}
+                >
                     <Upload className="h-4 w-4" />
                     Upload files
+                    {maxAttachments !== null && attachments.length >= maxAttachments && <Lock className="h-3.5 w-3.5 opacity-50" />}
                     <input
                         type="file"
                         multiple
                         accept={ACCEPTED_EXTENSIONS}
                         className="hidden"
+                        disabled={maxAttachments !== null && attachments.length >= maxAttachments}
                         onChange={(e) => {
                             const files = Array.from(e.target.files ?? [])
                             if (files.length > 0) handleFiles(files)
@@ -587,6 +624,14 @@ export function OtherDocsPanel({ projectId }: OtherDocsPanelProps) {
                     {attachments.length <= 0 && <DropZone onFiles={handleFiles} />}
                 </div>
             )}
+
+            <UpgradeModal
+                open={upgradeOpen}
+                onClose={() => setUpgradeOpen(false)}
+                featureName={upgradeFeature.name}
+                requiredPlan={upgradeFeature.plan}
+                description={upgradeFeature.description}
+            />
         </div>
     )
 }

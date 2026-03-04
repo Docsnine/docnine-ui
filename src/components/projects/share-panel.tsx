@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { sharingApi, ApiShare } from "@/lib/api"
+import { useSubscriptionStore, hasFeature, meetsMinPlan } from "@/store/subscription"
+import { UpgradeModal } from "@/components/billing/UpgradeModal"
 import { formatDistanceToNow } from "date-fns"
 
 // ─────────────────────────────────────────────────────────────
@@ -61,6 +63,13 @@ export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner
   const [isLoadingShares, setIsLoadingShares] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
 
+  // Subscription gates
+  const { subscription } = useSubscriptionStore()
+  const canShareEdit = hasFeature(subscription, "shareEdit")
+  const maxShares: number | null = subscription?.features?.maxShares ?? null
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
+  const [upgradeFeature, setUpgradeFeature] = useState<{ name: string; plan: string; description?: string }>({ name: "", plan: "pro" })
+
   // Invite form state
   const [inviteEmail, setInviteEmail] = useState("")
   const [inviteRole, setInviteRole] = useState<"viewer" | "editor">("viewer")
@@ -104,6 +113,20 @@ export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner
       return
     }
 
+    // Guard: max shares limit
+    if (maxShares !== null && shares.length >= maxShares) {
+      setUpgradeFeature({ name: "More Collaborators", plan: "pro", description: `Your plan allows up to ${maxShares} collaborator${maxShares === 1 ? "" : "s"}. Upgrade to invite unlimited team members.` })
+      setUpgradeOpen(true)
+      return
+    }
+
+    // Guard: editor role requires pro
+    if (inviteRole === "editor" && !canShareEdit) {
+      setUpgradeFeature({ name: "Editor Access", plan: "pro", description: "Upgrade to Pro to invite collaborators with editor access." })
+      setUpgradeOpen(true)
+      return
+    }
+
     setIsInviting(true)
     setInviteResult(null)
     try {
@@ -125,6 +148,11 @@ export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner
 
   // ── Role change ────────────────────────────────────────────
   const handleRoleChange = async (shareId: string, newRole: "viewer" | "editor") => {
+    if (newRole === "editor" && !canShareEdit) {
+      setUpgradeFeature({ name: "Editor Access", plan: "pro", description: "Upgrade to Pro to grant editor access to collaborators." })
+      setUpgradeOpen(true)
+      return
+    }
     setRowAction({ id: shareId, action: "role" })
     try {
       const data = await sharingApi.changeRole(projectId, shareId, newRole)
@@ -235,12 +263,20 @@ export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner
               <label className="text-xs font-medium text-muted-foreground">Role</label>
               <Select
                 value={inviteRole}
-                onChange={(e) => setInviteRole(e.target.value as "viewer" | "editor")}
+                onChange={(e) => {
+                  const newRole = e.target.value as "viewer" | "editor"
+                  if (newRole === "editor" && !canShareEdit) {
+                    setUpgradeFeature({ name: "Editor Access", plan: "pro", description: "Upgrade to Pro to invite collaborators with editor access." })
+                    setUpgradeOpen(true)
+                    return
+                  }
+                  setInviteRole(newRole)
+                }}
                 className="w-[110px]"
                 disabled={isInviting}
               >
                 <option value="viewer">Viewer</option>
-                <option value="editor">Editor</option>
+                <option value="editor">{canShareEdit ? "Editor" : "Editor 🔒"}</option>
               </Select>
             </div>
             <Button type="submit" disabled={isInviting || !inviteEmail.trim()} className="shrink-0">
@@ -398,10 +434,25 @@ export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner
         <div className="shrink-0 border-t border-border pt-3 text-xs text-muted-foreground">
           <p>
             <strong>Viewer</strong> — can read documentation and attachments.{" "}
-            <strong>Editor</strong> — can also edit docs and upload files.
+            <strong>Editor</strong> — can also edit docs and upload files.{" "}
+            {!canShareEdit && <span className="text-primary font-medium cursor-pointer" onClick={() => { setUpgradeFeature({ name: "Editor Access", plan: "pro", description: "Upgrade to Pro to invite collaborators with editor access." }); setUpgradeOpen(true) }}>Upgrade to Pro for editor access.</span>}
           </p>
+          {maxShares !== null && (
+            <p className="mt-1">
+              Collaborators: {shares.length} / {maxShares}.{" "}
+              {shares.length >= maxShares && <span className="text-primary font-medium cursor-pointer" onClick={() => { setUpgradeFeature({ name: "More Collaborators", plan: "pro", description: `Upgrade to invite unlimited collaborators.` }); setUpgradeOpen(true) }}>Upgrade for unlimited.</span>}
+            </p>
+          )}
         </div>
       </DialogContent>
+
+      <UpgradeModal
+        open={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        featureName={upgradeFeature.name}
+        requiredPlan={upgradeFeature.plan}
+        description={upgradeFeature.description}
+      />
     </Dialog>
   )
 }

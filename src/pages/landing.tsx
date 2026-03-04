@@ -47,7 +47,7 @@ export function LandingPage() {
             className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-8 h-14 text-lg font-semibold w-full sm:w-auto shadow-[0_0_40px_rgba(0,210,200,0.15)] dark:shadow-[0_0_40px_rgba(255,255,255,0.3)] transition-all hover:shadow-[0_0_60px_rgba(0,210,200,0.25)] dark:hover:shadow-[0_0_60px_rgba(255,255,255,0.4)]"
           >
             <Link to="/signup">
-              Get Started <ArrowRight className="ml-2 h-5 w-5" />
+              Get Started for free <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
           <Button

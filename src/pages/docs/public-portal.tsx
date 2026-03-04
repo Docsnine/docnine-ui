@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DocRenderer } from "@/components/projects/DocRenderer"
+import { ThemeToggle } from "@/components/theme-toggle"
 import {
     publicPortalApi,
     type PublicPortalData,
@@ -332,7 +333,7 @@ export function PublicPortalPage() {
         <div className="min-h-screen flex flex-col bg-background" style={brandingStyle}>
             {/* ── Top navigation bar ── */}
             <header
-                className="sticky top-0 z-30 border-b border-border/60"
+                className="sticky top-0 z-30 border-b border-border/60 bg-background/95 backdrop-blur-sm"
                 style={branding.bgColor ? { backgroundColor: branding.bgColor } : undefined}
             >
                 <div className="max-w-screen-xl mx-auto flex items-center gap-4 px-4 sm:px-6 h-14">
@@ -370,6 +371,9 @@ export function PublicPortalPage() {
                             className="h-8 w-48 lg:w-64 rounded-md border border-input bg-muted pl-8 pr-3 text-sm outline-none focus:border-primary focus:bg-background transition-colors"
                         />
                     </div>
+
+                    {/* Theme toggle */}
+                    <ThemeToggle />
 
                     {/* Access badge */}
                     {portal.accessMode === "password" && (

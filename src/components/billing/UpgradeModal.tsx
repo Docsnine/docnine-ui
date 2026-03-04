@@ -14,6 +14,7 @@ import { billingApi } from "@/lib/api"
 import { useSubscriptionStore, PLAN_LEVEL } from "@/store/subscription"
 import { useAuthStore } from "@/store/auth"
 import { cn } from "@/lib/utils"
+import { PlansModal } from "@/components/billing/PlansModal"
 
 const PLAN_LABELS: Record<string, { name: string; colour: string; Icon: React.ElementType }> = {
     starter: { name: "Starter", colour: "text-blue-400", Icon: Zap },
@@ -43,9 +44,11 @@ export function UpgradeModal({
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
     const plans = useSubscriptionStore((s) => s.plans)
     const refresh = useSubscriptionStore((s) => s.refresh)
+    const loadPlans = useSubscriptionStore((s) => s.loadPlans)
 
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [plansOpen, setPlansOpen] = useState(false)
 
     const planInfo = PLAN_LABELS[requiredPlan] ?? PLAN_LABELS.pro
     const planData = plans.find((p) => p.id === requiredPlan)
@@ -75,13 +78,16 @@ export function UpgradeModal({
     }
 
     function handleViewPlans() {
+        // Ensure plans are loaded before opening
+        if (plans.length === 0) loadPlans()
         onClose()
-        navigate("/pricing")
+        setPlansOpen(true)
     }
 
     return (
-        <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-            <DialogContent className="max-w-md">
+        <>
+            <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+                <DialogContent className="max-w-md">
                 <DialogHeader>
                     <div className="mb-2 flex items-center gap-2">
                         <planInfo.Icon className={cn("h-5 w-5", planInfo.colour)} />
@@ -146,5 +152,8 @@ export function UpgradeModal({
                 </div>
             </DialogContent>
         </Dialog>
+
+        <PlansModal open={plansOpen} onClose={() => setPlansOpen(false)} />
+    </>
     )
 }

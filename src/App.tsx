@@ -17,7 +17,6 @@ import { LogsPage } from "@/pages/logs"
 import { ProfilePage } from "@/pages/profile"
 import { SettingsPage } from "@/pages/settings"
 import { PricingPage } from "@/pages/pricing"
-// BillingPage now lives inside Settings — kept import-free
 import { useAuthStore } from "@/store/auth"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Loader2 } from "lucide-react"
@@ -90,10 +89,12 @@ function AppRoutes() {
      * with the parent tab's session.
      */
     const isOAuthCompletePage = window.location.pathname === '/github/oauth/complete'
+
     if (isOAuthCompletePage) {
       useAuthStore.setState({ initialized: true })
       return
     }
+
     // Attempt silent session restore from the httpOnly refresh-token cookie.
     initAuth()
   }, [initAuth])
@@ -118,7 +119,7 @@ function AppRoutes() {
       <Route path="/verify" element={<VerifyPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
-      
+
       {/* OAuth social login callback */}
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
       <Route path="/terms" element={<TermsPage />} />
@@ -126,8 +127,10 @@ function AppRoutes() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/share/accept/:token" element={<AcceptInvitePage />} />
       <Route path="/github/oauth/complete" element={<GithubOAuthCompletePage />} />
+
       {/* Public documentation portal — no auth required */}
       <Route path="/docs/:slug" element={<PublicPortalPage />} />
+
       {/* Public pricing page — no auth required */}
       <Route path="/pricing" element={<PricingPage />} />
 

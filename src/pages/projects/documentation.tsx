@@ -35,6 +35,7 @@ import {
   GitBranch,
   BookMarked,
   Globe,
+  Lock,
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import Markdown from "react-markdown"
@@ -50,6 +51,8 @@ import { useAuthStore } from "@/store/auth"
 import { PortalSettingsModal } from "@/components/projects/portal-settings-modal"
 import { ApiSpecImportModal } from "@/components/projects/api-spec-import-modal"
 import { ApiReferenceViewer } from "@/components/projects/api-reference-viewer"
+import { useSubscriptionStore, meetsMinPlan } from "@/store/subscription"
+import { UpgradeModal } from "@/components/billing/UpgradeModal"
 
 // ── Status-change modal ───────────────────────────────────────────────────────
 interface StatusChangeModalProps {
@@ -361,6 +364,19 @@ export function DocumentationViewerPage() {
   const [portal, setPortal] = useState<ApiPortal | null>(null)
   const [portalModalOpen, setPortalModalOpen] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
+
+  // Subscription gates
+  const { subscription } = useSubscriptionStore()
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
+  const [upgradeFeature, setUpgradeFeature] = useState<{ name: string; plan: string; description?: string }>({ name: "", plan: "starter" })
+  function requirePlan(featureName: string, plan: string, description: string, cb: () => void) {
+    if (!meetsMinPlan(subscription, plan)) {
+      setUpgradeFeature({ name: featureName, plan, description })
+      setUpgradeOpen(true)
+      return
+    }
+    cb()
+  }
 
   // API Spec (FT4)
   const [apiSpec, setApiSpec] = useState<ApiSpec | null>(null)
@@ -711,11 +727,12 @@ export function DocumentationViewerPage() {
           <Button
             variant={isChatOpen ? "default" : "outline"}
             size="sm"
-            onClick={() => {
+            onClick={() => requirePlan("AI Assistant", "pro", "Chat with your codebase using AI to get instant answers and generate documentation.", () => {
               setIsChatOpen((o) => !o)
               if (isHistoryOpen) setIsHistoryOpen(false)
-            }}
+            })}
           >
+            {!meetsMinPlan(subscription, "pro") && <Lock className="h-3.5 w-3.5 mr-1 opacity-50" />}
             <Bot className="h-4 w-4" />
             <span className="hidden sm:inline ml-1.5">Ask AI</span>
           </Button>
@@ -769,9 +786,10 @@ export function DocumentationViewerPage() {
             <Button
               variant={portal?.isPublished ? "default" : "outline"}
               size="sm"
-              onClick={() => setPortalModalOpen(true)}
+              onClick={() => requirePlan("Public Portal", "starter", "Publish your documentation as a shareable public portal.", () => setPortalModalOpen(true))}
               className="gap-1.5"
             >
+              {!meetsMinPlan(subscription, "starter") && <Lock className="h-3.5 w-3.5 opacity-50" />}
               <Globe className={cn("h-4 w-4", portal?.isPublished && "animate-none")} />
               <span className="hidden sm:inline">{portal?.isPublished ? "Published" : "Publish"}</span>
             </Button>
@@ -793,10 +811,10 @@ export function DocumentationViewerPage() {
                   !activeSectionName && "opacity-40 pointer-events-none",
                   isHistoryOpen && "bg-muted font-medium",
                 )}
-                onClick={() => {
+                onClick={() => requirePlan("Version History", "starter", "Access the full version history for each documentation section.", () => {
                   setIsHistoryOpen((o) => !o)
                   if (isChatOpen) setIsChatOpen(false)
-                }}
+                })}
                 disabled={!activeSectionName}
               >
                 <FileClock className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -811,18 +829,22 @@ export function DocumentationViewerPage() {
               <div className="mx-3 my-1 border-t border-border" />
               <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Export</div>
 
-              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={handleExportPdf}>
+              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => requirePlan("PDF Export", "starter", "Export your documentation as a PDF file.", handleExportPdf)}>
                 <FileDown className="h-4 w-4 text-muted-foreground shrink-0" /> PDF
+                {!meetsMinPlan(subscription, "starter") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
               </button>
-              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={handleExportYaml}>
+              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => requirePlan("GitHub Actions Export", "team", "Export your documentation as a GitHub Actions YAML workflow.", handleExportYaml)}>
                 <GitBranch className="h-4 w-4 text-muted-foreground shrink-0" /> GitHub Actions YAML
+                {!meetsMinPlan(subscription, "team") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
               </button>
-              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={handleExportNotion}>
+              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => requirePlan("Notion Export", "team", "Push your documentation directly to Notion.", handleExportNotion)}>
                 <BookMarked className="h-4 w-4 text-muted-foreground shrink-0" /> Push to Notion
+                {!meetsMinPlan(subscription, "team") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
               </button>
-              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={handleExportGoogleDocs}>
+              <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => requirePlan("Google Docs Export", "pro", "Export your documentation to Google Docs.", handleExportGoogleDocs)}>
                 <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="#4285F4" opacity=".3" /><path d="M14 2v6h6" fill="none" stroke="#4285F4" strokeWidth="1.5" /><path d="M16 13H8M16 17H8M10 9H8" fill="none" stroke="#4285F4" strokeWidth="1.5" strokeLinecap="round" /></svg>
                 Google Docs
+                {!meetsMinPlan(subscription, "pro") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
               </button>
             </div>
           </div>
@@ -947,7 +969,7 @@ export function DocumentationViewerPage() {
                     spec={apiSpec}
                     projectId={id ?? ""}
                     canEdit={true}
-                    onReimport={() => setApiSpecImportOpen(true)}
+                    onReimport={() => requirePlan("API Spec Importer", "pro", "Import and manage OpenAPI specifications.", () => setApiSpecImportOpen(true))}
                     onSync={apiSpec.source === "url" ? async () => {
                       if (!id) return
                       setSyncingSpec(true)
@@ -965,7 +987,8 @@ export function DocumentationViewerPage() {
                   <div className="flex flex-col items-center justify-center flex-1 gap-3 text-muted-foreground">
                     <Info className="h-8 w-8" />
                     <p className="text-sm">No API spec imported yet.</p>
-                    <Button size="sm" variant="outline" onClick={() => setApiSpecImportOpen(true)}>
+                    <Button size="sm" variant="outline" onClick={() => requirePlan("API Spec Importer", "pro", "Import and manage OpenAPI specifications for your project.", () => setApiSpecImportOpen(true))}>
+                      {!meetsMinPlan(subscription, "pro") && <Lock className="h-3.5 w-3.5 mr-1 opacity-50" />}
                       Import Spec
                     </Button>
                   </div>
@@ -1106,6 +1129,14 @@ export function DocumentationViewerPage() {
             if (taggedMember) setDocAssignee(id, activeSectionName, taggedMember)
             setStatusModal({ open: false, pendingStatus: null })
           }}
+        />
+
+        <UpgradeModal
+          open={upgradeOpen}
+          onClose={() => setUpgradeOpen(false)}
+          featureName={upgradeFeature.name}
+          requiredPlan={upgradeFeature.plan}
+          description={upgradeFeature.description}
         />
       </div>
     </div>

@@ -4,7 +4,7 @@ function TopBar({ title, description, children }: { title: string, description?:
             <div className="min-w-0">
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight truncate">{title}</h1>
                 {description && (
-                    <p className="text-muted-foreground mt-1 sm:mt-3 text-sm sm:text-base">
+                    <p className="text-muted-foreground sm:mt-1 text-sm sm:text-base">
                         {description}
                     </p>
                 )}

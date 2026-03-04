@@ -70,18 +70,18 @@ export function DashboardPage() {
 
     // Returns true if the user has hit their project limit
     const isAtProjectLimit = () => {
-      if (!subscription || !usage) return false
-      const limit = subscription.limits.projects
-      if (limit === null) return false // unlimited
-      return usage.projectCount >= limit
+        if (!subscription || !usage) return false
+        const limit = subscription.limits.projects
+        if (limit === null) return false // unlimited
+        return usage.projectCount >= limit
     }
 
     const handleNewProject = () => {
-      if (isAtProjectLimit()) {
-        setUpgradeOpen(true)
-        return
-      }
-      setIsNewProjectModalOpen(true)
+        if (isAtProjectLimit()) {
+            setUpgradeOpen(true)
+            return
+        }
+        setIsNewProjectModalOpen(true)
     }
 
     // Search is driven by the ?q= URL param so the navbar search stays in sync.
@@ -239,10 +239,10 @@ export function DashboardPage() {
                 {/* Filters */}
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                     <div className="relative w-full md:max-w-sm">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
                         <Input
                             placeholder="Search projects..."
-                            className="pl-9"
+                            className="pl-9 rounded-2xl"
                             value={searchQuery}
                             onChange={(e) => {
                                 const val = e.target.value
@@ -261,7 +261,7 @@ export function DashboardPage() {
                         <Select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="w-[130px]"
+                            className="w-[130px] !rounded-2xl"
                         >
                             <option value="all">All Status</option>
                             <option value="analyzing">Analyzing</option>
@@ -272,7 +272,7 @@ export function DashboardPage() {
                         <Select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            className="w-[130px]"
+                            className="w-[130px] !rounded-2xl"
                         >
                             <option value="updated">Last Updated</option>
                             <option value="created">Created Date</option>

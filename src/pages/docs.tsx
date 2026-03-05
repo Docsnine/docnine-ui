@@ -570,26 +570,50 @@ components:
                         </p>
 
                         <H3 id="webhook-setup">Setup guide</H3>
+                        
+                        <H4 className="text-lg font-semibold mt-6 mb-3">Option A — Use a real GitHub webhook (recommended)</H4>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            Set up an actual webhook in your repo settings pointing to <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">https://docnineai-server.vercel.app/api/webhook</code>. GitHub will POST the full push payload with a valid signature computed using your <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">WEBHOOK_SECRET</code>. Your existing handleWebhook code already handles this correctly — no workflow file needed.
+                        </p>
+
                         <div className="rounded-xl border border-border overflow-hidden">
-                            <Step n={1} title="Copy your webhook URL">
-                                In your Docnine project, go to <strong>Settings → Webhook</strong> and copy the webhook URL:
-                                <code className="block text-sm font-mono bg-muted px-3 py-2 rounded mt-2">https://api.docnine.app/webhook/github</code>
+                            <Step n={1} title="Go to your repository webhook settings">
+                                Open your GitHub repo and navigate to:
+                                <code className="block text-sm font-mono bg-muted px-3 py-2 rounded mt-2">
+                                    https://github.com/your-username/your-repo/settings/hooks/new
+                                </code>
                             </Step>
-                            <Step n={2} title="Open your GitHub repository">
-                                Go to your repo on GitHub → <strong>Settings</strong> → <strong>Webhooks</strong> → <strong>Add webhook</strong>.
-                            </Step>
-                            <Step n={3} title="Configure the webhook">
-                                <ul className="list-disc list-inside space-y-1 mt-1">
-                                    <li><strong>Payload URL:</strong> paste the Docnine webhook URL</li>
+                            <Step n={2} title="Fill in the webhook form">
+                                <ul className="list-disc list-inside space-y-2 mt-2">
+                                    <li><strong>Payload URL:</strong> <code className="font-mono bg-muted px-1 rounded text-xs">https://docnineai-server.vercel.app/api/webhook</code></li>
                                     <li><strong>Content type:</strong> <code className="font-mono bg-muted px-1 rounded text-xs">application/json</code></li>
-                                    <li><strong>Secret:</strong> copy your <code className="font-mono bg-muted px-1 rounded text-xs">WEBHOOK_SECRET</code> from Docnine settings</li>
-                                    <li><strong>Events:</strong> select "Just the push event"</li>
+                                    <li><strong>Secret:</strong> your <code className="font-mono bg-muted px-1 rounded text-xs">WEBHOOK_SECRET</code> from Vercel environment variables</li>
+                                    <li><strong>Which events?:</strong> Just the push event</li>
+                                    <li><strong>Active:</strong> ✅ checked</li>
                                 </ul>
                             </Step>
-                            <Step n={4} title="Save and test">
-                                Click <strong>Add webhook</strong>. GitHub will send a ping event — you should see it arrive in the Docnine webhook log. The next push to your repo will trigger an automatic doc update.
+                            <Step n={3} title="Verify your Vercel environment variable">
+                                In your Vercel dashboard → <strong>Project Settings → Environment Variables</strong>, confirm <code className="font-mono bg-muted px-1 rounded text-xs">WEBHOOK_SECRET</code> is set to the exact same string you entered in GitHub.
+                            </Step>
+                            <Step n={4} title="Delete the GitHub Actions workflow file (if present)">
+                                Remove <code className="font-mono bg-muted px-1 rounded text-xs">.github/workflows/document.yml</code> from your repo — it's now redundant and will cause confusion.
+                            </Step>
+                            <Step n={5} title="Test the connection">
+                                After saving, GitHub will send a ping event. You'll see a green checkmark at <code className="font-mono bg-muted px-1 rounded text-xs">https://github.com/your-username/your-repo/settings/hooks</code> if the connection is working. On your next push to main, the full documentation sync will trigger automatically.
                             </Step>
                         </div>
+
+                        <Callout type="success" className="mt-6">
+                            This is the <strong>recommended approach</strong> because GitHub handles the signature and payload delivery — your server receives verified, complete push event data.
+                        </Callout>
+
+                        <H4 className="text-lg font-semibold mt-8 mb-3">Option B — Use GitHub Actions workflow</H4>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            If you prefer, you can use a GitHub Actions workflow file that triggers on every push and calls the Docnine API. This approach works but requires maintaining a workflow file and doesn't provide signature verification.
+                        </p>
+                        <Callout type="tip">
+                            We recommend <strong>Option A</strong> over this approach, as it's simpler to set up and more secure.
+                        </Callout>
 
                         <H3 id="webhook-secret">Securing the webhook</H3>
                         <p className="text-muted-foreground leading-relaxed mb-4">

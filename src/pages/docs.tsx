@@ -162,7 +162,7 @@ function CodeBlock({ code, language = "yaml" }: { code: string; language?: strin
 function Callout({ type = "info", children }: { type?: "info" | "warning" | "tip"; children: React.ReactNode }) {
     const styles = {
         info: { bg: "bg-blue-500/10 border-blue-500/30", icon: <Info className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" /> },
-        warning: { bg: "bg-amber-500/10 border-amber-500/30", icon: <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" /> },
+        warning: { bg: "bg-primary/10 border-primary/30", icon: <AlertTriangle className="h-4 w-4 text-primary shrink-0 mt-0.5" /> },
         tip: { bg: "bg-green-500/10 border-green-500/30", icon: <CheckCircle2 className="h-4 w-4 text-green-400 shrink-0 mt-0.5" /> },
     }
     const { bg, icon } = styles[type]
@@ -293,7 +293,7 @@ export function PlatformDocsPage() {
                 </span>
             </div>
 
-            <div className="relative z-10 flex max-w-screen-xl mx-auto">
+            <div className="relative z-10 flex max-w-7xl mx-auto">
                 {/* ── Sidebar ── */}
                 <aside
                     className={cn(
@@ -570,7 +570,7 @@ components:
                         </p>
 
                         <H3 id="webhook-setup">Setup guide</H3>
-                        
+
                         <h4 className="text-lg font-semibold mt-6 mb-3">Option A — Use a real GitHub webhook (recommended)</h4>
                         <p className="text-muted-foreground leading-relaxed mb-4">
                             Set up an actual webhook in your repo settings pointing to <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">https://docnineai-server.vercel.app/webhook/github</code>. GitHub will POST the full push payload with a valid signature computed using your <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">WEBHOOK_SECRET</code>. Your existing handleWebhook code already handles this correctly — no workflow file needed.
@@ -603,7 +603,7 @@ components:
                             </Step>
                         </div>
 
-                        <Callout type="info" className="mt-6">
+                        <Callout type="info">
                             This is the <strong>recommended approach</strong> because GitHub handles the signature and payload delivery — your server receives verified, complete push event data.
                         </Callout>
 

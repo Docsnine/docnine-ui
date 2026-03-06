@@ -67,9 +67,9 @@ export const DOC_STATUS_CONFIG: Record<DocStatus, StatusConfig> = {
   outdated: {
     label: "Outdated",
     icon: AlertTriangle,
-    badgeClass: "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30",
-    dotClass: "bg-amber-500",
-    iconClass: "text-amber-600 dark:text-amber-400",
+    badgeClass: "bg-primary/15 text-primary dark:text-primary border-primary/30",
+    dotClass: "bg-primary",
+    iconClass: "text-primary dark:text-primary",
   },
   archived: {
     label: "Archived",

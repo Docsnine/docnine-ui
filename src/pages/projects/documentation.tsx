@@ -207,15 +207,15 @@ function StaleSectionBanner({
   accepting: boolean
 }) {
   return (
-    <div className="mx-6 mt-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 flex flex-col gap-2 shrink-0">
+    <div className="mx-6 mt-4 rounded-lg border border-primary/30 bg-primary/5 p-3 flex flex-col gap-2 shrink-0">
       <div className="flex items-start gap-2">
-        <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <AlertTriangle className="h-4 w-4 text-primary dark:text-primary shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-amber-700 dark:text-amber-300">
+          <p className="text-sm font-medium text-primary dark:text-primary">
             AI has updated this section since your last edit
           </p>
           {changeSummary && (
-            <p className="text-xs text-amber-600/80 dark:text-amber-400/80 mt-0.5 line-clamp-2">{changeSummary}</p>
+            <p className="text-xs text-primary/80 dark:text-primary/80 mt-0.5 line-clamp-2">{changeSummary}</p>
           )}
         </div>
       </div>
@@ -223,7 +223,7 @@ function StaleSectionBanner({
         <Button
           size="sm"
           variant="outline"
-          className="h-7 text-xs border-amber-500/30 hover:bg-amber-500/10"
+          className="h-7 text-xs border-primary/30 hover:bg-primary/10"
           onClick={onViewDiff}
         >
           <Eye className="mr-1.5 h-3 w-3" /> View AI version
@@ -938,7 +938,7 @@ export function DocumentationViewerPage() {
                         return de && de.status !== "draft" ? <DocStatusDot status={de.status} /> : null
                       })()}
                       {isStale && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" title="Stale — AI has newer content" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" title="Stale — AI has newer content" />
                       )}
                       {vCount > 1 && (
                         <span className="text-[10px] font-mono px-1 py-0.5 rounded bg-muted-foreground/15 text-muted-foreground shrink-0">

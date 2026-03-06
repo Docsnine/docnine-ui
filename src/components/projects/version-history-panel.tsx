@@ -363,8 +363,8 @@ export function VersionHistoryPanel({
 
                         {/* Restore confirmation */}
                         {isConfirming && (
-                          <div className="mt-2 rounded-md bg-amber-500/10 border border-amber-500/20 p-2.5">
-                            <p className="text-xs text-amber-700 dark:text-amber-400 mb-2 leading-relaxed">
+                          <div className="mt-2 rounded-md bg-primary/10 border border-primary/20 p-2.5">
+                            <p className="text-xs text-primary dark:text-primary/30 mb-2 leading-relaxed">
                               Restore this version? This will replace your current content.
                             </p>
                             <div className="flex gap-2">

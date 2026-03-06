@@ -243,7 +243,7 @@ export function AIChatPanel({
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* No pipeline warning */}
           {!sessionId && (
-            <div className="rounded-md bg-amber-500/10 border border-amber-500/20 p-3 text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
+            <div className="rounded-md bg-primary/10 border border-primary/20 p-3 text-xs text-primary dark:text-primary leading-relaxed">
               Run the documentation pipeline on this project to enable AI chat.
             </div>
           )}

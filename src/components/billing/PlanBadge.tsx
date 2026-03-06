@@ -15,7 +15,7 @@ const PLAN_COLOURS: Record<string, string> = {
     free: "bg-muted text-muted-foreground border-border",
     starter: "bg-blue-500/10 text-blue-400 border-blue-500/20",
     pro: "bg-violet-500/10 text-violet-400 border-violet-500/20",
-    team: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    team: "bg-primary/10 text-primary border-primary/20",
 }
 
 interface PlanBadgeProps {
@@ -39,7 +39,7 @@ export function PlanBadge({ className, showStatus = true }: PlanBadgeProps) {
         if (status === "trialing" && trialEndsAt) {
             const daysLeft = differenceInDays(new Date(trialEndsAt), new Date())
             statusBadge = (
-                <span className="ml-1.5 flex items-center gap-0.5 text-amber-400 text-[10px] font-medium">
+                <span className="ml-1.5 flex items-center gap-0.5 text-primary text-[10px] font-medium">
                     <Clock className="h-2.5 w-2.5" />
                     {daysLeft > 0 ? `${daysLeft}d` : "ends today"}
                 </span>

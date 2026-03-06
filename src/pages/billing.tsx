@@ -62,7 +62,7 @@ function fmtMoney(cents: number, currency = "USD") {
 function StatusBadge({ status }: { status: SubscriptionData["status"] }) {
     const MAP: Record<string, string> = {
         free: "bg-muted text-muted-foreground",
-        trialing: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+        trialing: "bg-primary/10 text-primary border-primary/20",
         active: "bg-green-500/10 text-green-400 border-green-500/20",
         past_due: "bg-red-500/10 text-red-400 border-red-500/20",
         cancelled: "bg-muted text-muted-foreground",
@@ -86,7 +86,7 @@ function StatusBadge({ status }: { status: SubscriptionData["status"] }) {
 function InvoiceStatusBadge({ status }: { status: InvoiceData["status"] }) {
     const MAP: Record<string, string> = {
         paid: "bg-green-500/10 text-green-400 border-green-500/20",
-        pending: "bg-amber-500/10 text-amber-400",
+        pending: "bg-primary/10 text-primary",
         failed: "bg-red-500/10 text-red-400",
         refunded: "bg-muted text-muted-foreground",
         void: "bg-muted text-muted-foreground",
@@ -272,7 +272,7 @@ function ChangePlanModal({
                                             direction === "upgrade"
                                                 ? "bg-green-500/10 text-green-400"
                                                 : direction === "downgrade"
-                                                    ? "bg-amber-500/10 text-amber-400"
+                                                    ? "bg-primary/10 text-primary"
                                                     : "bg-muted text-muted-foreground"
                                         )}>
                                             {direction === "upgrade" && <TrendingUp className="h-2.5 w-2.5" />}
@@ -293,7 +293,7 @@ function ChangePlanModal({
                     </p>
                 )}
                 {resultMsg?.type === "scheduled" && (
-                    <p className="text-sm text-amber-400 flex items-center gap-1.5">
+                    <p className="text-sm text-primary flex items-center gap-1.5">
                         <AlertTriangle className="h-3.5 w-3.5 shrink-0" /> {resultMsg.text}
                     </p>
                 )}
@@ -419,7 +419,7 @@ function CurrentPlanCard({
                         </div>
                     )}
                     {sub.status === "trialing" && daysLeft !== null && (
-                        <div className="flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-sm text-amber-400 mt-2">
+                        <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/10 px-3 py-2 text-sm text-primary mt-2">
                             <Star className="h-4 w-4 shrink-0" />
                             Your trial ends in{" "}
                             <strong>{daysLeft > 0 ? `${daysLeft} days` : "today"}</strong>.
@@ -848,14 +848,14 @@ function PaymentMethodsCard({ onRefresh }: { onRefresh: () => void }) {
                         const title = isCard && pm.card
                             ? `${pm.card.brand} \u00b7\u00b7\u00b7\u00b7 ${pm.card.last4}`
                             : isMobile && pm.mobileMoney
-                            ? `${pm.mobileMoney.network} Mobile Money`
-                            : "Bank Transfer"
+                                ? `${pm.mobileMoney.network} Mobile Money`
+                                : "Bank Transfer"
 
                         const subtitle = isCard && pm.card
                             ? `Expires ${String(pm.card.expMonth).padStart(2, "0")}/${pm.card.expYear}`
                             : isMobile && pm.mobileMoney
-                            ? pm.mobileMoney.phone
-                            : pm.displayLabel || "Bank transfer"
+                                ? pm.mobileMoney.phone
+                                : pm.displayLabel || "Bank transfer"
 
                         const MethodIcon = isCard ? CreditCard : isMobile ? Smartphone : Building2
 
@@ -1293,7 +1293,7 @@ export function BillingTab() {
             return
         }
 
-        ;(async () => {
+        ; (async () => {
             setVerifyState({ status: "verifying" })
             try {
                 await billingApi.verifyPayment(
@@ -1312,7 +1312,7 @@ export function BillingTab() {
                 })
             }
         })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {

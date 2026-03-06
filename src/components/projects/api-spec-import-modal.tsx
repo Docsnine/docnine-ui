@@ -117,7 +117,7 @@ export function ApiSpecImportModal({ projectId, open, onClose, onImported, exist
                 </DialogHeader>
 
                 {existingSpec && (
-                    <div className="mx-1 rounded-md border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+                    <div className="mx-1 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-primary dark:text-primary/30">
                         Currently imported: <span className="font-semibold">{existingSpec.info.title}</span>{" "}
                         ({existingSpec.specVersion}) — importing will replace the existing spec.
                     </div>

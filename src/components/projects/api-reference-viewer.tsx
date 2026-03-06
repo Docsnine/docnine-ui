@@ -80,7 +80,7 @@ function SchemaDisplay({ schema, depth = 0 }: SchemaProps) {
     if (type === "array") {
         return (
             <div className="flex items-start gap-1 font-mono text-[11px]">
-                <span className="text-amber-600 dark:text-amber-400">array</span>
+                <span className="text-primary dark:text-primary/20">array</span>
                 {schema.items != null ? (
                     <>
                         <span className="text-muted-foreground">of</span>
@@ -195,7 +195,7 @@ function EndpointDetail({ endpoint, spec, projectId, canEdit, onNoteUpdated, onT
         const n = parseInt(code, 10)
         if (n < 300) return "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20"
         if (n < 400) return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
-        if (n < 500) return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+        if (n < 500) return "bg-primary/10 text-primary dark:text-primary border-primary/20"
         return "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20"
     }
 
@@ -208,7 +208,7 @@ function EndpointDetail({ endpoint, spec, projectId, canEdit, onNoteUpdated, onT
                     <div className="flex items-center gap-2 flex-wrap">
                         <code className="font-mono text-base font-semibold text-foreground break-all">{endpoint.path}</code>
                         {endpoint.deprecated && (
-                            <Badge variant="outline" className="border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px]">
+                            <Badge variant="outline" className="border-primary/30 text-primary dark:text-primary text-[10px]">
                                 <AlertTriangle className="h-2.5 w-2.5 mr-1" />Deprecated
                             </Badge>
                         )}

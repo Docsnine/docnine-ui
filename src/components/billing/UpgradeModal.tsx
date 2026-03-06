@@ -20,7 +20,7 @@ import Loader1 from "../ui/loader1"
 const PLAN_LABELS: Record<string, { name: string; colour: string; Icon: React.ElementType }> = {
     starter: { name: "Starter", colour: "text-blue-400", Icon: Zap },
     pro: { name: "Pro", colour: "text-violet-400", Icon: User },
-    team: { name: "Team", colour: "text-amber-400", Icon: User },
+    team: { name: "Team", colour: "text-primary", Icon: User },
 }
 
 interface UpgradeModalProps {

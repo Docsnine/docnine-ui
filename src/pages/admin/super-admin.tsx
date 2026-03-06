@@ -32,7 +32,7 @@ const PLAN_COLORS: Record<string, string> = {
   free: "bg-muted text-muted-foreground",
   starter: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
   pro: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-  team: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  team: "bg-primary text-primary dark:bg-primary/30 dark:text-primary/30",
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -402,7 +402,7 @@ export function SuperAdminPage() {
                   value={stats.paidSubscriptions}
                   sub={`of ${stats.totalUsers} total users`}
                   icon={TrendingUp}
-                  iconClass="bg-amber-500/10"
+                  iconClass="bg-primary/10"
                 />
               </div>
 

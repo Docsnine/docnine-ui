@@ -271,6 +271,7 @@ export const authApi = {
       webhookEnabled: boolean
       lastWebhookAt: string | null
       lastWebhookStatus: 'success' | 'failed' | 'skipped' | null
+      yaml: string
     }>('/auth/webhook/init', { method: 'POST' }),
 
   rotateWebhookSecret: () =>
@@ -278,6 +279,9 @@ export const authApi = {
       webhookUrl: string
       secret: string
       webhookEnabled: boolean
+      lastWebhookAt: string | null
+      lastWebhookStatus: 'success' | 'failed' | 'skipped' | null
+      yaml: string
     }>('/auth/webhook/rotate', { method: 'POST' }),
 
   updateWebhookSettings: (webhookEnabled: boolean) =>
@@ -285,6 +289,9 @@ export const authApi = {
       webhookUrl: string
       webhookEnabled: boolean
       hasSecret: boolean
+      lastWebhookAt: string | null
+      lastWebhookStatus: 'success' | 'failed' | 'skipped' | null
+      yaml: string
     }>('/auth/webhook', {
       method: 'PATCH',
       body: JSON.stringify({ webhookEnabled }),

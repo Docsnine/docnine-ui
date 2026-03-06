@@ -5,8 +5,8 @@ import { ArrowRight, Github, Sparkles } from 'lucide-react'
 
 function CTA() {
     return (
-        <section className="relative z-10 py-24 px-4 border-t border-border bg-background flex justify-center">
-            <div className="container max-w-5xl relative overflow-hidden rounded-[2.5rem] bg-[#0a0a0a] border border-border/50 p-12 sm:p-20 text-center">
+        <section className="relative z-10 py-24 px-4 bg-background flex justify-center">
+            <div className="container max-w-5xl relative overflow-hidden rounded-[2.5rem] bg-[#0a0a0a] p-12 sm:p-20 text-center">
                 {/* Background Glow for CTA */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-full bg-primary/10 blur-[100px] pointer-events-none z-0" />
 

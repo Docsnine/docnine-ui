@@ -43,7 +43,7 @@ export default function Loader1({
             fill="none"
             role="status"
             aria-label={label}
-            className={cn("", className)}
+            className={cn("animate-spin", className)}
             style={{
                 color: color ?? undefined,
                 animationDuration: speed,

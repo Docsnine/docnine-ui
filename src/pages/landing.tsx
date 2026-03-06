@@ -135,7 +135,7 @@ export function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="relative z-10 py-24 px-4 border-t border-border bg-background">
+      <section id="faq" className="relative z-10 py-24 px-4 bg-background">
         <div className="container mx-auto max-w-3xl">
           <div className="mb-16 text-center">
             <h2 className="text-[48px] leading-[48px] font-bold tracking-tight text-foreground mb-6">

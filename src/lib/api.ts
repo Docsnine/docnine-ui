@@ -248,6 +248,21 @@ export const authApi = {
       body: JSON.stringify(body),
     }),
 
+  /** Browser-side approval endpoint for CLI login flow. */
+  cliApprove: (sessionId: string) =>
+    apiFetch<{ success: boolean }>("/auth/cli/approve", {
+      method: "POST",
+      body: JSON.stringify({ sessionId }),
+    }),
+
+  /** Cancel endpoint for CLI login flow (used by cancel button/unload). */
+  cliCancel: (sessionId: string) =>
+    apiFetch<{ success: boolean }>("/auth/cli/cancel", {
+      method: "POST",
+      body: JSON.stringify({ sessionId }),
+      skipAuth: true,
+    }),
+
   /** Google Docs export — settings-level (no project ID needed) */
   getGoogleDocsStatus: () =>
     apiFetch<{

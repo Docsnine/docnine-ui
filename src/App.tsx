@@ -7,6 +7,7 @@ import { VerifyPage } from "@/pages/auth/verify"
 import { ForgotPasswordPage } from "@/pages/auth/forgot-password"
 import { ResetPasswordPage } from "@/pages/auth/reset-password"
 import { AuthCallbackPage } from "@/pages/auth/callback"
+import { CliAuthPage } from "@/pages/auth/cli-auth"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { DashboardPage } from "@/pages/dashboard"
 import { ProjectOverviewPage } from "@/pages/projects/overview"
@@ -141,6 +142,7 @@ function AppRoutes() {
 
       {/* OAuth social login callback */}
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
+      <Route path="/cli-auth" element={<CliAuthPage />} />
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/contact" element={<ContactPage />} />

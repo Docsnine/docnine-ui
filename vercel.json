@@ -12,6 +12,9 @@
     }
   ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/((?!sitemap\\.xml|robots\\.txt|favicon\\.ico|.*\\..*).*)",
+      "destination": "/index.html"
+    }
   ]
 }

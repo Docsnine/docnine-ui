@@ -1,11 +1,8 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams, Link } from "react-router-dom"
 import { useProjectStore, mapApiStatus } from "@/store/projects"
-import { projectsApi, versionsApi, ApiException, ApiProject, ApiShare, sharingApi, portalApi, apiSpecApi, type ApiPortal, type ApiSpec, type ApiProjectEditedSection } from "@/lib/api"
+import { projectsApi, versionsApi, customTabsApi, ApiException, ApiProject, ApiShare, sharingApi, portalApi, apiSpecApi, type ApiPortal, type ApiSpec, type ApiProjectEditedSection, type CustomTab } from "@/lib/api"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import {
   ArrowLeft,
   Book,
@@ -35,6 +32,7 @@ import {
   BookMarked,
   Globe,
   Lock,
+  Plus,
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import Markdown from "react-markdown"
@@ -53,6 +51,8 @@ import { ApiReferenceViewer } from "@/components/projects/api-reference-viewer"
 import { useSubscriptionStore, meetsMinPlan } from "@/store/subscription"
 import { UpgradeModal } from "@/components/billing/UpgradeModal"
 import Loader1 from "@/components/ui/loader1"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { CreateTabModal } from "@/components/projects/custom-tabs-modals"
 
 // ── Status-change modal ───────────────────────────────────────────────────────
 interface StatusChangeModalProps {
@@ -95,7 +95,7 @@ function StatusChangeModal({ isOpen, onClose, pendingStatus, onConfirm, members,
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Message <span className="text-muted-foreground font-normal">(optional)</span></label>
             <textarea
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary resize-none min-h-[80px] placeholder:text-muted-foreground"
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary resize-none min-h-20 placeholder:text-muted-foreground"
               placeholder={isChangesRequested ? "Describe what needs to change..." : "Add a note for this status change..."}
               value={note}
               onChange={(e) => setNote(e.target.value)}
@@ -165,26 +165,48 @@ function StatusChangeModal({ isOpen, onClose, pendingStatus, onConfirm, members,
 }
 
 // ── Tab definitions ──────────────────────────────────────────────────────────
-type DocTab = "readme" | "api" | "schema" | "internal" | "security" | "other_docs"
+// Native tabs are always available and tied to document sections with version history.
+// Custom tabs are user-created and managed dynamically.
+type NativeTab = "readme" | "api" | "schema" | "internal" | "security" | "other_docs"
+type DocTab = NativeTab | `custom_${string}`
 
 interface TabDef {
   key: DocTab
   label: string
   icon: React.ElementType
-  field: "readme" | "apiReference" | "schemaDocs" | "internalDocs" | "securityReport" | "otherDocs"
+  field?: string // Only for native tabs — maps to API project field
+  isNative: boolean
+  isCustom?: boolean
+  customTab?: CustomTab
 }
 
-const TABS: TabDef[] = [
-  { key: "readme", label: "README", icon: Book, field: "readme" },
-  { key: "api", label: "API Reference", icon: FileCode2, field: "apiReference" },
-  { key: "schema", label: "Schema Docs", icon: Database, field: "schemaDocs" },
-  { key: "internal", label: "Internal Docs", icon: BookOpen, field: "internalDocs" },
-  { key: "security", label: "Security", icon: ShieldAlert, field: "securityReport" },
-  { key: "other_docs", label: "Other Docs", icon: FileCode, field: "otherDocs" },
+// ── Native tabs (always defined) ──────────────────────────────────────────
+const NATIVE_TABS: TabDef[] = [
+  { key: "readme", label: "README", icon: Book, field: "readme", isNative: true },
+  { key: "api", label: "API Reference", icon: FileCode2, field: "apiReference", isNative: true },
+  { key: "schema", label: "Schema Docs", icon: Database, field: "schemaDocs", isNative: true },
+  { key: "internal", label: "Internal Docs", icon: BookOpen, field: "internalDocs", isNative: true },
+  { key: "security", label: "Security", icon: ShieldAlert, field: "securityReport", isNative: true },
+  { key: "other_docs", label: "Other Docs", icon: FileCode, isNative: true },
 ]
 
-// Section key → DocumentVersion section name (null = not versioned)
-const TAB_TO_SECTION: Partial<Record<DocTab, string>> = {
+// ── Helper: Build full tab list from native + custom tabs ──────────────────
+function buildTabList(customTabs: CustomTab[] = []): TabDef[] {
+  const customDefs: TabDef[] = (customTabs ?? [])
+    .sort((a, b) => a.order - b.order)
+    .map((ct) => ({
+      key: `custom_${ct._id}` as DocTab,
+      label: ct.name,
+      icon: FileCode,
+      isNative: false,
+      isCustom: true,
+      customTab: ct,
+    }))
+  return [...NATIVE_TABS.slice(0, -1), ...customDefs, NATIVE_TABS[NATIVE_TABS.length - 1]] // Other Docs always last
+}
+
+// ── Section key → DocumentVersion section name (native tabs only) ──────────
+const TAB_TO_SECTION: Partial<Record<NativeTab, string>> = {
   readme: "readme",
   api: "apiReference",
   schema: "schemaDocs",
@@ -212,7 +234,7 @@ function StaleSectionBanner({
         <AlertTriangle className="h-4 w-4 text-primary dark:text-primary shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-primary dark:text-primary">
-            AI has updated this section since your last edit
+            (AI) has updated this section since your last edit
           </p>
           {changeSummary && (
             <p className="text-xs text-primary/80 dark:text-primary/80 mt-0.5 line-clamp-2">{changeSummary}</p>
@@ -280,7 +302,7 @@ function StaleDiffModal({
             <DocRenderer content={userContent} />
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto p-6 bg-primary/[0.02]">
+        <div className="flex-1 overflow-y-auto p-6 bg-primary/2">
           <div className="mb-3 text-xs font-semibold text-primary uppercase tracking-wider">New AI Version</div>
           <div className="prose prose-slate dark:prose-invert max-w-none">
             <DocRenderer content={aiContent} />
@@ -351,36 +373,26 @@ export function DocumentationViewerPage() {
   const [showStaleDiff, setShowStaleDiff] = useState(false)
   const [staleSummary, setStaleSummary] = useState<string | null>(null)
   const [acceptingAI, setAcceptingAI] = useState(false)
+  const [createTabModalOpen, setCreateTabModalOpen] = useState(false)
+
+  // Global search
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchResults, setSearchResults] = useState<Record<string, { label: string; matches: number; highlights: string[] }>>({})
+  const [showSearchResults, setShowSearchResults] = useState(false)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Status-change modal
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false)
   const statusDropdownRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (!statusDropdownOpen) return
-    const handler = (e: MouseEvent) => {
-      if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) {
-        setStatusDropdownOpen(false)
-      }
-    }
-    document.addEventListener("click", handler)
-    return () => document.removeEventListener("click", handler)
-  }, [statusDropdownOpen])
+
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false)
   const moreDropdownRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (!moreDropdownOpen) return
-    const handler = (e: MouseEvent) => {
-      if (moreDropdownRef.current && !moreDropdownRef.current.contains(e.target as Node)) {
-        setMoreDropdownOpen(false)
-      }
-    }
-    document.addEventListener("click", handler)
-    return () => document.removeEventListener("click", handler)
-  }, [moreDropdownOpen])
+
   const [statusModal, setStatusModal] = useState<{
     open: boolean
     pendingStatus: import("@/store/doc-tracker").DocStatus | null
   }>({ open: false, pendingStatus: null })
+
   const [projectMembers, setProjectMembers] = useState<ApiShare[]>([])
   const [loadingMembers, setLoadingMembers] = useState(false)
 
@@ -393,6 +405,29 @@ export function DocumentationViewerPage() {
   const { subscription } = useSubscriptionStore()
   const [upgradeOpen, setUpgradeOpen] = useState(false)
   const [upgradeFeature, setUpgradeFeature] = useState<{ name: string; plan: string; description?: string }>({ name: "", plan: "starter" })
+
+  useEffect(() => {
+    if (!statusDropdownOpen) return
+    const handler = (e: MouseEvent) => {
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) {
+        setStatusDropdownOpen(false)
+      }
+    }
+    document.addEventListener("click", handler)
+    return () => document.removeEventListener("click", handler)
+  }, [statusDropdownOpen])
+
+  useEffect(() => {
+    if (!moreDropdownOpen) return
+    const handler = (e: MouseEvent) => {
+      if (moreDropdownRef.current && !moreDropdownRef.current.contains(e.target as Node)) {
+        setMoreDropdownOpen(false)
+      }
+    }
+    document.addEventListener("click", handler)
+    return () => document.removeEventListener("click", handler)
+  }, [moreDropdownOpen])
+
   function requirePlan(featureName: string, plan: string, description: string, cb: () => void) {
     if (!meetsMinPlan(subscription, plan)) {
       setUpgradeFeature({ name: featureName, plan, description })
@@ -410,7 +445,7 @@ export function DocumentationViewerPage() {
   const [syncingSpec, setSyncingSpec] = useState(false)
 
   // Editable content per tab (initialized from project data)
-  const [editedContent, setEditedContent] = useState<Record<DocTab, string>>({
+  const [editedContent, setEditedContent] = useState<Record<string, string>>({
     readme: "",
     api: "",
     schema: "",
@@ -418,6 +453,9 @@ export function DocumentationViewerPage() {
     security: "",
     other_docs: "",
   })
+
+  // Dynamic tabs list (native + custom)
+  const [allTabs, setAllTabs] = useState<TabDef[]>(NATIVE_TABS)
 
   // Load project on mount + fetch version counts
   useEffect(() => {
@@ -430,20 +468,37 @@ export function DocumentationViewerPage() {
         setEditedSections((data.editedSections as ApiProjectEditedSection[]) ?? []);
         const owner = data.shareRole === 'owner'
         setIsOwner(owner)
+
+        // Build dynamic tab list (native + custom)
+        const customTabs = data.project.customTabs ?? [];
+        const tabs = buildTabList(customTabs);
+        setAllTabs(tabs);
+
         // Fetch portal settings for owners
         if (owner) {
           portalApi.get(data.project._id)
             .then((r) => setPortal(r.portal))
             .catch(() => { })
         }
-        setEditedContent({
+
+        // Initialize edited content for native tabs
+        const newEditedContent: Record<string, string> = {
           readme: data.effectiveOutput?.readme ?? "",
           api: data.effectiveOutput?.apiReference ?? "",
           schema: data.effectiveOutput?.schemaDocs ?? "",
           internal: data.effectiveOutput?.internalDocs ?? "",
           security: data.effectiveOutput?.securityReport ?? "",
           other_docs: data.effectiveOutput?.otherDocs ?? "",
+        };
+
+        // Initialize edited content for custom tabs
+        customTabs.forEach((ct) => {
+          const tabKey = `custom_${ct._id}`;
+          newEditedContent[tabKey] = ct.content ?? "";
         });
+
+        setEditedContent(newEditedContent);
+
         // Pre-fetch version counts for all versioned sections
         const sections = ["readme", "internalDocs", "apiReference", "schemaDocs", "securityReport"];
         const counts: Record<string, number> = {};
@@ -455,6 +510,12 @@ export function DocumentationViewerPage() {
             } catch { /* ignore */ }
           }),
         );
+
+        // Fetch version counts for custom tabs
+        customTabs.forEach((ct) => {
+          const sectionName = `custom_${ct._id}`;
+        });
+
         setVersionCounts(counts);
 
         // Load API spec (FT4)
@@ -467,10 +528,13 @@ export function DocumentationViewerPage() {
 
   // Fetch change summary for stale section when it becomes active
   useEffect(() => {
-    const sectionName = TAB_TO_SECTION[activeTab];
+    const isCustomTab = activeTab.startsWith("custom_");
+    const sectionName = isCustomTab ? activeTab : TAB_TO_SECTION[activeTab as NativeTab];
+
     const isStale = sectionName
       ? editedSections.some((e) => e.section === sectionName && e.stale)
       : false;
+
     if (!isStale || !id || !sectionName) { setStaleSummary(null); return; }
     versionsApi
       .list(id, sectionName)
@@ -501,56 +565,183 @@ export function DocumentationViewerPage() {
   }
 
   const handleSave = async () => {
-    if (!id || !activeTabDef) return
-    const sectionName = activeTabDef.field  // e.g. "apiReference", "readme"
-    const content = editedContent[activeTab]
-    setActionLoading("save")
+    if (!id || !activeTabDef) return;
+
+    const content = editedContent[activeTab];
+    setActionLoading("save");
+
     try {
-      const data = await projectsApi.saveEdit(id, sectionName, content)
-      setProject(data.project)
-      setEffectiveOutput(data.effectiveOutput as any)
-      setEditedSections((data.editedSections as ApiProjectEditedSection[]) ?? [])
-      // update version count for this section
-      const vSection = TAB_TO_SECTION[activeTab]
-      if (vSection) {
-        versionsApi.list(id, vSection).then((r) => {
-          setVersionCounts((prev) => ({ ...prev, [vSection]: r.total }))
-        }).catch(() => { })
+      // Handle custom tabs
+      if (activeTabDef.isCustom && activeTabDef.customTab) {
+        const tabId = activeTabDef.customTab._id;
+        const data = await customTabsApi.update(id, tabId, { content });
+        setProject(data.project);
+        // Reload tabs since content may have changed
+        if (data.project.customTabs) {
+          setAllTabs(buildTabList(data.project.customTabs));
+        }
+      } else if (activeTabDef.field) {
+        // Handle native tabs
+        const sectionName = activeTabDef.field;
+        const data = await projectsApi.saveEdit(id, sectionName, content);
+        setProject(data.project);
+        setEffectiveOutput(data.effectiveOutput as any);
+        setEditedSections((data.editedSections as ApiProjectEditedSection[]) ?? []);
+
+        // Update version count for this section
+        const vSection = TAB_TO_SECTION[activeTab as NativeTab];
+        if (vSection) {
+          versionsApi.list(id, vSection).then((r) => {
+            setVersionCounts((prev) => ({ ...prev, [vSection]: r.total }));
+          }).catch(() => { });
+        }
       }
-      setIsEditMode(false)
+
+      setIsEditMode(false);
     } catch (err: any) {
-      alert(err?.message ?? "Failed to save. Please try again.")
+      alert(err?.message ?? "Failed to save. Please try again.");
     } finally {
-      setActionLoading(null)
+      setActionLoading(null);
     }
-  }
+  };
 
   const handleCancelEdit = () => {
     if (project) {
       const effective = (project as any).effectiveOutput || project;
-      setEditedContent({
+      const newEditedContent: Record<string, string> = {
         readme: effective.readme ?? "",
         api: effective.apiReference ?? "",
         schema: effective.schemaDocs ?? "",
         internal: effective.internalDocs ?? "",
         security: effective.securityReport ?? "",
         other_docs: effective.otherDocs ?? "",
-      });
+      };
+
+      // Restore custom tab content from project
+      if (project.customTabs) {
+        project.customTabs.forEach((ct) => {
+          const key = `custom_${ct._id}`;
+          newEditedContent[key] = ct.content ?? "";
+        });
+      }
+
+      setEditedContent(newEditedContent);
     }
     setIsEditMode(false);
-  }
+  };
+
+  // Handle creating a new custom tab
+  const handleCreateTab = async (data: { name: string; description: string }) => {
+    if (!id) return;
+
+    setActionLoading("create-tab");
+
+    try {
+      const result = await customTabsApi.create(id, { name: data.name, description: data.description });
+      if (result.project?.customTabs) {
+        const tabs = buildTabList(result.project.customTabs);
+
+        setAllTabs(tabs);
+
+        const newTabId = result.project.customTabs[result.project.customTabs.length - 1]?._id;
+
+        if (newTabId) {
+          setEditedContent((prev) => ({
+            ...prev,
+            [`custom_${newTabId}`]: "",
+          }));
+        }
+
+        setProject(result.project);
+        setCreateTabModalOpen(false);
+      }
+    } catch (err: any) {
+      alert(err?.message ?? "Failed to create tab");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  // Global search function
+  const performSearch = (query: string) => {
+    if (!query.trim()) {
+      setSearchResults({});
+      setShowSearchResults(false);
+      return;
+    }
+
+    const searchTerm = query.toLowerCase();
+    const results: Record<string, { label: string; matches: number; highlights: string[] }> = {};
+
+    // Search through all tabs
+    allTabs.forEach((tab) => {
+      const tabContent = editedContent[tab.key] ?? "";
+      const tabLabel = tab.label;
+
+      // Search in tab name
+      const nameMatches = tabLabel.toLowerCase().includes(searchTerm) ? 1 : 0;
+
+      // Search in content (find matching lines/highlights)
+      const highlights: string[] = [];
+      if (tabContent) {
+        const lines = tabContent.split("\n");
+        lines.forEach((line) => {
+          if (line.toLowerCase().includes(searchTerm)) {
+            const preview = line.length > 100 ? line.substring(0, 100) + "..." : line;
+            highlights.push(preview);
+          }
+        });
+      }
+
+      const contentMatches = highlights.length;
+      const totalMatches = nameMatches + contentMatches;
+
+      if (totalMatches > 0) {
+        results[tab.key] = {
+          label: tabLabel,
+          matches: totalMatches,
+          highlights: highlights.slice(0, 2), // Show first 2 highlights
+        };
+      }
+    });
+
+    setSearchResults(results);
+    setShowSearchResults(Object.keys(results).length > 0);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    performSearch(value);
+  };
+
+  // Handle search result click
+  const handleSearchResultClick = (tabKey: DocTab) => {
+    setActiveTab(tabKey);
+    setSearchQuery("");
+    setShowSearchResults(false);
+    setIsEditMode(false);
+  };
 
   // ── Version history callbacks ────────────────────────────────────────────
 
   const handleVersionRestored = (newEffectiveOutput: any, newEditedSections: any[]) => {
     setEffectiveOutput(newEffectiveOutput);
     setEditedSections((newEditedSections as ApiProjectEditedSection[]) ?? []);
-    const tabDef = TABS.find((t) => t.key === activeTab);
+    const tabDef = allTabs.find((t: TabDef) => t.key === activeTab);
     if (tabDef) {
-      setEditedContent((prev) => ({ ...prev, [activeTab]: newEffectiveOutput?.[tabDef.field] ?? "" }));
+      let content = "";
+      if (tabDef.isCustom && tabDef.customTab) {
+        content = tabDef.customTab.content ?? "";
+      } else if (tabDef.field) {
+        content = newEffectiveOutput?.[tabDef.field] ?? "";
+      }
+      setEditedContent((prev) => ({ ...prev, [activeTab]: content }));
     }
     // Refresh the version count for the restored section
-    const sectionName = TAB_TO_SECTION[activeTab];
+    const isCustom = activeTab.startsWith("custom_");
+    const sectionName = isCustom ? activeTab : (TAB_TO_SECTION[activeTab as NativeTab] ?? null);
     if (id && sectionName) {
       versionsApi.list(id, sectionName).then((r) => {
         setVersionCounts((prev) => ({ ...prev, [sectionName]: r.total }));
@@ -559,7 +750,8 @@ export function DocumentationViewerPage() {
   }
 
   const handleAcceptAI = async () => {
-    const sectionName = TAB_TO_SECTION[activeTab];
+    const isCustom = activeTab.startsWith("custom_");
+    const sectionName = isCustom ? activeTab : (TAB_TO_SECTION[activeTab as NativeTab] ?? null);
     if (!id || !sectionName) return;
     setAcceptingAI(true);
     try {
@@ -567,15 +759,21 @@ export function DocumentationViewerPage() {
       setProject(result.project);
       setEffectiveOutput(result.effectiveOutput);
       setEditedSections((result.editedSections as ApiProjectEditedSection[]) ?? []);
-      const tabDef = TABS.find((t) => t.key === activeTab);
+      const tabDef = allTabs.find((t: TabDef) => t.key === activeTab);
       if (tabDef) {
+        let content = "";
+        if (tabDef.isCustom && tabDef.customTab) {
+          content = tabDef.customTab.content ?? "";
+        } else if (tabDef.field) {
+          content = (result.effectiveOutput as any)?.[tabDef.field] ?? "";
+        }
         setEditedContent((prev) => ({
           ...prev,
-          [activeTab]: (result.effectiveOutput as any)?.[tabDef.field] ?? "",
+          [activeTab]: content,
         }));
       }
       setShowStaleDiff(false);
-      setDismissedStaleTabs((prev) => new Set([...prev, activeTab]));
+      setDismissedStaleTabs((prev) => new Set([...prev, activeTab as string]));
     } catch { /* ignore */ }
     finally { setAcceptingAI(false); }
   }
@@ -686,23 +884,35 @@ export function DocumentationViewerPage() {
 
   // Show all tabs if pipeline is done, else only those with content
   const availableTabs = project && mapApiStatus(project.status) === "completed"
-    ? TABS
-    : TABS.filter((t) => !!editedContent[t.key]);
+    ? allTabs
+    : allTabs.filter((t) => !!editedContent[t.key as string]);
 
   // Stale section derived state
-  const activeSectionName = TAB_TO_SECTION[activeTab] ?? null
-  const activeTabDef = TABS.find((t) => t.key === activeTab)
+  const isCustomTab = activeTab.startsWith("custom_");
+  const activeSectionName = isCustomTab ? activeTab : (TAB_TO_SECTION[activeTab as NativeTab] ?? null);
+  const activeTabDef = allTabs.find((t: TabDef) => t.key === activeTab);
   const staleEntry = activeSectionName
     ? editedSections.find((e) => e.section === activeSectionName && e.stale)
-    : null
-  const showStaleBanner = !!staleEntry && !dismissedStaleTabs.has(activeTab) && !isEditMode
-  const aiSnapshotContent = activeTabDef ? (project?.output as any)?.[activeTabDef.field] ?? "" : ""
-  const userEditContent = activeTabDef ? (project?.editedOutput as any)?.[activeTabDef.field] ?? "" : ""
+    : null;
+  const showStaleBanner = !!staleEntry && !dismissedStaleTabs.has(activeTab as string) && !isEditMode;
+  const aiSnapshotContent = activeTabDef && activeTabDef.field && !isCustomTab ? (project?.output as any)?.[activeTabDef.field] ?? "" : "";
+  const userEditContent = activeTabDef && activeTabDef.field && !isCustomTab ? (project?.editedOutput as any)?.[activeTabDef.field] ?? "" : "";
 
   function getEffectiveOutputTabContent(effectiveOutput: any, tab: DocTab) {
-    const tabDef = TABS.find(t => t.key === tab);
+    const tabDef = allTabs.find((t: TabDef) => t.key === tab);
     if (!tabDef) return "";
-    return effectiveOutput[tabDef.field] ?? "";
+
+    // For custom tabs, get from the customTab.content directly
+    if (tabDef.isCustom && tabDef.customTab) {
+      return tabDef.customTab.content ?? "";
+    }
+
+    // For native tabs, use field mapping
+    if (tabDef.field) {
+      return effectiveOutput[tabDef.field] ?? "";
+    }
+
+    return "";
   }
 
   // ── Main render ───────────────────────────────────────────────────────────
@@ -710,10 +920,49 @@ export function DocumentationViewerPage() {
     <div>
       {/* Top bar */}
       <div className="relative z-20 md:flex items-center justify-between border-b border-border/90 bg-background/50 backdrop-blur-sm container mx-auto max-w-7xl pb-6">
-        <div className="flex items-center">
+        <div className="flex items-center gap-6 flex-1">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Documentation</h1>
             <p className="text-sm text-muted-foreground">{project.meta?.name}</p>
+          </div>
+
+          {/* Global Search */}
+          <div className="relative flex-1 max-w-xs">
+            <Input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search docs..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onFocus={() => searchQuery && setShowSearchResults(true)}
+              className="h-10 text-sm rounded-2xl"
+            />
+            {showSearchResults && Object.keys(searchResults).length > 0 && (
+              <div className="absolute top-full mt-1 left-0 right-0 z-50 rounded-md border border-border bg-background shadow-lg max-h-64 overflow-y-auto">
+                {Object.entries(searchResults).map(([tabKey, { label, matches, highlights }]) => (
+                  <button
+                    key={tabKey}
+                    onClick={() => handleSearchResultClick(tabKey as DocTab)}
+                    className="w-full text-left px-3 py-2 hover:bg-muted transition-colors text-sm border-b border-border/50 last:border-b-0 flex flex-col gap-1"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium truncate">{label}</span>
+                      <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">
+                        {matches}
+                      </span>
+                    </div>
+                    {highlights.length > 0 && (
+                      <div className="text-xs text-muted-foreground line-clamp-1">{highlights[0]}</div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+            {searchQuery && !showSearchResults && (
+              <div className="absolute top-full mt-1 left-0 right-0 z-50 rounded-md border border-border bg-background shadow-lg p-3 text-center text-sm text-muted-foreground">
+                No matches found
+              </div>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -745,6 +994,14 @@ export function DocumentationViewerPage() {
                 <span className="hidden sm:inline ml-1.5">Edit</span>
               </Button>
             )
+          )}
+
+          {/* ── Primary: Create Custom Tab ── */}
+          {isOwner && (
+            <Button variant="outline" size="sm" onClick={() => setCreateTabModalOpen(true)}>
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline ml-1.5">Add Tab</span>
+            </Button>
           )}
 
           {/* ── Primary: Ask AI ── */}
@@ -913,11 +1170,12 @@ export function DocumentationViewerPage() {
               <nav className="flex-1 overflow-y-auto p-2 space-y-1">
                 {availableTabs.map((tab) => {
                   const Icon = tab.icon
-                  const sectionName = TAB_TO_SECTION[tab.key]
-                  const vCount = sectionName ? (versionCounts[sectionName] ?? 0) : 0
+                  const isCustomTab = tab.key.startsWith("custom_");
+                  const sectionName = isCustomTab ? tab.key : (TAB_TO_SECTION[tab.key as NativeTab] ?? null);
+                  const vCount = sectionName && !isCustomTab ? (versionCounts[sectionName] ?? 0) : 0;
                   const isStale = sectionName
                     ? editedSections.some((e) => e.section === sectionName && e.stale)
-                    : false
+                    : false;
                   return (
                     <button
                       key={tab.key}
@@ -933,14 +1191,14 @@ export function DocumentationViewerPage() {
                     >
                       <Icon className="h-4 w-4 shrink-0" />
                       <span className="flex-1 text-left truncate">{tab.label}</span>
-                      {sectionName && (() => {
+                      {!isCustomTab && sectionName && (() => {
                         const de = getDocEntry(id ?? "", sectionName)
                         return de && de.status !== "draft" ? <DocStatusDot status={de.status} /> : null
                       })()}
                       {isStale && (
                         <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" title="Stale — AI has newer content" />
                       )}
-                      {vCount > 1 && (
+                      {!isCustomTab && vCount > 1 && (
                         <span className="text-[10px] font-mono px-1 py-0.5 rounded bg-muted-foreground/15 text-muted-foreground shrink-0">
                           {vCount > 20 ? "20+" : vCount}
                         </span>
@@ -1047,15 +1305,15 @@ export function DocumentationViewerPage() {
             {!(activeTab === "api" && apiSubTab === "spec") && (
               <div className={cn("flex-1 overflow-y-auto", !isEditMode && "p-6 md:p-10")}>
                 <div className={cn("mx-auto", "h-full flex flex-col")}>
-                  {/* Markdown tabs (readme, api, schema, internal) */}
-                  {["readme", "api", "schema", "internal"].includes(activeTab) && (
+                  {/* Markdown tabs (readme, api, schema, internal, custom) */}
+                  {(["readme", "api", "schema", "internal"].includes(activeTab) || activeTab.startsWith("custom_")) && (
                     isEditMode ? (
                       <div className="flex flex-col h-full border-0">
                         <MarkdownToolbar onInsert={insertMarkdown} />
                         <textarea
                           id="markdown-editor"
                           className="flex-1 w-full p-6 font-mono text-sm bg-background border-0 focus:outline-none resize-none"
-                          value={editedContent[activeTab]}
+                          value={editedContent[activeTab as string] ?? ""}
                           onChange={(e) => setEditedContent((c) => ({ ...c, [activeTab]: e.target.value }))}
                         />
                       </div>
@@ -1063,10 +1321,15 @@ export function DocumentationViewerPage() {
                       <div className="prose prose-slate dark:prose-invert max-w-none">
                         <DocRenderer content={getEffectiveOutputTabContent(effectiveOutput, activeTab)} />
                       </div>
-                    ) : project && mapApiStatus(project.status) === "completed" ? (
+                    ) : project && mapApiStatus(project.status) === "completed" && !activeTab.startsWith("custom_") ? (
                       <div className="flex flex-col items-center justify-center py-24 text-center text-muted-foreground">
                         <Info className="h-10 w-10 mb-3" />
                         <p>No content generated for this section.</p>
+                      </div>
+                    ) : activeTab.startsWith("custom_") ? (
+                      <div className="flex flex-col items-center justify-center py-24 text-center text-muted-foreground">
+                        <Info className="h-10 w-10 mb-3" />
+                        <p>No content in this tab yet. Click Edit to add content.</p>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -1185,6 +1448,13 @@ export function DocumentationViewerPage() {
           description={upgradeFeature.description}
         />
       </div>
+
+      <CreateTabModal
+        isOpen={createTabModalOpen}
+        onClose={() => setCreateTabModalOpen(false)}
+        onCreate={handleCreateTab}
+        isLoading={actionLoading === "create-tab"}
+      />
     </div>
   )
 }

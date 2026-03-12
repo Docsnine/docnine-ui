@@ -497,7 +497,8 @@ export const bitbucketApi = {
     return apiFetch<BitbucketReposResponse>(`/bitbucket/repos?${qs}`);
   },
 
-  disconnect: () => apiFetch<void>("/bitbucket/disconnect", { method: "DELETE" }),
+  disconnect: () =>
+    apiFetch<void>("/bitbucket/disconnect", { method: "DELETE" }),
 };
 
 // ── Azure DevOps ──────────────────────────────────────────────────────────
@@ -614,6 +615,7 @@ export interface ApiProject {
   output: ApiProjectOutput;
   editedOutput: ApiProjectOutput;
   editedSections: ApiProjectEditedSection[];
+  customTabs?: CustomTab[];
   createdAt: string;
   updatedAt: string;
   chatSessionId?: string;
@@ -700,10 +702,10 @@ export const projectsApi = {
     const fd = new FormData();
     fd.append("file", file);
     if (projectName) fd.append("projectName", projectName);
-    return apiFetch<{ project: ApiProject }>(
-      "/projects/zip/upload",
-      { method: "POST", body: fd },
-    );
+    return apiFetch<{ project: ApiProject }>("/projects/zip/upload", {
+      method: "POST",
+      body: fd,
+    });
   },
 
   /**
@@ -711,13 +713,10 @@ export const projectsApi = {
    * Returns a ready-to-edit project.
    */
   createFromScratch: (projectName: string) =>
-    apiFetch<{ project: ApiProject }>(
-      "/projects/from-scratch",
-      {
-        method: "POST",
-        body: JSON.stringify({ projectName }),
-      },
-    ),
+    apiFetch<{ project: ApiProject }>("/projects/from-scratch", {
+      method: "POST",
+      body: JSON.stringify({ projectName }),
+    }),
 
   update: (id: string, body: { status: "archived" }) =>
     apiFetch<{ project: ApiProject }>(`/projects/${id}`, {
@@ -1344,6 +1343,70 @@ export const apiSpecApi = {
       method: "POST",
       body: JSON.stringify(opts),
     }),
+};
+
+// ── Custom Tabs ───────────────────────────────────────────────────────────
+
+export interface CustomTab {
+  _id: string;
+  name: string;
+  description: string;
+  content: string;
+  order: number;
+  isNative: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+}
+
+export const customTabsApi = {
+  /** List all custom tabs for a project (sorted by order). */
+  list: (projectId: string) =>
+    apiFetch<{ tabs: CustomTab[] }>(`/projects/${projectId}/custom-tabs`),
+
+  /** Create a new custom tab. */
+  create: (projectId: string, data: { name: string; description?: string; content?: string }) =>
+    apiFetch<{ project: ApiProject }>(
+      `/projects/${projectId}/custom-tabs`,
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      },
+    ),
+
+  /** Update a custom tab (name, description, content). */
+  update: (
+    projectId: string,
+    tabId: string,
+    data: { name?: string; description?: string; content?: string },
+  ) =>
+    apiFetch<{ project: ApiProject }>(
+      `/projects/${projectId}/custom-tabs/${tabId}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      },
+    ),
+
+  /** Delete a custom tab. */
+  delete: (projectId: string, tabId: string) =>
+    apiFetch<{ project: ApiProject }>(
+      `/projects/${projectId}/custom-tabs/${tabId}`,
+      { method: "DELETE" },
+    ),
+
+  /** Reorder custom tabs (bulk operation). */
+  reorder: (
+    projectId: string,
+    orders: Array<{ tabId: string; order: number }>,
+  ) =>
+    apiFetch<{ project: ApiProject }>(
+      `/projects/${projectId}/custom-tabs/reorder`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ orders }),
+      },
+    ),
 };
 
 // ---------------------------------------------------------------------------

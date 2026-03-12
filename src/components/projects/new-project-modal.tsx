@@ -23,8 +23,16 @@ import {
     RefreshCw,
     Upload,
     Plus,
+    GithubIcon,
+    GitlabIcon,
+    PaintBucketIcon,
+    CloudIcon,
+    CodeIcon,
+    CloudCheckIcon,
+    UploadCloudIcon,
 } from "lucide-react"
 import { useProjectStore } from "@/store/projects"
+import { useAuthStore } from "@/store/auth"
 import {
     githubApi,
     gitlabApi,
@@ -146,17 +154,18 @@ interface NewProjectModalProps {
 
 const PROVIDER_CONFIG: Record<
     ProviderKey,
-    { label: string; description: string; emoji: string }
+    { label: string; description: string; emoji: React.ComponentType }
 > = {
-    github: { label: "GitHub", description: "Connect repo", emoji: "🐙" },
-    gitlab: { label: "GitLab", description: "Connect repo", emoji: "🦊" },
-    bitbucket: { label: "Bitbucket", description: "Connect repo", emoji: "🪣" },
-    azure: { label: "Azure DevOps", description: "Connect repo", emoji: "☁️" },
+    github: { label: "GitHub", description: "Connect repo", emoji: GithubIcon },
+    gitlab: { label: "GitLab", description: "Connect repo", emoji: GitlabIcon },
+    bitbucket: { label: "Bitbucket", description: "Connect repo", emoji: CodeIcon },
+    azure: { label: "Azure DevOps", description: "Connect repo", emoji: CloudCheckIcon },
 }
 
 export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
     const navigate = useNavigate()
     const { createProject } = useProjectStore()
+    const { user, isAuthenticated } = useAuthStore()
 
     const [step, setStep] = useState<Step>("source")
     const [isConnecting, setIsConnecting] = useState(false)
@@ -206,6 +215,12 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
     useEffect(() => {
         if (!open) return
 
+        // Double-check: user must be authenticated to use OAuth
+        if (!isAuthenticated) {
+            console.warn("[Modal] Skipping provider checks - user not authenticated")
+            return
+        }
+
         const checkAllProviders = async () => {
             const providers: ProviderKey[] = ["github", "gitlab", "bitbucket", "azure"]
 
@@ -236,7 +251,8 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
                         setProviderStatus((prev) => ({ ...prev, [provider]: status.connected }))
                         setProviderUsernames((prev) => ({ ...prev, [provider]: username }))
                     }
-                } catch (err) {
+                } catch (err: any) {
+                    console.warn(`[Provider Status] ${provider} check failed:`, err?.message || err)
                     setProviderStatus((prev) => ({ ...prev, [provider]: false }))
                 } finally {
                     setCheckingStatus((prev) => ({ ...prev, [provider]: false }))
@@ -245,7 +261,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
         }
 
         checkAllProviders()
-    }, [open])
+    }, [open, isAuthenticated])
 
     const loadProviderRepos = async (provider: ProviderKey, page: number, org?: string | null) => {
         setReposLoading(true)
@@ -306,6 +322,12 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
     }
 
     const handleConnectProvider = async (provider: ProviderKey) => {
+        // Extra safety check
+        if (!isAuthenticated) {
+            setApiError("You must be logged in to connect to a provider. Please refresh the page and log in again.")
+            return
+        }
+
         setIsConnecting(true)
         setApiError(null)
 
@@ -329,9 +351,17 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
             else data = await azureApi.getOAuthStartUrl()
         } catch (err: any) {
             if (popup && !popup.closed) popup.close()
-            setApiError(
-                err instanceof ApiException ? err.message : `Failed to start ${provider} OAuth.`,
-            )
+            let errorMsg = `Failed to start ${provider} OAuth.`
+
+            if (err instanceof ApiException) {
+                if (err.status === 401) {
+                    errorMsg = "Your session has expired. Please refresh the page and log in again."
+                } else {
+                    errorMsg = err.message
+                }
+            }
+
+            setApiError(errorMsg)
             setIsConnecting(false)
             return
         }
@@ -364,6 +394,11 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
             setIsConnecting(false)
 
             if (status === "connected") {
+                // Update provider status before entering provider to load repos
+                setProviderStatus((prev) => ({ ...prev, [provider]: true }))
+                if (user) {
+                    setProviderUsernames((prev) => ({ ...prev, [provider]: user }))
+                }
                 handleEnterProvider(provider)
             } else if (status === "error") {
                 setApiError(msg ?? `${provider} connection failed. Please try again.`)
@@ -492,7 +527,19 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
     }
 
     const onSubmitFromScratch = async (values: FromScratchFormValues) => {
-        setApiError("From Scratch projects coming soon!")
+        setApiError(null)
+        setIsConnecting(true)
+        try {
+            const result = await projectsApi.createFromScratch(values.projectName)
+            handleClose()
+            navigate(`/projects/${result.project._id}/live`)
+        } catch (err: any) {
+            setApiError(
+                err instanceof ApiException ? err.message : "Failed to create project.",
+            )
+        } finally {
+            setIsConnecting(false)
+        }
     }
 
     const handleZipFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -597,7 +644,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
                                         disabled={checking || isConnecting}
                                         className="flex flex-col items-center justify-center gap-2 rounded-lg border border-border p-4 text-center transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60 disabled:cursor-not-allowed"
                                     >
-                                        <div className="text-2xl">{config.emoji}</div>
+                                        <div className="text-2xl">{config.emoji && <config.emoji />}</div>
                                         <div className="font-medium text-sm">{config.label}</div>
                                         <div className="text-xs text-muted-foreground">{config.description}</div>
                                         {providerStatus[provider] && (
@@ -614,7 +661,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
                                 disabled={checkingStatus.azure || isConnecting}
                                 className="flex flex-col items-center justify-center gap-2 rounded-lg border border-border p-4 text-center transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60 disabled:cursor-not-allowed"
                             >
-                                <div className="text-2xl">☁️</div>
+                                <div className="text-2xl"><CloudIcon /></div>
                                 <div className="font-medium text-sm">Azure DevOps</div>
                                 <div className="text-xs text-muted-foreground">Connect repo</div>
                                 {providerStatus.azure && (
@@ -626,7 +673,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
                                 onClick={() => setStep("zip")}
                                 className="flex flex-col items-center justify-center gap-2 rounded-lg border border-border p-4 text-center transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
                             >
-                                <Upload className="h-6 w-6" />
+                                <UploadCloudIcon className="h-6 w-6" />
                                 <div className="font-medium text-sm">Upload ZIP</div>
                                 <div className="text-xs text-muted-foreground">Upload folder</div>
                             </button>
@@ -643,7 +690,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
 
                         <button
                             onClick={() => setStep("manual")}
-                            className="w-full flex items-center gap-2 rounded-lg border border-border/50 p-3 text-left text-sm transition-colors hover:bg-muted/50 text-muted-foreground hover:text-foreground"
+                            className="w-full flex items-center gap-2 rounded-lg border border-border p-3 text-left text-sm transition-colors hover:bg-muted/50 text-muted-foreground hover:text-foreground"
                         >
                             <LinkIcon className="h-4 w-4" />
                             Or paste a repository URL manually

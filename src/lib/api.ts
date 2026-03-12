@@ -700,11 +700,24 @@ export const projectsApi = {
     const fd = new FormData();
     fd.append("file", file);
     if (projectName) fd.append("projectName", projectName);
-    return apiFetch<{ project: ApiProject; streamUrl: string }>(
+    return apiFetch<{ project: ApiProject }>(
       "/projects/zip/upload",
       { method: "POST", body: fd },
     );
   },
+
+  /**
+   * Create a blank "from scratch" project with no repository.
+   * Returns a ready-to-edit project.
+   */
+  createFromScratch: (projectName: string) =>
+    apiFetch<{ project: ApiProject }>(
+      "/projects/from-scratch",
+      {
+        method: "POST",
+        body: JSON.stringify({ projectName }),
+      },
+    ),
 
   update: (id: string, body: { status: "archived" }) =>
     apiFetch<{ project: ApiProject }>(`/projects/${id}`, {

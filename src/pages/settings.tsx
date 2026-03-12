@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { useSearchParams } from "react-router-dom"
-import { githubApi, authApi, GitHubStatus, API_BASE } from "@/lib/api"
+import { githubApi, gitlabApi, bitbucketApi, azureApi, authApi, GitHubStatus, API_BASE } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -25,6 +25,10 @@ import {
     EyeOff,
     Puzzle,
     CreditCard,
+    GitBranch,
+    UtensilsCrossed,
+    Cloud,
+    User,
 } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
@@ -52,6 +56,65 @@ function CopyButton({ text, className }: { text: string; className?: string }) {
             {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
             {copied ? "Copied" : "Copy"}
         </button>
+    )
+}
+
+// ── General Settings Card ───────────────────────────────────────────────────
+function GeneralSettingsCard() {
+    const [user, setUser] = useState<{ name?: string; email?: string } | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
+
+    useEffect(() => {
+        const loadUserInfo = async () => {
+            try {
+                const response = await authApi.me()
+                setUser(response.user)
+            } catch (error) {
+                console.error("Failed to load user info:", error)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        loadUserInfo()
+    }, [])
+
+    if (isLoading) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <User className="h-5 w-5" />
+                        Account Information
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                </CardContent>
+            </Card>
+        )
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    Account Information
+                </CardTitle>
+                <CardDescription>View and manage your account details</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="space-y-2">
+                    <Label className="text-sm font-medium">Name</Label>
+                    <p className="text-sm text-muted-foreground">{user?.name || "Not specified"}</p>
+                </div>
+                <div className="space-y-2">
+                    <Label className="text-sm font-medium">Email</Label>
+                    <p className="text-sm text-muted-foreground">{user?.email || "Not available"}</p>
+                </div>
+            </CardContent>
+        </Card>
     )
 }
 
@@ -582,7 +645,6 @@ function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "erro
                                     </p>
                                 )}
                             </div>
-                            <Badge variant="success" className="ml-auto">Active</Badge>
                         </div>
                         <div className="flex items-center gap-2">
                             <Button variant="outline" size="sm" onClick={loadStatus} className="gap-2">
@@ -764,7 +826,6 @@ function NotionCard() {
                                     </p>
                                 )}
                             </div>
-                            <Badge variant="success" className="ml-auto shrink-0">Active</Badge>
                         </div>
                         <div className="flex items-center gap-2">
                             <Button variant="outline" size="sm" onClick={loadStatus} className="gap-2">
@@ -856,8 +917,477 @@ function NotionCard() {
     )
 }
 
+// ── GitLab Integration card ──────────────────────────────────────────────────
+function GitLabCard() {
+    const [status, setStatus] = useState<any>(null)
+    const [isLoading, setIsLoading] = useState(true)
+    const [actionLoading, setActionLoading] = useState<"connect" | "disconnect" | null>(null)
+    const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
+
+    const loadStatus = useCallback(async () => {
+        setIsLoading(true)
+        try {
+            const response = await gitlabApi.getStatus()
+            setStatus(response || { connected: false })
+        } catch (error) {
+            setStatus({ connected: false })
+        } finally {
+            setIsLoading(false)
+        }
+    }, [])
+
+    useEffect(() => {
+        loadStatus()
+    }, [loadStatus])
+
+    const handleConnect = async () => {
+        setActionLoading("connect")
+        try {
+            window.location.href = `${API_BASE}/gitlab/oauth/url`
+        } catch (error) {
+            setFeedback({ type: "error", message: "Failed to initiate connection" })
+            setActionLoading(null)
+        }
+    }
+
+    const handleDisconnect = async () => {
+        setActionLoading("disconnect")
+        try {
+            await gitlabApi.disconnect()
+            setFeedback({ type: "success", message: "GitLab disconnected successfully" })
+            setStatus({ connected: false })
+        } catch (error) {
+            setFeedback({ type: "error", message: "Failed to disconnect GitLab" })
+        } finally {
+            setActionLoading(null)
+        }
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <GitBranch className="h-5 w-5" />
+                    GitLab
+                </CardTitle>
+                <CardDescription>Connect your GitLab account to import repositories and analyze code</CardDescription>
+                {feedback && (
+                    <div className={cn(
+                        "mt-2 flex items-center gap-2 rounded-md px-3 py-2 text-sm",
+                        feedback.type === "success"
+                            ? "bg-green-50 text-green-700 dark:bg-green-900/20"
+                            : "bg-red-50 text-red-700 dark:bg-red-900/20"
+                    )}>
+                        {feedback.type === "success" ? (
+                            <CheckCircle2 className="h-4 w-4 shrink-0" />
+                        ) : (
+                            <AlertTriangle className="h-4 w-4 shrink-0" />
+                        )}
+                        {feedback.message}
+                    </div>
+                )}
+            </CardHeader>
+            <CardContent>
+                {isLoading ? (
+                    <div className="space-y-2">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                    </div>
+                ) : status?.connected ? (
+                    <div className="space-y-4">
+                        <div>
+                            <div className="flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-900/20 px-4 py-3">
+                                <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0" />
+                                <div className="flex-1">
+                                    <p className="text-sm font-medium text-green-900 dark:text-green-400">
+                                        {status.gitlabUsername ? `Connected as @${status.gitlabUsername}` : "GitLab connected"}
+                                    </p>
+                                    {status.connectedAt && (
+                                        <p className="text-xs text-green-700 dark:text-green-300 mt-0.5">
+                                            Since {format(new Date(status.connectedAt), "d MMM yyyy")}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {status.scopes && status.scopes.length > 0 && (
+                            <div>
+                                <p className="text-xs text-muted-foreground mb-1.5">Granted scopes</p>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {status.scopes.map((s) => (
+                                        <span key={s} className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted font-mono">
+                                            {s}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={loadStatus}
+                                className="gap-2"
+                            >
+                                <RefreshCw className="h-3.5 w-3.5" />
+                                Refresh
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={handleDisconnect}
+                                disabled={actionLoading === "disconnect"}
+                                className="gap-2"
+                            >
+                                {actionLoading === "disconnect"
+                                    ? <Loader1 className="h-3.5 w-3.5 " />
+                                    : <Unlink className="h-3.5 w-3.5" />
+                                }
+                                Disconnect
+                            </Button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
+                            <GitBranch className="h-5 w-5 text-muted-foreground shrink-0" />
+                            <p className="text-sm text-muted-foreground">No GitLab account connected.</p>
+                        </div>
+                        <Button
+                            onClick={handleConnect}
+                            disabled={actionLoading === "connect"}
+                            className="gap-2"
+                        >
+                            {actionLoading === "connect"
+                                ? <Loader1 className="h-4 w-4 " />
+                                : <GitBranch className="h-4 w-4" />
+                            }
+                            Connect GitLab
+                        </Button>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    )
+}
+
+// ── Bitbucket Integration card ───────────────────────────────────────────────
+function BitbucketCard() {
+    const [status, setStatus] = useState<any>(null)
+    const [isLoading, setIsLoading] = useState(true)
+    const [actionLoading, setActionLoading] = useState<"connect" | "disconnect" | null>(null)
+    const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
+
+    const loadStatus = useCallback(async () => {
+        setIsLoading(true)
+        try {
+            const response = await bitbucketApi.getStatus()
+            setStatus(response || { connected: false })
+        } catch (error) {
+            setStatus({ connected: false })
+        } finally {
+            setIsLoading(false)
+        }
+    }, [])
+
+    useEffect(() => {
+        loadStatus()
+    }, [loadStatus])
+
+    const handleConnect = async () => {
+        setActionLoading("connect")
+        try {
+            window.location.href = `${API_BASE}/bitbucket/oauth/url`
+        } catch (error) {
+            setFeedback({ type: "error", message: "Failed to initiate connection" })
+            setActionLoading(null)
+        }
+    }
+
+    const handleDisconnect = async () => {
+        setActionLoading("disconnect")
+        try {
+            await bitbucketApi.disconnect()
+            setFeedback({ type: "success", message: "Bitbucket disconnected successfully" })
+            setStatus({ connected: false })
+        } catch (error) {
+            setFeedback({ type: "error", message: "Failed to disconnect Bitbucket" })
+        } finally {
+            setActionLoading(null)
+        }
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <UtensilsCrossed className="h-5 w-5" />
+                    Bitbucket
+                </CardTitle>
+                <CardDescription>Connect your Bitbucket account to import repositories and analyze code</CardDescription>
+                {feedback && (
+                    <div className={cn(
+                        "mt-2 flex items-center gap-2 rounded-md px-3 py-2 text-sm",
+                        feedback.type === "success"
+                            ? "bg-green-50 text-green-700 dark:bg-green-900/20"
+                            : "bg-red-50 text-red-700 dark:bg-red-900/20"
+                    )}>
+                        {feedback.type === "success" ? (
+                            <CheckCircle2 className="h-4 w-4 shrink-0" />
+                        ) : (
+                            <AlertTriangle className="h-4 w-4 shrink-0" />
+                        )}
+                        {feedback.message}
+                    </div>
+                )}
+            </CardHeader>
+            <CardContent>
+                {isLoading ? (
+                    <div className="space-y-2">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                    </div>
+                ) : status?.connected ? (
+                    <div className="space-y-4">
+                        <div>
+                            <div className="flex items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-900/20 px-4 py-3">
+                                <CheckCircle2 className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />
+                                <div className="flex-1">
+                                    <p className="text-sm font-medium text-blue-900 dark:text-blue-400">
+                                        {status.bitbucketUsername ? `Connected as @${status.bitbucketUsername}` : "Bitbucket connected"}
+                                    </p>
+                                    {status.connectedAt && (
+                                        <p className="text-xs text-blue-700 dark:text-blue-300 mt-0.5">
+                                            Since {format(new Date(status.connectedAt), "d MMM yyyy")}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {status.scopes && status.scopes.length > 0 && (
+                            <div>
+                                <p className="text-xs text-muted-foreground mb-1.5">Granted scopes</p>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {status.scopes.map((s) => (
+                                        <span key={s} className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted font-mono">
+                                            {s}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={loadStatus}
+                                className="gap-2"
+                            >
+                                <RefreshCw className="h-3.5 w-3.5" />
+                                Refresh
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={handleDisconnect}
+                                disabled={actionLoading === "disconnect"}
+                                className="gap-2"
+                            >
+                                {actionLoading === "disconnect"
+                                    ? <Loader1 className="h-3.5 w-3.5 " />
+                                    : <Unlink className="h-3.5 w-3.5" />
+                                }
+                                Disconnect
+                            </Button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
+                            <UtensilsCrossed className="h-5 w-5 text-muted-foreground shrink-0" />
+                            <p className="text-sm text-muted-foreground">No Bitbucket account connected.</p>
+                        </div>
+                        <Button
+                            onClick={handleConnect}
+                            disabled={actionLoading === "connect"}
+                            className="gap-2"
+                        >
+                            {actionLoading === "connect"
+                                ? <Loader1 className="h-4 w-4 " />
+                                : <UtensilsCrossed className="h-4 w-4" />
+                            }
+                            Connect Bitbucket
+                        </Button>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    )
+}
+
+// ── Azure DevOps Integration card ─────────────────────────────────────────────
+function AzureDevOpsCard() {
+    const [status, setStatus] = useState<any>(null)
+    const [isLoading, setIsLoading] = useState(true)
+    const [actionLoading, setActionLoading] = useState<"connect" | "disconnect" | null>(null)
+    const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
+
+    const loadStatus = useCallback(async () => {
+        setIsLoading(true)
+        try {
+            const response = await azureApi.getStatus()
+            setStatus(response || { connected: false })
+        } catch (error) {
+            setStatus({ connected: false })
+        } finally {
+            setIsLoading(false)
+        }
+    }, [])
+
+    useEffect(() => {
+        loadStatus()
+    }, [loadStatus])
+
+    const handleConnect = async () => {
+        setActionLoading("connect")
+        try {
+            window.location.href = `${API_BASE}/azure/oauth/url`
+        } catch (error) {
+            setFeedback({ type: "error", message: "Failed to initiate connection" })
+            setActionLoading(null)
+        }
+    }
+
+    const handleDisconnect = async () => {
+        setActionLoading("disconnect")
+        try {
+            await azureApi.disconnect()
+            setFeedback({ type: "success", message: "Azure DevOps disconnected successfully" })
+            setStatus({ connected: false })
+        } catch (error) {
+            setFeedback({ type: "error", message: "Failed to disconnect Azure DevOps" })
+        } finally {
+            setActionLoading(null)
+        }
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Cloud className="h-5 w-5" />
+                    Azure DevOps
+                </CardTitle>
+                <CardDescription>Connect your Azure DevOps account to import repositories and analyze code</CardDescription>
+                {feedback && (
+                    <div className={cn(
+                        "mt-2 flex items-center gap-2 rounded-md px-3 py-2 text-sm",
+                        feedback.type === "success"
+                            ? "bg-green-50 text-green-700 dark:bg-green-900/20"
+                            : "bg-red-50 text-red-700 dark:bg-red-900/20"
+                    )}>
+                        {feedback.type === "success" ? (
+                            <CheckCircle2 className="h-4 w-4 shrink-0" />
+                        ) : (
+                            <AlertTriangle className="h-4 w-4 shrink-0" />
+                        )}
+                        {feedback.message}
+                    </div>
+                )}
+            </CardHeader>
+            <CardContent>
+                {isLoading ? (
+                    <div className="space-y-2">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                    </div>
+                ) : status?.connected ? (
+                    <div className="space-y-4">
+                        <div>
+                            <div className="flex items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-900/20 px-4 py-3">
+                                <CheckCircle2 className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />
+                                <div className="flex-1">
+                                    <p className="text-sm font-medium text-blue-900 dark:text-blue-400">
+                                        {status.azureUsername ? `Connected as @${status.azureUsername}` : "Azure DevOps connected"}
+                                    </p>
+                                    {status.connectedAt && (
+                                        <p className="text-xs text-blue-700 dark:text-blue-300 mt-0.5">
+                                            Since {format(new Date(status.connectedAt), "d MMM yyyy")}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {status.scopes && status.scopes.length > 0 && (
+                            <div>
+                                <p className="text-xs text-muted-foreground mb-1.5">Granted scopes</p>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {status.scopes.map((s) => (
+                                        <span key={s} className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted font-mono">
+                                            {s}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={loadStatus}
+                                className="gap-2"
+                            >
+                                <RefreshCw className="h-3.5 w-3.5" />
+                                Refresh
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={handleDisconnect}
+                                disabled={actionLoading === "disconnect"}
+                                className="gap-2"
+                            >
+                                {actionLoading === "disconnect"
+                                    ? <Loader1 className="h-3.5 w-3.5 " />
+                                    : <Unlink className="h-3.5 w-3.5" />
+                                }
+                                Disconnect
+                            </Button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3 rounded-lg border border-yellow-200 bg-yellow-50 dark:border-yellow-900 dark:bg-yellow-900/20 px-4 py-3">
+                            <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 shrink-0" />
+                            <p className="text-sm text-yellow-800 dark:text-yellow-300">Azure DevOps OAuth is currently being debugged. Use token-based authentication instead.</p>
+                        </div>
+                        <Button
+                            onClick={handleConnect}
+                            disabled={actionLoading === "connect"}
+                            className="gap-2"
+                        >
+                            {actionLoading === "connect"
+                                ? <Loader1 className="h-4 w-4 " />
+                                : <Cloud className="h-4 w-4" />
+                            }
+                            Connect Azure DevOps
+                        </Button>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    )
+}
+
 // ── Tab nav ───────────────────────────────────────────────────────────────────
 const TABS = [
+    { id: "general", label: "General Settings", icon: User },
     { id: "integrations", label: "Integrations", icon: Puzzle },
     { id: "billing", label: "Billing & Subscription", icon: CreditCard },
 ] as const
@@ -867,7 +1397,7 @@ type TabId = typeof TABS[number]["id"]
 export function SettingsPage() {
     const [searchParams, setSearchParams] = useSearchParams()
     const googleDocsStatus = searchParams.get("googleDocs") as "connected" | "error" | null
-    const activeTab = (searchParams.get("tab") ?? "integrations") as TabId
+    const activeTab = (searchParams.get("tab") ?? "general") as TabId
 
     const setTab = (tab: TabId) => {
         setSearchParams((prev) => {
@@ -901,7 +1431,7 @@ export function SettingsPage() {
                         Settings
                     </h1>
                     <p className="text-muted-foreground mt-1">
-                        Manage integrations, billing, and automation for your account.
+                        Manage your account, integrations, billing, and automation.
                     </p>
                 </div>
 
@@ -926,16 +1456,21 @@ export function SettingsPage() {
                 </div>
 
                 {/* Tab content */}
-                {activeTab === "billing" ? (
-                    <BillingTab />
-                ) : (
-                    <>
+                {activeTab === "general" ? (
+                    <GeneralSettingsCard />
+                ) : activeTab === "integrations" ? (
+                    <div className="space-y-6">
                         <GitHubCard />
+                        <GitLabCard />
+                        <BitbucketCard />
+                        <AzureDevOpsCard />
                         <GoogleDocsCard initialStatus={googleDocsStatus ?? undefined} />
                         <NotionCard />
                         <WebhookCard />
-                    </>
-                )}
+                    </div>
+                ) : activeTab === "billing" ? (
+                    <BillingTab />
+                ) : null}
             </div>
         </div>
     )

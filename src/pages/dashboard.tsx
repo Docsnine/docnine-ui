@@ -26,6 +26,8 @@ import {
     Users2,
     Eye,
     Pencil,
+    FolderGitIcon,
+    PencilLineIcon,
 } from "lucide-react"
 import TopBar from "@/components/projects/top-bar"
 import Loader1 from "@/components/ui/loader1"
@@ -347,9 +349,20 @@ export function DashboardPage() {
                                                     </Link>
                                                 </CardTitle>
                                                 <div className="flex items-center text-sm text-muted-foreground">
-                                                    <Github className="mr-1 h-3 w-3 shrink-0" />
+                                                    {project.repoUrl && project.repoUrl.includes("github.com") && (
+                                                        <Github className="mr-1 h-3 w-3 shrink-0" />
+                                                    )}
+
+                                                    {project.repoOwner && project.repoOwner.includes("local") && (
+                                                        <FolderGitIcon className="mr-1 h-3 w-3 shrink-0" />
+                                                    )}
+
+                                                    {project.repoOwner && project.repoOwner.includes("manual") && (
+                                                        <PencilLineIcon className="mr-1 h-3 w-3 shrink-0" />
+                                                    )}
+
                                                     <span className="truncate max-w-[200px]" title={project.repoUrl}>
-                                                        {project.repoOwner}/{project.name}
+                                                        {project.repoOwner} / {project.name}
                                                     </span>
                                                 </div>
                                             </div>
@@ -458,6 +471,7 @@ export function DashboardPage() {
                     }}
                     openToGithubStep={openModalToGithubStep}
                 />
+                
                 <UpgradeModal
                     open={upgradeOpen}
                     onClose={() => setUpgradeOpen(false)}

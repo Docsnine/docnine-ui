@@ -158,9 +158,9 @@ function getRouteSeo(pathname: string): SeoConfig | null {
 
   const PUBLIC_PAGES: Record<string, SeoConfig> = {
     "/": {
-      title: "AI Documentation for Engineering Teams",
+      title: "Docnine -  AI Documentation for Engineering Teams",
       description:
-        "Docnine reads your codebase and instantly generates docs that stay in sync with every push — no writing, no maintenance, no stale README.",
+        "Create and maintain developer documentation with AI. Docnine generates docs from your codebase, then keeps them up to date as your code evolves.",
       pathname: "/",
       keywords: MARKETING_KEYWORDS,
       appendSiteName: false,
@@ -184,7 +184,7 @@ function getRouteSeo(pathname: string): SeoConfig | null {
       },
     },
     "/login": {
-      title: "Sign In",
+      title: "Sign In To Your Account",
       description:
         "Sign in to Docnine to generate, publish, and maintain documentation for your codebase — automatically.",
       pathname: "/login",

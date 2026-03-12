@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { Link, Outlet, useLocation, useNavigate, useSearchParams } from "react-router-dom"
-import { BookOpen, Github, Search, FolderKanban, User, Settings, LogOut, BookDown, TerminalIcon, Menu, X, ShieldAlert } from "lucide-react"
+import { BookOpen, Github, Search, FolderKanban, User, Settings, LogOut, BookDown, TerminalIcon, Menu, X, ShieldAlert, FolderCodeIcon, FilesIcon } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useAuthStore } from "@/store/auth"
 import { useSubscriptionStore } from "@/store/subscription"
@@ -65,8 +65,8 @@ export function DashboardLayout() {
     : "?"
 
   const navLinks = [
-    { name: "Projects", href: "/projects", icon: FolderKanban },
-    { name: "Documentations", href: "/documentations", icon: BookDown },
+    { name: "Projects", href: "/projects", icon: FolderCodeIcon },
+    { name: "Documentations", href: "/documentations", icon: FilesIcon },
     { name: "Logs", href: "/logs", icon: TerminalIcon }
   ]
 
@@ -107,7 +107,7 @@ export function DashboardLayout() {
             <ApplicationLogo link="/projects" className="!h-7" />
 
             <div className="h-4 w-px bg-border hidden md:block" />
-            
+
             <a
               href="https://github.com/Docsnine"
               target="_blank"
@@ -269,6 +269,7 @@ export function DashboardLayout() {
             </nav>
 
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Account</p>
+
             <nav className="flex flex-col gap-1">
               {rightSideLinks.map((link) => {
                 const Icon = link.icon

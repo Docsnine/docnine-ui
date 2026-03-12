@@ -30,6 +30,8 @@ import {
     CodeIcon,
     CloudCheckIcon,
     UploadCloudIcon,
+    FolderGitIcon,
+    Code2Icon,
 } from "lucide-react"
 import { useProjectStore } from "@/store/projects"
 import { useAuthStore } from "@/store/auth"
@@ -156,10 +158,10 @@ const PROVIDER_CONFIG: Record<
     ProviderKey,
     { label: string; description: string; emoji: React.ComponentType }
 > = {
-    github: { label: "GitHub", description: "Connect repo", emoji: GithubIcon },
-    gitlab: { label: "GitLab", description: "Connect repo", emoji: GitlabIcon },
-    bitbucket: { label: "Bitbucket", description: "Connect repo", emoji: CodeIcon },
-    azure: { label: "Azure DevOps", description: "Connect repo", emoji: CloudCheckIcon },
+    github: { label: "GitHub", description: "Import Repositories", emoji: GithubIcon },
+    gitlab: { label: "GitLab", description: "Import Repositories", emoji: GitlabIcon },
+    bitbucket: { label: "Bitbucket", description: "Import Repositories", emoji: Code2Icon },
+    azure: { label: "Azure DevOps", description: "Import Repositories", emoji: CloudCheckIcon },
 }
 
 export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
@@ -601,10 +603,10 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="sm:max-w-125">
+            <DialogContent className="sm:max-w-125 w-full md:max-w-xl">
                 <DialogHeader>
                     <DialogTitle>
-                        {step === "source" && "Create New Project"}
+                        {step === "source" && "Import To Docnine"}
                         {step === "manual" && "Enter Repository URL"}
                         {step === "zip" && "Upload Project ZIP"}
                         {step === "from-scratch" && "Create From Scratch"}
@@ -614,7 +616,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
                         {step === "azure" && "Select Azure Repository"}
                     </DialogTitle>
                     <DialogDescription>
-                        {step === "source" && "How would you like to add your project?"}
+                        {step === "source" && "Import your project to Docnine to generate documentation."}
                         {step === "manual" &&
                             "Enter a repository URL for GitHub, GitLab, Bitbucket, or Azure DevOps."}
                         {step === "zip" && "Upload a ZIP file containing your project source code."}
@@ -663,7 +665,8 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
                             >
                                 <div className="text-2xl"><CloudIcon /></div>
                                 <div className="font-medium text-sm">Azure DevOps</div>
-                                <div className="text-xs text-muted-foreground">Connect repo</div>
+                                <div className="text-xs text-muted-foreground">Connect Account</div>
+
                                 {providerStatus.azure && (
                                     <CheckCircle2 className="h-4 w-4 text-green-500 mt-1" />
                                 )}
@@ -675,7 +678,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
                             >
                                 <UploadCloudIcon className="h-6 w-6" />
                                 <div className="font-medium text-sm">Upload ZIP</div>
-                                <div className="text-xs text-muted-foreground">Upload folder</div>
+                                <div className="text-xs text-muted-foreground">Import from a .zip File</div>
                             </button>
 
                             <button

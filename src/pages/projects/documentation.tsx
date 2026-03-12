@@ -377,9 +377,11 @@ export function DocumentationViewerPage() {
 
   // Global search
   const [searchQuery, setSearchQuery] = useState("")
-  const [searchResults, setSearchResults] = useState<Record<string, { label: string; matches: number; highlights: string[] }>>({})
+  const [searchResults, setSearchResults] = useState<Record<string, { label: string; matches: number; highlights: string[]; firstMatchLine: number }>>({})
   const [showSearchResults, setShowSearchResults] = useState(false)
+  const [highlightedText, setHighlightedText] = useState<string>("") // Track text to highlight
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
 
   // Status-change modal
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false)
@@ -667,11 +669,12 @@ export function DocumentationViewerPage() {
     if (!query.trim()) {
       setSearchResults({});
       setShowSearchResults(false);
+      setHighlightedText("");
       return;
     }
 
     const searchTerm = query.toLowerCase();
-    const results: Record<string, { label: string; matches: number; highlights: string[] }> = {};
+    const results: Record<string, { label: string; matches: number; highlights: string[]; firstMatchLine: number }> = {};
 
     // Search through all tabs
     allTabs.forEach((tab) => {
@@ -683,10 +686,12 @@ export function DocumentationViewerPage() {
 
       // Search in content (find matching lines/highlights)
       const highlights: string[] = [];
+      let firstMatchLine = -1;
       if (tabContent) {
         const lines = tabContent.split("\n");
-        lines.forEach((line) => {
+        lines.forEach((line, lineIndex) => {
           if (line.toLowerCase().includes(searchTerm)) {
+            if (firstMatchLine === -1) firstMatchLine = lineIndex; // Track first match line
             const preview = line.length > 100 ? line.substring(0, 100) + "..." : line;
             highlights.push(preview);
           }
@@ -701,12 +706,14 @@ export function DocumentationViewerPage() {
           label: tabLabel,
           matches: totalMatches,
           highlights: highlights.slice(0, 2), // Show first 2 highlights
+          firstMatchLine: firstMatchLine >= 0 ? firstMatchLine : 0,
         };
       }
     });
 
     setSearchResults(results);
     setShowSearchResults(Object.keys(results).length > 0);
+    setHighlightedText(query); // Store search term for highlighting
   };
 
   // Handle search input change
@@ -717,11 +724,62 @@ export function DocumentationViewerPage() {
   };
 
   // Handle search result click
-  const handleSearchResultClick = (tabKey: DocTab) => {
+  const handleSearchResultClick = (tabKey: DocTab, firstMatchLine: number = 0) => {
     setActiveTab(tabKey);
-    setSearchQuery("");
-    setShowSearchResults(false);
     setIsEditMode(false);
+    
+    // Scroll to the first match after a short delay (to allow tab switch to complete)
+    setTimeout(() => {
+      scrollToSearchResult(firstMatchLine);
+    }, 100);
+    
+    // Keep search visible for context
+    // setSearchQuery("");
+    // setShowSearchResults(false);
+  };
+
+  // Helper function to scroll to search result
+  const scrollToSearchResult = (lineNumber: number) => {
+    const content = document.querySelector("[data-content-viewer]");
+    if (!content) return;
+
+    // Try to find the text in the content
+    const searchTerm = searchQuery.toLowerCase();
+    if (!searchTerm) return;
+
+    const walker = document.createTreeWalker(
+      content,
+      NodeFilter.SHOW_TEXT,
+      null,
+      false
+    );
+
+    let node;
+    let found = false;
+    while ((node = walker.nextNode())) {
+      if (node.textContent?.toLowerCase().includes(searchTerm)) {
+        const range = document.createRange();
+        const index = node.textContent.toLowerCase().indexOf(searchTerm);
+        range.setStart(node, index);
+        range.setEnd(node, index + searchTerm.length);
+        range.getBoundingClientRect(); // Get position
+        
+        // Scroll into view
+        const element = node.parentElement;
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+          
+          // Add temporary highlight effect
+          const originalBg = element.style.backgroundColor;
+          element.style.backgroundColor = "rgba(255, 193, 7, 0.3)";
+          setTimeout(() => {
+            element.style.backgroundColor = originalBg;
+          }, 1500);
+          found = true;
+          break;
+        }
+      }
+    }
   };
 
   // ── Version history callbacks ────────────────────────────────────────────
@@ -939,10 +997,10 @@ export function DocumentationViewerPage() {
             />
             {showSearchResults && Object.keys(searchResults).length > 0 && (
               <div className="absolute top-full mt-1 left-0 right-0 z-50 rounded-md border border-border bg-background shadow-lg max-h-64 overflow-y-auto">
-                {Object.entries(searchResults).map(([tabKey, { label, matches, highlights }]) => (
+                {Object.entries(searchResults).map(([tabKey, { label, matches, highlights, firstMatchLine }]) => (
                   <button
                     key={tabKey}
-                    onClick={() => handleSearchResultClick(tabKey as DocTab)}
+                    onClick={() => handleSearchResultClick(tabKey as DocTab, firstMatchLine)}
                     className="w-full text-left px-3 py-2 hover:bg-muted transition-colors text-sm border-b border-border/50 last:border-b-0 flex flex-col gap-1"
                   >
                     <div className="flex items-center justify-between">
@@ -1303,7 +1361,7 @@ export function DocumentationViewerPage() {
 
             {/* Normal content (all tabs; hidden when API Spec sub-tab is open) */}
             {!(activeTab === "api" && apiSubTab === "spec") && (
-              <div className={cn("flex-1 overflow-y-auto", !isEditMode && "p-6 md:p-10")}>
+              <div className={cn("flex-1 overflow-y-auto", !isEditMode && "p-6 md:p-10")} data-content-viewer>
                 <div className={cn("mx-auto", "h-full flex flex-col")}>
                   {/* Markdown tabs (readme, api, schema, internal, custom) */}
                   {(["readme", "api", "schema", "internal"].includes(activeTab) || activeTab.startsWith("custom_")) && (

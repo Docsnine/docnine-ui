@@ -36,7 +36,7 @@ export class ProjectCreationService {
         }
         throw new Error(err.message);
       }
-      throw new Error("Failed to create project. Is the server running?");
+      throw new Error("Failed to create project. Try Again Later.");
     }
   }
 
@@ -84,7 +84,7 @@ export class ProjectCreationService {
       if (err instanceof ApiException) {
         throw new Error(err.message);
       }
-      throw new Error("Failed to upload ZIP. Is the server running?");
+      throw new Error("Failed to upload ZIP. Try Again Later.");
     }
   }
 

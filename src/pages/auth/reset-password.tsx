@@ -82,7 +82,7 @@ export function ResetPasswordPage() {
                 {/* Center Cyan Glow */}
                 <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
 
-                <section className="flex flex-col items-center justify-center p-4 z-10 mt-10">
+                <section className="flex flex-col items-center justify-center p-4 z-10 my-20">
                     <Card className="w-full max-w-md bg-background/80 backdrop-blur-md">
                         <CardHeader>
                             <CardTitle className="text-2xl font-bold">Invalid Link</CardTitle>
@@ -102,59 +102,62 @@ export function ResetPasswordPage() {
     }
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-muted/30 p-4">
-            <Link to="/" className="mb-8 flex items-center gap-2 font-semibold text-primary">
-                <BookOpen className="h-6 w-6" />
-                <span className="text-xl">Docnine</span>
-            </Link>
-            <Card className="w-full max-w-md">
-                <CardHeader className="space-y-1 text-center">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                        <KeyRound className="h-6 w-6 text-primary" />
-                    </div>
-                    <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
-                    <CardDescription>Enter your new password below.</CardDescription>
-                </CardHeader>
-                {isSuccess ? (
-                    <CardContent className="space-y-4 text-center">
-                        <div className="rounded-md bg-green-50 p-4 text-sm text-green-800 border border-green-200">
-                            Password reset successful! You can now log in with your new password.
-                        </div>
-                        <Button className="w-full mt-4" onClick={() => navigate("/login")}>
-                            Go to Login
-                        </Button>
-                    </CardContent>
-                ) : (
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <CardContent className="space-y-4">
-                            {error && <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">{error}</div>}
-                            <div className="space-y-2">
-                                <Label htmlFor="password">New Password</Label>
-                                <Input id="password" type="password" {...register("password")} />
-                                {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+        <div>
+            <BackgroundGrid />
+
+            {/* Top Left Glow */}
+            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
+
+            {/* Center Cyan Glow */}
+            <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
+
+            <section className="flex flex-col items-center justify-center p-4 z-10 my-20">
+                <Card className="w-full max-w-md bg-background/80 backdrop-blur-md">
+                    <CardHeader className="space-y-1 text-center">
+                        <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
+                        <CardDescription>Enter your new password below.</CardDescription>
+                    </CardHeader>
+                    {isSuccess ? (
+                        <CardContent className="space-y-4 text-center">
+                            <div className="rounded-md bg-green-50 p-4 text-sm text-green-800 border border-green-200">
+                                Password reset successful! You can now log in with your new password.
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                                <Input id="confirmPassword" type="password" {...register("confirmPassword")} />
-                                {errors.confirmPassword && (
-                                    <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
-                                )}
-                            </div>
-                        </CardContent>
-                        <CardFooter className="flex flex-col space-y-4">
-                            <Button type="submit" className="w-full" disabled={isLoading}>
-                                {isLoading && <Loader1 className="mr-2 h-4 w-4 " />}
-                                Reset Password
+                            <Button className="w-full mt-4" onClick={() => navigate("/login")}>
+                                Go to Login
                             </Button>
-                            <div className="text-center text-sm text-muted-foreground">
-                                <Link to="/login" className="text-primary hover:underline flex items-center justify-center">
-                                    <ArrowLeft className="mr-2 h-4 w-4" /> Back to login
-                                </Link>
-                            </div>
-                        </CardFooter>
-                    </form>
-                )}
-            </Card>
+                        </CardContent>
+                    ) : (
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <CardContent className="space-y-4">
+                                {error && <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">{error}</div>}
+                                <div className="space-y-2">
+                                    <Label htmlFor="password">New Password</Label>
+                                    <Input id="password" type="password" {...register("password")} />
+                                    {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                                    <Input id="confirmPassword" type="password" {...register("confirmPassword")} />
+                                    {errors.confirmPassword && (
+                                        <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+                                    )}
+                                </div>
+                            </CardContent>
+                            <CardFooter className="flex flex-col space-y-4">
+                                <Button type="submit" className="w-full" disabled={isLoading}>
+                                    {isLoading && <Loader1 className="mr-2 h-4 w-4 " />}
+                                    Reset Password
+                                </Button>
+                                <div className="text-center text-sm text-muted-foreground">
+                                    <Link to="/login" className="text-primary hover:underline flex items-center justify-center">
+                                        <ArrowLeft className="mr-2 h-4 w-4" /> Back to login
+                                    </Link>
+                                </div>
+                            </CardFooter>
+                        </form>
+                    )}
+                </Card>
+            </section>
         </div>
     )
 }

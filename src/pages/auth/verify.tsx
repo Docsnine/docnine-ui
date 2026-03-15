@@ -113,7 +113,7 @@ export function VerifyPage() {
       {/* Center Cyan Glow */}
       <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
 
-      <section className="flex flex-col items-center justify-center p-4 z-10 mt-10">
+      <section className="flex flex-col items-center justify-center p-4 z-10 my-20">
         <Card className="w-full max-w-md bg-background/80 backdrop-blur-md">
           <CardHeader className="space-y-1">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">

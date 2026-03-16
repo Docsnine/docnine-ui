@@ -9,43 +9,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import {
-    portalApi,
-    type ApiPortal,
-    type PortalBranding,
-    type PortalSectionConfig,
-    type PortalSectionKey,
-    type PortalSectionVisibility,
-    type PortalAccessMode,
-    PORTAL_SECTION_KEYS,
-    PORTAL_SECTION_LABELS,
-    type CustomTab,
-} from "@/lib/api"
 import { cn } from "@/lib/utils"
 import Loader1 from "../ui/loader1"
-
-// ── Constants ──────────────────────────────────────────────────────────────
-
-const TAB_IDS = ["general", "sections", "branding", "domain"] as const
-type TabId = typeof TAB_IDS[number]
-
-const TAB_LABELS: Record<TabId, string> = {
-    general: "General",
-    sections: "Sections",
-    branding: "Branding",
-    domain: "Custom Domain",
-}
-
-const VISIBILITY_OPTIONS: { value: PortalSectionVisibility; label: string; description: string }[] = [
-    { value: "public", label: "Public", description: "Visible to all portal visitors" },
-    { value: "internal", label: "Internal only", description: "Hidden from the portal entirely" },
-    { value: "coming_soon", label: "Coming soon", description: "Shows as locked in the sidebar" },
-]
+import { PORTAL_SECTION_KEYS, PORTAL_SECTION_LABELS, TAB_IDS, TAB_LABELS, TabId, VISIBILITY_OPTIONS } from "@/configs/PortalConfig"
+import { ApiPortal, PortalAccessMode, PortalBranding, PortalSectionConfig, PortalSectionKey, PortalSectionVisibility, PortalSettingsModalProps } from "@/types/PortalTypes"
+import { portalApi } from "@/lib/api"
 
 const FRONTEND_ORIGIN = import.meta.env.VITE_APP_URL || window.location.origin
 
 // ── Helpers ────────────────────────────────────────────────────────────────
-
 function buildPortalUrl(slug: string): string {
     return `${FRONTEND_ORIGIN}/docs/${slug}`
 }
@@ -54,19 +26,7 @@ function getEffectiveVisibility(sections: PortalSectionConfig[], key: PortalSect
     return sections.find((s) => s.sectionKey === key)?.visibility ?? "public"
 }
 
-// ── Component ──────────────────────────────────────────────────────────────
-
-interface PortalSettingsModalProps {
-    isOpen: boolean
-    onClose: () => void
-    projectId: string
-    /** Optional initial portal data (to avoid an extra fetch when already loaded) */
-    initialPortal?: ApiPortal | null
-    /** Optional custom tabs from the project (to include in publishable sections) */
-    customTabs?: CustomTab[]
-    onPublishChange?: (portal: ApiPortal) => void
-}
-
+// ── Component ─────────────────────────────────────────────────────────────
 export function PortalSettingsModal({
     isOpen,
     onClose,

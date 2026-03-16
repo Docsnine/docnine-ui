@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 import { useProjectStore } from "@/store/projects"
-import { projectsApi, ApiException } from "@/lib/api"
+import { projectsApi } from "@/lib/api"
 import { prepareExportData, getExportSummary, getFormattedTabContent } from "@/lib/export-utils"
 import { generatePDFHTML } from "@/lib/pdf-generator"
 import { useSubscriptionStore, meetsMinPlan } from "@/store/subscription"
 import { UpgradeModal } from "@/components/billing/UpgradeModal"
-import { DocRenderer } from "@/components/projects/DocRenderer"
+import { DocRenderer } from "@/components/projects/doc-render"
 import { SharePanel } from "@/components/projects/share-panel"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -31,7 +31,6 @@ import {
     Lock,
 } from "lucide-react"
 import Loader1 from "@/components/ui/loader1"
-import { MCPServerCard } from "@/components/settings/MCPServerCard"
 
 // ── Helper for file downloads ──────────────────────────────────────────
 const triggerDownload = (blob: Blob, filename: string) => {
@@ -63,6 +62,7 @@ export function ProjectOverviewPage() {
     const { subscription } = useSubscriptionStore()
     const [upgradeOpen, setUpgradeOpen] = useState(false)
     const [upgradeFeature, setUpgradeFeature] = useState<{ name: string; plan: string; description?: string }>({ name: "", plan: "starter" })
+
     function requirePlan(featureName: string, plan: string, description: string, cb: () => void) {
         if (!meetsMinPlan(subscription, plan)) {
             setUpgradeFeature({ name: featureName, plan, description })
@@ -204,46 +204,46 @@ export function ProjectOverviewPage() {
             // Prepare export data with project metadata
             const tabs = [
                 {
-                    id: "readme",
-                    name: "README",
-                    content: project.output?.readme || "",
+                    key: "readme",
+                    label: "README",
+                    content: project.readme || "",
                     isCustom: false,
                 },
                 {
-                    id: "api",
-                    name: "API Reference",
-                    content: project.output?.apiReference || "",
+                    key: "api",
+                    label: "API Reference",
+                    content: project.apiReference || "",
                     isCustom: false,
                 },
                 {
-                    id: "schema",
-                    name: "Schema",
-                    content: project.output?.schemaDocs || "",
+                    key: "schema",
+                    label: "Schema",
+                    content: project.schemaDocs || "",
                     isCustom: false,
                 },
                 {
-                    id: "internal",
-                    name: "Internal",
-                    content: project.output?.internalDocs || "",
+                    key: "internal",
+                    label: "Internal",
+                    content: project.internalDocs || "",
                     isCustom: false,
                 },
                 {
-                    id: "security",
-                    name: "Security",
-                    content: project.output?.securityReport || "",
+                    key: "security",
+                    label: "Security",
+                    content: project.securityReport || "",
                     isCustom: false,
                 },
             ].filter((t) => t.content)
 
             const exportData = {
                 projectName: project.name,
-                description: project.description || "",
+                projectDescription: "",
+                exportedAt: new Date().toISOString(),
                 tabs,
                 totalTabs: tabs.length,
             }
 
             const summary = getExportSummary(exportData)
-            console.debug("📊 PDF Export:", summary)
 
             // Generate formatted PDF HTML
             const pdfHtml = generatePDFHTML(exportData, {
@@ -269,43 +269,43 @@ export function ProjectOverviewPage() {
         setActionLoading("yaml")
         setExportMessage(null)
         try {
-            // Prepare export data with all available sections
             const tabs = [
                 {
-                    id: "readme",
-                    name: "README",
-                    content: project.output?.readme || "",
+                    key: "readme",
+                    label: "README",
+                    content: project.readme || "",
                     isCustom: false,
                 },
                 {
-                    id: "api",
-                    name: "API Reference",
-                    content: project.output?.apiReference || "",
+                    key: "api",
+                    label: "API Reference",
+                    content: project.apiReference || "",
                     isCustom: false,
                 },
                 {
-                    id: "schema",
-                    name: "Schema",
-                    content: project.output?.schemaDocs || "",
+                    key: "schema",
+                    label: "Schema",
+                    content: project.schemaDocs || "",
                     isCustom: false,
                 },
                 {
-                    id: "internal",
-                    name: "Internal",
-                    content: project.output?.internalDocs || "",
+                    key: "internal",
+                    label: "Internal",
+                    content: project.internalDocs || "",
                     isCustom: false,
                 },
                 {
-                    id: "security",
-                    name: "Security",
-                    content: project.output?.securityReport || "",
+                    key: "security",
+                    label: "Security",
+                    content: project.securityReport || "",
                     isCustom: false,
                 },
             ].filter((t) => t.content)
 
             const exportData = {
                 projectName: project.name,
-                description: project.description || "",
+                projectDescription: "",
+                exportedAt: new Date().toISOString(),
                 tabs,
                 totalTabs: tabs.length,
             }
@@ -318,7 +318,6 @@ export function ProjectOverviewPage() {
             }
 
             const summary = getExportSummary(cleanExportData)
-            console.debug("📊 YAML Export:", summary)
 
             // Export with cleaned data
             const blob = await projectsApi.exportBlob(project.id, "yaml", cleanExportData)
@@ -494,7 +493,7 @@ export function ProjectOverviewPage() {
                                                 <Skeleton className="h-4 w-2/3" />
                                             </div>
                                         ) : githubReadme ? (
-                                            <div className="prose prose-sm prose-slate dark:prose-invert max-w-none max-h-[480px] overflow-y-auto pr-1">
+                                            <div className="prose prose-sm prose-slate dark:prose-invert max-w-none max-h-120 overflow-y-auto pr-1">
                                                 <DocRenderer content={githubReadme} />
                                             </div>
                                         ) : (
@@ -509,9 +508,9 @@ export function ProjectOverviewPage() {
                                         <p>Analysis is currently running. This may take a few minutes.</p>
                                     </div>
                                     <div className="space-y-2 pt-4">
-                                        <Skeleton className="h-4 w-[250px]" />
-                                        <Skeleton className="h-4 w-[200px]" />
-                                        <Skeleton className="h-4 w-[300px]" />
+                                        <Skeleton className="h-4 w-62.5" />
+                                        <Skeleton className="h-4 w-50" />
+                                        <Skeleton className="h-4 w-75" />
                                     </div>
                                 </div>
                             ) : project.status === "failed" ? (
@@ -623,11 +622,6 @@ export function ProjectOverviewPage() {
                             </div>
                         </CardContent>
                     </Card>
-
-                    {/* MCP Server Card */}
-                    {project && project.status === "completed" && (
-                        <MCPServerCard projectId={id} />
-                    )}
                 </div>
             </div>
 

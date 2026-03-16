@@ -3,10 +3,10 @@ import { Link, useSearchParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { BookOpen, MailCheck, CheckCircle2, XCircle } from "lucide-react"
-import { authApi, ApiException } from "@/lib/api"
-import TopHeader from "@/components/header"
+import { authApi } from "@/lib/api"
 import BackgroundGrid from "@/components/ui/background-grid"
 import Loader1 from "@/components/ui/loader1"
+import { ApiException } from "@/types/ApiTypes"
 
 /**
  * VerifyPage handles two cases:

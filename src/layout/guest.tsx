@@ -1,6 +1,6 @@
-import CTA from "@/components/CTA";
-import Footer from "@/components/footer";
-import TopHeader from "@/components/header";
+import { CTA } from "@/components/common/CTA";
+import { Footer } from "@/components/common/footer";
+import { TopHeader } from "@/components/common/header";
 import { Outlet } from "react-router-dom";
 
 export function GuestLayout({ allowCTA = true }: { allowCTA?: boolean }) {

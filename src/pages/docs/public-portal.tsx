@@ -19,20 +19,15 @@ import {
     Menu, X, ExternalLink, AlertTriangle, BookOpen, ArrowUp, Home
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { DocRenderer } from "@/components/projects/DocRenderer"
-import { ThemeToggle } from "@/components/theme-toggle"
-import {
-    publicPortalApi,
-    type PublicPortalData,
-    type PortalSectionKey,
-    PORTAL_SECTION_LABELS,
-    PORTAL_SECTION_KEYS,
-} from "@/lib/api"
+import { DocRenderer } from "@/components/projects/doc-render"
+import { ThemeToggle } from "@/components/common/theme-toggle"
 import { cn } from "@/lib/utils"
 import Loader1 from "@/components/ui/loader1"
+import { PortalSectionKey, PublicPortalData } from "@/types/PortalTypes"
+import { publicPortalApi } from "@/lib/api"
+import { PORTAL_SECTION_KEYS, PORTAL_SECTION_LABELS } from "@/configs/PortalConfig"
 
 // ── Types ─────────────────────────────────────────────────────────────────
-
 interface TocEntry {
     id: string
     level: number
@@ -86,7 +81,6 @@ function buildExcerpt(text: string, query: string, radius = 120): string {
 }
 
 // ── Password Gate ─────────────────────────────────────────────────────────
-
 function PasswordGate({
     slug,
     onUnlock,
@@ -156,10 +150,8 @@ function PasswordGate({
 }
 
 // ── Main Page ─────────────────────────────────────────────────────────────
-
 export function PublicPortalPage() {
     const { slug } = useParams<{ slug: string }>()
-
     const [data, setData] = useState<PublicPortalData | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)

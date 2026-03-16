@@ -156,3 +156,192 @@ export interface ZipState {
   validating: boolean;
   error: string | null;
 }
+
+export interface CustomTab {
+  _id: string;
+  name: string;
+  description: string;
+  content: string;
+  order: number;
+  isNative: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+}
+
+export interface CreateTabModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onCreate: (data: { name: string; description: string }) => Promise<void>;
+  isLoading?: boolean;
+}
+
+export type ApiProjectStatus =
+  | "queued"
+  | "running"
+  | "done"
+  | "error"
+  | "archived";
+
+export interface ApiProjectEditedSection {
+  section: string;
+  editedAt: string;
+  stale: boolean;
+}
+
+export interface ApiProjectMeta {
+  name: string;
+  description: string | null;
+  language: string;
+  stars: number;
+  defaultBranch: string;
+  topics: string[];
+}
+
+export interface ApiProjectStats {
+  filesAnalysed: number;
+  endpoints: number;
+  models: number;
+  relationships: number;
+  components: number;
+}
+
+export interface ApiProjectSecurity {
+  counts: {
+    CRITICAL: number;
+    HIGH: number;
+    MEDIUM: number;
+    LOW: number;
+  };
+  score: number;
+  grade: string;
+  findings: any[];
+}
+
+export interface ApiProjectOutput {
+  readme?: string;
+  internalDocs?: string;
+  apiReference?: string;
+  schemaDocs?: string;
+  securityReport?: string;
+}
+
+export interface ApiProject {
+  meta: ApiProjectMeta;
+  _id: string;
+  userId: string;
+  repoUrl: string;
+  repoOwner: string;
+  repoName: string;
+  jobId: string;
+  status: ApiProjectStatus;
+  techStack: string[];
+  lastDocumentedCommit: string;
+  stats: ApiProjectStats;
+  security: ApiProjectSecurity;
+  output: ApiProjectOutput;
+  editedOutput: ApiProjectOutput;
+  editedSections: ApiProjectEditedSection[];
+  customTabs?: CustomTab[];
+  createdAt: string;
+  updatedAt: string;
+  chatSessionId?: string;
+}
+
+export interface ProjectGetResponse {
+  project: ApiProject;
+  effectiveOutput: ApiProjectOutput;
+  editedSections: ApiProjectEditedSection[];
+  lastSyncedCommit: string;
+  shareRole: "owner" | "editor" | "viewer";
+}
+
+export interface PipelineEvent {
+  step: string;
+  status?: string;
+  msg?: string;
+  detail?: string;
+  ts: string;
+  result?: Record<string, unknown>;
+}
+
+export interface ProjectsListResponse {
+  projects: ApiProject[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export type ProjectStatus = "analyzing" | "completed" | "failed" | "archived";
+
+export interface Project {
+  id: string; // = ApiProject._id
+  name: string; // = repoName
+  repoUrl: string;
+  repoOwner: string;
+  status: ProjectStatus;
+  apiStatus: ApiProjectStatus; // raw status from API, needed for PATCH /archive
+  createdAt: string;
+  updatedAt: string;
+  shareRole: "owner" | "editor" | "viewer"; // access level
+  // Documentation fields (populated after a successful pipeline run)
+  readme?: string;
+  apiReference?: string;
+  schemaDocs?: string;
+  internalDocs?: string;
+  securityReport?: string;
+}
+
+export interface ProjectState {
+  projects: Project[];
+  total: number;
+  page: number;
+  totalPages: number;
+  isLoading: boolean;
+  error: string | null;
+
+  // Shared-with-me
+  sharedProjects: Project[];
+  sharedLoading: boolean;
+  sharedError: string | null;
+
+  /** Fetch (or refresh) the project list. */
+  fetchProjects: (params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    sort?: string;
+    search?: string;
+  }) => Promise<void>;
+
+  /** Create a new project and start the pipeline. Returns the created project. */
+  createProject: (repoUrl: string) => Promise<Project & { streamUrl: string }>;
+
+  /** Hard-delete a project. */
+  deleteProject: (id: string) => Promise<void>;
+
+  /** Archive a project. */
+  archiveProject: (id: string) => Promise<void>;
+
+  /** Re-run the pipeline for a done/error project. Returns the updated project. */
+  retryProject: (id: string) => Promise<Project & { streamUrl: string }>;
+
+  /** Fetch a single project by ID (used by detail pages). */
+  getProject: (id: string) => Promise<Project>;
+
+  /** Fetch a single project by ID without updating the cache (used by SSE handler). */
+  getProjectData: (id: string) => Promise<{
+    project: ApiProject;
+    editedSections: any;
+    effectiveOutput: any;
+    lastSyncedCommit: string;
+    shareRole: "owner" | "editor" | "viewer";
+  }>;
+
+  /** Update a project in the local cache (e.g. after SSE stream completes). */
+  updateLocalProject: (id: string, changes: Partial<Project>) => void;
+
+  /** Fetch all projects shared with the current user. */
+  fetchSharedProjects: () => Promise<void>;
+}

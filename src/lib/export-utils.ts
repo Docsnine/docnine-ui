@@ -3,27 +3,11 @@
  * Handles collecting all documentation content from all tabs in a structured format
  */
 
+import { ExportDocumentData, ExportTabContent } from "@/types/ExportTypes";
 import {
   markdownToFormattedText,
   markdownToStructuredContent,
 } from "./markdown-converter";
-import type { CustomTab } from "@/lib/api";
-
-export interface ExportTabContent {
-  key: string;
-  label: string;
-  content: string;
-  isCustom?: boolean;
-  order?: number;
-}
-
-export interface ExportDocumentData {
-  projectName: string;
-  projectDescription?: string;
-  exportedAt: string;
-  tabs: ExportTabContent[];
-  totalTabs: number;
-}
 
 /**
  * Prepare comprehensive export data from all tabs

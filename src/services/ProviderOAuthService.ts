@@ -11,14 +11,7 @@ import {
   OAUTH_POLL_INTERVAL_MS,
 } from "@/configs/ProjectConfig";
 import type { ProviderKey } from "@/types/ProjectTypes";
-
-export type OAuthStatus = "success" | "error" | "cancelled";
-
-export interface OAuthResult {
-  status: OAuthStatus;
-  user?: string;
-  message?: string;
-}
+import { OAuthStatus } from "@/types/OauthIntergrationTypes";
 
 export class ProviderOAuthService {
   /**

@@ -6,9 +6,9 @@ import { useAuthStore } from "@/store/auth"
 import { useSubscriptionStore } from "@/store/subscription"
 import { authApi } from "@/lib/api"
 import { cn } from "@/lib/utils"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { ThemeToggle } from "@/components/common/theme-toggle"
 import { useTheme } from "../providers/theme-provider"
-import ApplicationLogo from "../components/application-logo"
+import { ApplicationLogo } from "../components/common/application-logo"
 import { PlanBadge } from "@/components/billing/PlanBadge"
 
 export function DashboardLayout() {

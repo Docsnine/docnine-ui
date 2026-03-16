@@ -1,29 +1,9 @@
-import { BillingPlan } from "@/lib/api"
 import { ArrowRight, Badge, Check, Star, User, Users, Zap } from "lucide-react"
 import { Button } from "../ui/button"
 import { cn } from "@/lib/utils"
 import Loader1 from "../ui/loader1"
-
-const PLAN_ICONS: Record<string, React.ElementType> = {
-    free: Star,
-    starter: Zap,
-    pro: User,
-    team: Users,
-}
-
-const PLAN_ACCENT: Record<string, string> = {
-    free: "text-muted-foreground",
-    starter: "text-blue-400",
-    pro: "text-primary",
-    team: "text-primary",
-}
-
-const PLAN_BTN: Record<string, string> = {
-    free: "",
-    starter: "bg-foreground text-background",
-    pro: "bg-primary hover:bg-primary/90 text-white",
-    team: "bg-background border border-border text-white",
-}
+import { BillingPlan } from "@/types/BillingTypes"
+import { PLAN_ACCENT, PLAN_BTN, PLAN_ICONS } from "@/configs/BillingConfig"
 
 function FeatureLine({ label }: { label: string }) {
     return (

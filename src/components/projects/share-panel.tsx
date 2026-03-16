@@ -5,23 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { sharingApi, ApiShare } from "@/lib/api"
+import { sharingApi } from "@/lib/api"
 import { useSubscriptionStore, hasFeature, meetsMinPlan } from "@/store/subscription"
 import { UpgradeModal } from "@/components/billing/UpgradeModal"
 import { formatDistanceToNow } from "date-fns"
 import Loader1 from "../ui/loader1"
-
-// ─────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────
-
-interface SharePanelProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  projectId: string
-  projectName: string
-  isOwner: boolean
-}
+import { ApiShare, SharePanelProps } from "@/types/ProjectShareTypes"
 
 // ─────────────────────────────────────────────────────────────
 // Helpers
@@ -58,7 +47,6 @@ function StatusBadge({ status }: { status: "pending" | "accepted" | "revoked" })
 // ─────────────────────────────────────────────────────────────
 // Main component
 // ─────────────────────────────────────────────────────────────
-
 export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner }: SharePanelProps) {
   const [shares, setShares] = useState<ApiShare[]>([])
   const [isLoadingShares, setIsLoadingShares] = useState(false)
@@ -294,11 +282,10 @@ export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner
         {/* Invite result banner */}
         {inviteResult && (
           <div
-            className={`shrink-0 flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
-              inviteResult.type === "success"
+            className={`shrink-0 flex items-center gap-2 rounded-md px-3 py-2 text-sm ${inviteResult.type === "success"
                 ? "bg-green-50 text-green-800 border border-green-200"
                 : "bg-destructive/10 text-destructive border border-destructive/20"
-            }`}
+              }`}
           >
             {inviteResult.type === "success" ? (
               <Check className="h-4 w-4 shrink-0" />

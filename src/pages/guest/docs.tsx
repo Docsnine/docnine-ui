@@ -21,8 +21,6 @@ import {
     Terminal, Copy, Check, Search, X, Menu, ArrowUp,
     Zap, Lock, Key, AlertTriangle, Info, CheckCircle2
 } from "lucide-react"
-import TopHeader from "@/components/header"
-import Footer from "@/components/footer"
 import BackgroundGrid from "@/components/ui/background-grid"
 import { cn } from "@/lib/utils"
 
@@ -136,7 +134,6 @@ const SECTIONS: DocSection[] = [
 ]
 
 // ── Code block ────────────────────────────────────────────────────────────
-
 function CodeBlock({ code, language = "yaml" }: { code: string; language?: string }) {
     const [copied, setCopied] = useState(false)
     return (
@@ -158,7 +155,6 @@ function CodeBlock({ code, language = "yaml" }: { code: string; language?: strin
 }
 
 // ── Callout ───────────────────────────────────────────────────────────────
-
 function Callout({ type = "info", children }: { type?: "info" | "warning" | "tip"; children: React.ReactNode }) {
     const styles = {
         info: { bg: "bg-blue-500/10 border-blue-500/30", icon: <Info className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" /> },
@@ -175,7 +171,6 @@ function Callout({ type = "info", children }: { type?: "info" | "warning" | "tip
 }
 
 // ── Step ──────────────────────────────────────────────────────────────────
-
 function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
     return (
         <div className="flex gap-4 py-5 px-5 border-b border-border/50 last:border-0">
@@ -191,7 +186,6 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
 }
 
 // ── Section heading ───────────────────────────────────────────────────────
-
 function H2({ id, children }: { id: string; children: React.ReactNode }) {
     return (
         <h2 id={id} className="text-2xl font-bold text-foreground mt-12 mb-4 scroll-mt-24 flex items-center gap-2 group">
@@ -215,7 +209,6 @@ function H3({ id, children }: { id: string; children: React.ReactNode }) {
 }
 
 // ── Main component ────────────────────────────────────────────────────────
-
 export function PlatformDocsPage() {
     const [activeSection, setActiveSection] = useState("what-is-docnine")
     const [sidebarOpen, setSidebarOpen] = useState(false)

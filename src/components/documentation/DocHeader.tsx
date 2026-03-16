@@ -1,12 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
-
-interface DocHeaderProps {
-  title: string
-  isSidebarOpen: boolean
-  onSidebarToggle: () => void
-  onBack: () => void
-}
+import { DocHeaderProps } from "@/types/DocumentationTypes"
 
 export function DocHeader({ title, isSidebarOpen, onSidebarToggle, onBack }: DocHeaderProps) {
   return (

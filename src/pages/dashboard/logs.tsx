@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { Link } from "react-router-dom"
 import { formatDistanceToNow, format } from "date-fns"
-import { projectsApi, ApiProject, PipelineEvent } from "@/lib/api"
+import { projectsApi } from "@/lib/api"
 import { mapApiStatus } from "@/store/projects"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -24,6 +24,7 @@ import {
 import { cn } from "@/lib/utils"
 import TopBar from "@/components/projects/top-bar"
 import Loader1 from "@/components/ui/loader1"
+import { ApiProject, PipelineEvent } from "@/types/ProjectTypes"
 
 // ── Event severity helpers ───────────────────────────────────────────────────
 type Severity = "info" | "success" | "warning" | "error"

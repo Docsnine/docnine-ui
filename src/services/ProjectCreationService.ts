@@ -3,11 +3,13 @@
  * Unified project creation logic across different import methods
  */
 
-import { projectsApi, ApiException, type ApiProject } from "@/lib/api";
+import { projectsApi } from "@/lib/api";
+import { ApiException } from "@/types/ApiTypes";
 import type {
   ManualProjectFormValues,
   FromScratchFormValues,
   NormalizedRepo,
+  ApiProject,
 } from "@/types/ProjectTypes";
 
 export interface ProjectCreationResult {
@@ -24,7 +26,7 @@ export class ProjectCreationService {
   ): Promise<ProjectCreationResult> {
     try {
       const result = await projectsApi.create(values.repoUrl);
-      const project = result.project || result as any;
+      const project = result.project || (result as any);
       return {
         project,
         projectId: project._id,
@@ -54,7 +56,7 @@ export class ProjectCreationService {
       }
 
       const result = await projectsApi.create(repoUrl);
-      const project = result.project || result as any;
+      const project = result.project || (result as any);
       return {
         project,
         projectId: project._id,

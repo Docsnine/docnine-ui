@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
-import { bitbucketApi, ApiException } from "@/lib/api"
+import { bitbucketApi } from "@/lib/api"
 import Loader1 from "@/components/ui/loader1"
+import { ApiException } from "@/types/ApiTypes"
 
 /**
  * Bitbucket OAuth Initiator Page
@@ -33,8 +34,8 @@ export function BitbucketOAuthPage() {
             <div className="flex min-h-screen items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-4 text-center max-w-md">
                     <p className="text-sm text-destructive">{error}</p>
-                    <button 
-                        onClick={() => window.close()} 
+                    <button
+                        onClick={() => window.close()}
                         className="text-sm text-primary hover:underline"
                     >
                         Close window

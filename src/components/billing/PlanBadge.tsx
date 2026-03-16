@@ -3,26 +3,8 @@ import { Zap, Users, Star, AlertTriangle, Clock, User } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useSubscriptionStore, PLAN_LEVEL } from "@/store/subscription"
-
-const PLAN_ICONS: Record<string, React.ElementType> = {
-    free: Star,
-    starter: Zap,
-    pro: User,
-    team: Users,
-}
-
-const PLAN_COLOURS: Record<string, string> = {
-    free: "bg-muted text-muted-foreground border-border",
-    starter: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    pro: "bg-violet-500/10 text-violet-400 border-violet-500/20",
-    team: "bg-primary/10 text-primary border-primary/20",
-}
-
-interface PlanBadgeProps {
-    className?: string
-    /** Show trial countdown or dunning warning inline. Defaults to true. */
-    showStatus?: boolean
-}
+import { PlanBadgeProps } from "@/types/BillingTypes"
+import { PLAN_COLOURS, PLAN_ICONS } from "@/configs/BillingConfig"
 
 export function PlanBadge({ className, showStatus = true }: PlanBadgeProps) {
     const subscription = useSubscriptionStore((s) => s.subscription)
@@ -79,7 +61,7 @@ export function PlanBadge({ className, showStatus = true }: PlanBadgeProps) {
 /**
  * Headless helper — returns true if the current user's plan meets the minimum.
  * Useful for conditional rendering without the badge UI.
- */
+*/
 export function usePlanCheck(minPlan: string): boolean {
     const subscription = useSubscriptionStore((s) => s.subscription)
     if (!subscription) return false

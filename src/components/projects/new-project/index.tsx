@@ -152,7 +152,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
 
         // Not connected yet - open OAuth window
         setIsConnecting(true)
-        
+
         try {
             await ProviderOAuthService.openOAuthWindow(
                 provider,
@@ -162,12 +162,12 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
                         if (user) {
                             setProviderUsernames((prev) => ({ ...prev, [provider]: user }))
                         }
-                        
+
                         // Load GitHub orgs if needed
                         if (provider === "github" && githubOrgs.length === 0) {
                             loadGithubOrgs()
                         }
-                        
+
                         // Reload repos after successful connection
                         await loadRepos(
                             provider,

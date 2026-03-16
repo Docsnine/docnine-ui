@@ -11,12 +11,13 @@ import {
 import { useAuthStore } from "@/store/auth"
 import { useSessionStore } from "@/store/session"
 import { ThemeProvider } from "@/providers/theme-provider"
-import { getSiteUrl, type SeoConfig, useSeo } from "@/lib/seo"
+import { getSiteUrl, useSeo } from "@/lib/seo"
 import { SessionExpiredDialog } from "@/components/dialogs/SessionExpiredDialog"
-import ApplicationLogo from "./components/application-logo"
 import Loader1 from "./components/ui/loader1"
 import { GuestLayout } from "./layout/guest"
 import { AuthLayout } from "./layout/auth"
+import { ApplicationLogo } from "./components/common"
+import { SeoConfig } from "./types/SeoTypes"
 
 // ─── Lazy-loaded pages ────────────────────────────────────────────
 

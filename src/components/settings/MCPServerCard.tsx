@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Copy, Check, ExternalLink, Zap } from "lucide-react"
-import { projectsApi, ApiException } from "@/lib/api"
+import { projectsApi } from "@/lib/api"
 
 interface MCPInfo {
     projectId: string

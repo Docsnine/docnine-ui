@@ -5,18 +5,11 @@ import { Button } from "@/components/ui/button"
 import { AlertTriangle } from "lucide-react"
 import Loader1 from "@/components/ui/loader1"
 import { Textarea } from "../ui/textarea"
+import { CreateTabModalProps } from "@/types/ProjectTypes"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CREATE TAB MODAL
 // ─────────────────────────────────────────────────────────────────────────────
-
-interface CreateTabModalProps {
-    isOpen: boolean
-    onClose: () => void
-    onCreate: (data: { name: string; description: string }) => Promise<void>
-    isLoading?: boolean
-}
-
 export function CreateTabModal({ isOpen, onClose, onCreate, isLoading = false }: CreateTabModalProps) {
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")

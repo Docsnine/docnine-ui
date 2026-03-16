@@ -14,3 +14,6 @@ export { useSearchAndFilter } from "./useSearchAndFilter";
 export { usePagination } from "./usePagination";
 export { useNotification } from "./useNotification";
 export { useGeneralSettings } from "./useGeneralSettings";
+
+// documentations
+export { useDocumentationTabs } from "./useDocumentationTabs";

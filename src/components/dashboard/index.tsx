@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
-import { useProjectStore, ProjectStatus, Project } from "@/store/projects"
+import { useProjectStore } from "@/store/projects"
 import { useSubscriptionStore } from "@/store/subscription"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
@@ -10,23 +10,9 @@ import TopBar from "@/components/projects/top-bar"
 import { ErrorBanner, EmptyState } from "@/components/common"
 import { useSearchAndFilter, usePagination } from "@/hooks"
 import { DashboardFilters, ProjectsGrid, SharedProjects } from "./sections"
-import type { GithubNotice } from "./types"
-
-// Map UI status filter values → API status query values
-const STATUS_API_MAP: Record<string, string> = {
-    all: "",
-    analyzing: "queued,running",
-    completed: "done",
-    failed: "error",
-    archived: "archived",
-}
-
-// Map UI sort values → API sort params
-const SORT_API_MAP: Record<string, string> = {
-    updated: "-updatedAt",
-    created: "-createdAt",
-    name: "repoName",
-}
+import type { GithubNotice } from "../../types/DashboardTypes"
+import { SORT_API_MAP, STATUS_API_MAP } from "@/configs/DashboardConfig"
+import { ProjectStatus } from "@/types/ProjectTypes"
 
 // Debounces value changes by `delay` ms to avoid hammering the API on every keystroke
 function useDebounce<T>(value: T, delay: number): T {

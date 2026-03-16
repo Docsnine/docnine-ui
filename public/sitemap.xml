@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
-  xsi:schemaLocation="
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="
     http://www.sitemaps.org/schemas/sitemap/0.9
     http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd
     http://www.google.com/schemas/sitemap-image/1.1
@@ -23,7 +21,7 @@
     <image:image>
       <image:loc>https://docnineai.com/web-app-manifest-512x512.png</image:loc>
       <image:title>Docnine — AI Documentation for Engineering Teams</image:title>
-      <image:caption>Docnine reads your codebase and instantly generates docs that stay in sync with every push.</image:caption>
+      <image:caption>Ship better documentations, faster. Stop writing documentation by hand. Create and maintain developer documentation with AI. Docnine generates docs from your codebase, then keeps them up to date as your code evolves.</image:caption>
     </image:image>
   </url>
 

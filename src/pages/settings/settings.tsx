@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { useSearchParams } from "react-router-dom"
-import { githubApi, gitlabApi, bitbucketApi, azureApi, authApi, GitHubStatus, API_BASE } from "@/lib/api"
+import { githubApi, gitlabApi, bitbucketApi, azureApi, authApi, API_BASE } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -37,6 +37,18 @@ import Loader1 from "@/components/ui/loader1"
 import { CopyButton } from "@/components/common"
 import { GeneralSettingsCard } from "@/components/settings/GeneralSettingsCard"
 import { APITokensCard } from "@/components/settings/APITokensCard"
+import { GoogleDocsStatusData, NotionStatusData } from "@/types/OauthIntergrationTypes"
+import { GitHubStatus } from "@/types/GithubTypes"
+
+// ── Tab nav ───────────────────────────────────────────────────────────────────
+const TABS = [
+    { id: "general", label: "General", icon: User },
+    { id: "integrations", label: "Integrations", icon: Puzzle },
+    { id: "billing", label: "Billings", icon: CreditCard },
+    { id: "api-tokens", label: "Tokens", icon: KeyRound },
+] as const;
+
+type TabId = typeof TABS[number]["id"];
 
 // ── GitHub Integration card ──────────────────────────────────────────────────
 function GitHubCard() {
@@ -453,14 +465,7 @@ function WebhookCard() {
     )
 }
 
-// ── Google Docs card ─────────────────────────────────────────────────────────
-interface GoogleDocsStatusData {
-    connected: boolean
-    email?: string
-    name?: string
-    connectedAt?: string
-}
-
+// ── Google Docs Integration card ─────────────────────────────────────────────────
 function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "error" }) {
     const [status, setStatus] = useState<GoogleDocsStatusData | null>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -614,13 +619,6 @@ function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "erro
 }
 
 // ── Notion Integration card ──────────────────────────────────────────────────
-type NotionStatusData = {
-    connected: boolean
-    parentPageId?: string
-    workspaceName?: string | null
-    connectedAt?: string
-}
-
 function NotionCard() {
     const [status, setStatus] = useState<NotionStatusData | null>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -1305,15 +1303,6 @@ function AzureDevOpsCard() {
         </Card>
     )
 }
-
-// ── Tab nav ───────────────────────────────────────────────────────────────────
-const TABS = [
-    { id: "general", label: "General", icon: User },
-    { id: "integrations", label: "Integrations", icon: Puzzle },
-    { id: "billing", label: "Billings", icon: CreditCard },
-    { id: "api-tokens", label: "Tokens", icon: KeyRound },
-] as const
-type TabId = typeof TABS[number]["id"]
 
 // ── Main page ────────────────────────────────────────────────────────────────
 export function SettingsPage() {

@@ -1,14 +1,7 @@
 import { AlertTriangle, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Loader1 from "@/components/ui/loader1"
-
-export interface StaleSectionBannerProps {
-    changeSummary: string | null
-    onViewDiff: () => void
-    onAcceptAI: () => void
-    onDismiss: () => void
-    accepting: boolean
-}
+import { StaleSectionBannerProps } from "@/types/StaleTypes"
 
 export function StaleSectionBanner({
     changeSummary,

@@ -1,6 +1,6 @@
-import { GitHubOrg } from "@/lib/api"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { OrgAccountPickerProps } from "@/types/GithubTypes"
 import { User, Building2 } from "lucide-react"
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -22,14 +22,6 @@ import { User, Building2 } from "lucide-react"
 //                    string → org login
 //   onSelect     — called with null (personal) or org login string
 // ─────────────────────────────────────────────────────────────────────────────
-
-export interface OrgAccountPickerProps {
-    username: string
-    orgs: GitHubOrg[]
-    orgsLoading: boolean
-    selected: string | null
-    onSelect: (org: string | null) => void
-}
 
 export function OrgAccountPicker({
     username,

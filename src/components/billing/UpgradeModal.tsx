@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Zap, X, ArrowRight, User } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import {
     Dialog,
     DialogContent,
@@ -9,30 +9,13 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { billingApi } from "@/lib/api"
-import { useSubscriptionStore, PLAN_LEVEL } from "@/store/subscription"
+import { useSubscriptionStore } from "@/store/subscription"
 import { useAuthStore } from "@/store/auth"
-import { cn } from "@/lib/utils"
 import { PlansModal } from "@/components/billing/PlansModal"
 import Loader1 from "../ui/loader1"
-
-const PLAN_LABELS: Record<string, { name: string; colour: string; Icon: React.ElementType }> = {
-    starter: { name: "Starter", colour: "text-blue-400", Icon: Zap },
-    pro: { name: "Pro", colour: "text-violet-400", Icon: User },
-    team: { name: "Team", colour: "text-primary", Icon: User },
-}
-
-interface UpgradeModalProps {
-    open: boolean
-    onClose: () => void
-    /** Human-readable name of the feature being blocked, e.g. "GitHub Sync" */
-    featureName: string
-    /** Minimum plan ID required, e.g. "pro" */
-    requiredPlan: string
-    /** Optional description override shown under the title */
-    description?: string
-}
+import { UpgradeModalProps } from "@/types/BillingTypes"
+import { PLAN_LABELS } from "@/configs/BillingConfig"
 
 export function UpgradeModal({
     open,
@@ -81,6 +64,7 @@ export function UpgradeModal({
     function handleViewPlans() {
         // Ensure plans are loaded before opening
         if (plans.length === 0) loadPlans()
+
         onClose()
         setPlansOpen(true)
     }

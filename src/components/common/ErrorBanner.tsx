@@ -1,11 +1,6 @@
 import { AlertTriangle, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
-interface ErrorBannerProps {
-    message: string
-    onRetry?: () => void
-    className?: string
-}
+import { ErrorBannerProps } from "@/types/StateTypes"
 
 export function ErrorBanner({ message, onRetry, className }: ErrorBannerProps) {
     return (

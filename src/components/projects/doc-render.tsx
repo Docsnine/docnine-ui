@@ -18,6 +18,8 @@ import ReactMarkdown, { Components } from "react-markdown"
 import remarkGfm from "remark-gfm"          // FIX #1: static import, not require()
 import { Check, Copy, ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { LANG_META } from "@/configs/DocRenderConfig"
+import { DocRendererProps } from "@/types/DocRenderTypes"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // UTILITIES
@@ -49,40 +51,8 @@ function isBadgeUrl(src?: string): boolean {
     )
 }
 
-const LANG_META: Record<string, { label: string; color: string }> = {
-    bash: { label: "bash", color: "#4ade80" },
-    sh: { label: "shell", color: "#4ade80" },
-    shell: { label: "shell", color: "#4ade80" },
-    zsh: { label: "zsh", color: "#4ade80" },
-    javascript: { label: "javascript", color: "#fbbf24" },
-    js: { label: "javascript", color: "#fbbf24" },
-    typescript: { label: "typescript", color: "#60a5fa" },
-    ts: { label: "typescript", color: "#60a5fa" },
-    jsx: { label: "jsx", color: "#22d3ee" },
-    tsx: { label: "tsx", color: "#22d3ee" },
-    json: { label: "json", color: "#fb923c" },
-    python: { label: "python", color: "#a3e635" },
-    py: { label: "python", color: "#a3e635" },
-    css: { label: "css", color: "#f472b6" },
-    scss: { label: "scss", color: "#f472b6" },
-    html: { label: "html", color: "#f87171" },
-    xml: { label: "xml", color: "#f87171" },
-    sql: { label: "sql", color: "#c084fc" },
-    yaml: { label: "yaml", color: "#fcd34d" },
-    yml: { label: "yaml", color: "#fcd34d" },
-    go: { label: "go", color: "#67e8f9" },
-    rust: { label: "rust", color: "#fdba74" },
-    java: { label: "java", color: "#fca5a5" },
-    php: { label: "php", color: "#a78bfa" },
-    ruby: { label: "ruby", color: "#fb7185" },
-    rb: { label: "ruby", color: "#fb7185" },
-    graphql: { label: "graphql", color: "#e879f9" },
-    dockerfile: { label: "dockerfile", color: "#38bdf8" },
-    prisma: { label: "prisma", color: "#818cf8" },
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
-// COPY BUTTON  (FIX #6: gap between icon and text)
+// COPY BUTTON 
 // ─────────────────────────────────────────────────────────────────────────────
 function CopyButton({ text }: { text: string }) {
     const [copied, setCopied] = useState(false)
@@ -126,7 +96,6 @@ function CopyButton({ text }: { text: string }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // CODE BLOCK COMPONENT  (FIX #2: lives outside `code` renderer)
 // ─────────────────────────────────────────────────────────────────────────────
-
 export function CodeBlock({ lang, code }: { lang: string; code: string }) {
     const meta = LANG_META[lang.toLowerCase()] ?? null
 
@@ -176,9 +145,7 @@ export function CodeBlock({ lang, code }: { lang: string; code: string }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // RENDERERS
 // ─────────────────────────────────────────────────────────────────────────────
-
 const components: Components = {
-
     h1({ children }) {
         const slug = slugify(children)
 
@@ -481,12 +448,6 @@ const components: Components = {
 // ─────────────────────────────────────────────────────────────────────────────
 // EXPORT
 // ─────────────────────────────────────────────────────────────────────────────
-
-interface DocRendererProps {
-    content: string
-    className?: string
-}
-
 export function DocRenderer({ content, className }: DocRendererProps) {
     if (!content?.trim()) return null
 

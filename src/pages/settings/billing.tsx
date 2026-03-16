@@ -38,18 +38,12 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-    billingApi,
-    BillingPlan,
-    InvoiceData,
-    PaymentMethodData,
-    SubscriptionData,
-    UsageData,
-} from "@/lib/api"
 import { useSubscriptionStore, PLAN_LEVEL } from "@/store/subscription"
 import { PlanBadge } from "@/components/billing/PlanBadge"
 import { cn } from "@/lib/utils"
 import Loader1 from "@/components/ui/loader1"
+import { BillingPlan, InvoiceData, SubscriptionData, UsageData, PaymentMethodData } from "@/types/BillingTypes"
+import { billingApi } from "@/lib/api"
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 function fmtMoney(cents: number, currency = "USD") {

@@ -5,29 +5,8 @@
  * Loaded lazily on first access — not fetched on app startup.
  */
 import { create } from "zustand";
-import {
-  billingApi,
-  BillingPlan,
-  SubscriptionData,
-  UsageData,
-} from "@/lib/api";
-
-interface SubscriptionState {
-  subscription: SubscriptionData | null;
-  usage: UsageData | null;
-  plans: BillingPlan[];
-  loading: boolean;
-  error: string | null;
-
-  // Load subscription + usage for the authenticated user
-  load: () => Promise<void>;
-  // Load available plans (public — no auth)
-  loadPlans: () => Promise<void>;
-  // Reset on logout
-  reset: () => void;
-  // Refresh subscription after a plan change
-  refresh: () => Promise<void>;
-}
+import { billingApi } from "@/lib/api";
+import { SubscriptionData, SubscriptionState } from "@/types/BillingTypes";
 
 export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
   subscription: null,

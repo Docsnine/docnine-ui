@@ -5,15 +5,8 @@ import { defineConfig, loadEnv } from "vite";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, ".", "");
-  // In local dev VITE_API_URL is empty — proxy to localhost:4000 directly.
-  // Set VITE_API_URL to an ngrok URL only when the *frontend* is served externally.
   const BACKEND_URL = env.VITE_API_URL || "http://localhost:4000";
 
-  // For every backend-bound path we need a bypass check:
-  // Browser page navigations send Accept: text/html — those must be served
-  // by the SPA (index.html), NOT forwarded to Express.
-  // XHR / fetch calls send Accept: application/json or no text/html —
-  // those are forwarded to the backend as normal API requests.
   type BypassFn = (req: {
     url?: string;
     headers?: Record<string, string>;
@@ -24,16 +17,13 @@ export default defineConfig(({ mode }) => {
     changeOrigin: true,
     secure: false,
     bypass(req: { url?: string; headers?: Record<string, string> }) {
-      // OAuth callback routes MUST be forwarded to the backend even when the
-      // browser makes a text/html GET (e.g. GitHub redirecting the popup back).
-      // Never bypass these — let them go to Express.
       if (req.url?.startsWith("/github/oauth/callback")) return undefined;
       if (req.url?.startsWith("/auth/github/callback")) return undefined;
       if (req.url?.startsWith("/auth/google/callback")) return undefined;
 
       // Always serve the SPA for all other browser navigations.
       if (req.headers?.accept?.includes("text/html")) return req.url;
-      // Any additional path-specific bypass rules.
+
       return extraBypass?.(req);
     },
   });
@@ -51,9 +41,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), tailwindcss()],
-    define: {
-      "process.env.GEMINI_API_KEY": JSON.stringify(env.GEMINI_API_KEY),
-    },
+    define: {},
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
@@ -61,8 +49,6 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 3000,
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modify — file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== "true",
       proxy: proxyConfig,
     },

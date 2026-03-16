@@ -1,9 +1,9 @@
 import React from 'react'
-import { Button } from './ui/button'
+import { Button } from '../ui/button'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Github, Sparkles } from 'lucide-react'
 
-function CTA() {
+export function CTA() {
     return (
         <section className="relative z-10 py-24 px-4 bg-background flex justify-center">
             <div className="container max-w-5xl relative overflow-hidden rounded-[2.5rem] bg-[#0a0a0a] p-12 sm:p-20 text-center">
@@ -52,5 +52,3 @@ function CTA() {
         </section>
     )
 }
-
-export default CTA

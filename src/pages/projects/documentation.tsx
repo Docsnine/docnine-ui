@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams, Link } from "react-router-dom"
 import { useProjectStore, mapApiStatus } from "@/store/projects"
-import { projectsApi, versionsApi, customTabsApi, ApiException, ApiProject, ApiShare, sharingApi, portalApi, apiSpecApi, type ApiPortal, type ApiSpec, type ApiProjectEditedSection, type CustomTab } from "@/lib/api"
 import { prepareExportData, getExportSummary, getFormattedTabContent } from "@/lib/export-utils"
 import { generatePDFHTML } from "@/lib/pdf-generator"
 import { Button } from "@/components/ui/button"
@@ -30,8 +29,8 @@ import Markdown from "react-markdown"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { AIChatPanel } from "@/components/projects/ai-chat"
-import { DocRenderer } from "@/components/projects/DocRenderer"
-import { DocStatusDot, DOC_STATUS_ORDER, DOC_STATUS_CONFIG } from "@/components/projects/doc-status"
+import { DocRenderer } from "@/components/projects/doc-render"
+import { DocStatusDot } from "@/components/projects/doc-status"
 import { VersionHistoryPanel } from "@/components/projects/version-history-panel"
 import { OtherDocsPanel } from "@/components/projects/other-docs-panel"
 import { useDocTrackerStore } from "@/store/doc-tracker"
@@ -48,7 +47,16 @@ import { StatusChangeModal } from "@/components/projects/status-change-modal"
 import { StaleSectionBanner } from "@/components/projects/stale-section-banner"
 import { StaleDiffModal } from "@/components/projects/stale-diff-modal"
 import { MarkdownToolbar } from "@/components/projects/markdown-toolbar"
-import { buildTabList, NATIVE_TABS, TAB_TO_SECTION, type NativeTab, type DocTab, type TabDef } from "@/components/projects/documentation-tabs"
+import { buildTabList } from "@/components/projects/documentation-tabs"
+import { ApiProject, ApiProjectEditedSection } from "@/types/ProjectTypes"
+import { ApiShare } from "@/types/ProjectShareTypes"
+import { ApiPortal } from "@/types/PortalTypes"
+import { ApiSpec } from "@/types/ApiSpecTypes"
+import { apiSpecApi, customTabsApi, portalApi, projectsApi, sharingApi, versionsApi } from "@/lib/api"
+import { DocStatus } from "@/types/DocStatusTypes"
+import { DOC_STATUS_CONFIG, DOC_STATUS_ORDER } from "@/configs/DocStatusConfig"
+import { DocTab, NativeTab, TabDef } from "@/types/DocumentationTypes"
+import { NATIVE_TABS, TAB_TO_SECTION } from "@/configs/DocumentationConfig"
 
 // ── Main component ────────────────────────────────────────────────────────────
 export function DocumentationViewerPage() {
@@ -100,7 +108,7 @@ export function DocumentationViewerPage() {
 
   const [statusModal, setStatusModal] = useState<{
     open: boolean
-    pendingStatus: import("@/store/doc-tracker").DocStatus | null
+    pendingStatus: DocStatus | null
   }>({ open: false, pendingStatus: null })
 
   const [projectMembers, setProjectMembers] = useState<ApiShare[]>([])
@@ -202,7 +210,7 @@ export function DocumentationViewerPage() {
         };
 
         // Initialize edited content for custom tabs
-        customTabs.forEach((ct) => {
+        customTabs.forEach((ct: { _id: any; content: string }) => {
           const tabKey = `custom_${ct._id}`;
           newEditedContent[tabKey] = ct.content ?? "";
         });
@@ -222,7 +230,7 @@ export function DocumentationViewerPage() {
         );
 
         // Fetch version counts for custom tabs
-        customTabs.forEach((ct) => {
+        customTabs.forEach((ct: { _id: any }) => {
           const sectionName = `custom_${ct._id}`;
         });
 
@@ -329,7 +337,7 @@ export function DocumentationViewerPage() {
 
       // Restore custom tab content from project
       if (project.customTabs) {
-        project.customTabs.forEach((ct) => {
+        project.customTabs.forEach((ct: { _id: any; content: string }) => {
           const key = `custom_${ct._id}`;
           newEditedContent[key] = ct.content ?? "";
         });

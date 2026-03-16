@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
-import { githubApi, ApiException } from "@/lib/api"
+import { githubApi } from "@/lib/api"
 import Loader1 from "@/components/ui/loader1"
+import { ApiException } from "@/types/ApiTypes"
 
 /**
  * GitHub OAuth Initiator Page

@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
-import { Button } from './ui/button'
+import { Button } from '../ui/button'
 import { Link } from 'react-router-dom'
 import { ThemeToggle } from './theme-toggle'
 import { Mail, MessageSquare, Menu, X, Sparkles } from 'lucide-react'
-import { useTheme } from '../providers/theme-provider'
-import ApplicationLogo from './application-logo'
-import Loader from './ui/loader'
-import Loader1 from './ui/loader1'
+import { useTheme } from '../../providers/theme-provider'
+import Loader from '../ui/loader'
+import Loader1 from '../ui/loader1'
+import { ApplicationLogo } from './application-logo'
 
-function TopHeader({ className }: { className?: string }) {
+export function TopHeader({ className }: { className?: string }) {
     const { theme } = useTheme()
     const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -88,5 +88,3 @@ function TopHeader({ className }: { className?: string }) {
         </header>
     )
 }
-
-export default TopHeader

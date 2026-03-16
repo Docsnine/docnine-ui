@@ -1,5 +1,5 @@
 /**
- * api.ts — Typed API client for the Docnine backend.
+ * Typed API client for the Docnine backend.
  *
  * All requests go through `apiFetch()` which:
  *   1. Attaches the Authorization header when an access token is stored.
@@ -11,30 +11,55 @@
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { useAuthStore } from "@/store/auth";
 import { useSessionStore } from "@/store/session";
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-export interface ApiError {
-  code: string;
-  message: string;
-  fields?: Array<{ field: string; message: string }>;
-}
-
-export class ApiException extends Error {
-  status: number;
-  code: string;
-  fields?: ApiError["fields"];
-
-  constructor(status: number, error: ApiError) {
-    super(error.message);
-    this.name = "ApiException";
-    this.status = status;
-    this.code = error.code;
-    this.fields = error.fields;
-  }
-}
+import { ApiError, ApiException, AuthResponse } from "@/types/ApiTypes";
+import { User } from "@/types/UserTypes";
+import {
+  GitHubOrg,
+  GitHubReposResponse,
+  GitHubStatus,
+} from "@/types/GithubTypes";
+import { GitLabReposResponse, GitLabStatus } from "@/types/GitlabTypes";
+import {
+  BitbucketReposResponse,
+  BitbucketStatus,
+} from "@/types/BitbucketTypes";
+import { AzureReposResponse, AzureStatus } from "@/types/AzureTypes";
+import {
+  ApiProject,
+  ApiProjectEditedSection,
+  ApiProjectMeta,
+  ApiProjectOutput,
+  CustomTab,
+  PipelineEvent,
+  ProjectGetResponse,
+  ProjectsListResponse,
+} from "@/types/ProjectTypes";
+import { ApiAttachment } from "@/types/DocAttachmentTypes";
+import { DocVersion } from "@/types/DocVersionTypes";
+import { ApiShare, ApiSharedProject } from "@/types/ProjectShareTypes";
+import {
+  ApiPortal,
+  PortalAccessMode,
+  PortalBranding,
+  PortalSectionConfig,
+  PortalSectionKey,
+  PublicPortalData,
+} from "@/types/PortalTypes";
+import { ApiSpec, TryItResult } from "@/types/ApiSpecTypes";
+import {
+  BillingPlan,
+  InvoiceData,
+  SubscriptionData,
+  UsageData,
+  PaymentMethodData,
+} from "@/types/BillingTypes";
+import {
+  AdminProject,
+  AdminStats,
+  AdminSubscription,
+  AdminUser,
+  Pagination,
+} from "@/types/AdminTypes";
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -62,21 +87,30 @@ export function setAccessToken(token: string | null) {
 let _isRefreshing = false;
 let _refreshPromise: Promise<string | null> | null = null;
 
-/** Attempt a silent token refresh via the httpOnly refresh-token cookie. */
+/**
+ * ---------------------------------------------------------------------------
+ * Attempt a silent token refresh via the httpOnly refresh-token cookie.
+ * ---------------------------------------------------------------------------
+ * */
 async function refreshToken(): Promise<string | null> {
   if (_isRefreshing && _refreshPromise) return _refreshPromise;
 
   _isRefreshing = true;
+
   _refreshPromise = (async () => {
     try {
       const res = await fetch(`${API_BASE}/auth/refresh`, {
         method: "POST",
         credentials: "include", // send the httpOnly cookie
       });
+
       if (!res.ok) return null;
+
       const json = await res.json();
       const token: string = json.data?.accessToken ?? json.accessToken ?? null;
+
       if (token) setAccessToken(token);
+
       return token;
     } catch {
       return null;
@@ -85,20 +119,20 @@ async function refreshToken(): Promise<string | null> {
       _refreshPromise = null;
     }
   })();
+
   return _refreshPromise;
 }
 
 /**
- * apiFetch — the main HTTP client.
- *
+ * ---------------------------------------------------------------------------
  * Automatically handles JSON serialization, auth headers, and token refresh.
+ * ---------------------------------------------------------------------------
  */
 export async function apiFetch<T = unknown>(
   path: string,
   options: RequestInit & { skipAuth?: boolean } = {},
 ): Promise<T> {
   const { skipAuth, ...fetchOptions } = options;
-
   const headers = new Headers(fetchOptions.headers);
 
   if (
@@ -138,6 +172,7 @@ export async function apiFetch<T = unknown>(
   // Parse JSON response body.
   let body: any;
   const contentType = res.headers.get("content-type") ?? "";
+
   if (contentType.includes("application/json")) {
     body = await res.json();
   } else if (!res.ok) {
@@ -156,7 +191,7 @@ export async function apiFetch<T = unknown>(
       code: "UNKNOWN_ERROR",
       message: "An unexpected error occurred.",
     };
-    
+
     // Handle session expiration (401 error after refresh attempt failed)
     if (res.status === 401) {
       const authStore = useAuthStore();
@@ -164,7 +199,7 @@ export async function apiFetch<T = unknown>(
       authStore.clearAuth();
       sessionStore.showSessionExpired();
     }
-    
+
     throw new ApiException(res.status, err);
   }
 
@@ -177,26 +212,12 @@ export async function apiFetch<T = unknown>(
 // ---------------------------------------------------------------------------
 
 // ── Auth ──────────────────────────────────────────────────────────────────
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  emailVerified: boolean;
-  provider?: "email" | "github" | "google";
-  githubConnected?: boolean;
-  githubUsername?: string;
-  googleId?: string;
-  googleUsername?: string;
-  role?: "user" | "super-admin";
-  createdAt: string;
-}
-
-export interface AuthResponse {
-  user: User;
-  accessToken: string;
-}
-
 export const authApi = {
+  /**
+   * ---------------------------------------------------------------------------
+   * Signup API
+   * ---------------------------------------------------------------------------
+   */
   signup: (body: {
     name: string;
     email: string;
@@ -209,6 +230,11 @@ export const authApi = {
       skipAuth: true,
     }),
 
+  /**
+   * ---------------------------------------------------------------------------
+   * Sign In APi
+   * ---------------------------------------------------------------------------
+   */
   login: (body: { email: string; password: string }) =>
     apiFetch<AuthResponse>("/auth/login", {
       method: "POST",
@@ -216,13 +242,33 @@ export const authApi = {
       skipAuth: true,
     }),
 
+  /**
+   * ---------------------------------------------------------------------------
+   * Refresh Token APi
+   * ---------------------------------------------------------------------------
+   */
   refresh: () =>
     apiFetch<AuthResponse>("/auth/refresh", { method: "POST", skipAuth: true }),
 
+  /**
+   * ---------------------------------------------------------------------------
+   * Logout API
+   * ---------------------------------------------------------------------------
+   */
   logout: () => apiFetch<void>("/auth/logout", { method: "POST" }),
 
+  /**
+   * ---------------------------------------------------------------------------
+   * Get current auth user API
+   * ---------------------------------------------------------------------------
+   */
   me: () => apiFetch<{ user: User }>("/auth/me"),
 
+  /**
+   * ---------------------------------------------------------------------------
+   * Verify Email API
+   * ---------------------------------------------------------------------------
+   */
   verifyEmail: (token: string) =>
     apiFetch<{ message: string }>("/auth/verify-email", {
       method: "POST",
@@ -230,6 +276,11 @@ export const authApi = {
       skipAuth: true,
     }),
 
+  /**
+   * ---------------------------------------------------------------------------
+   * Forgot Password API
+   * ---------------------------------------------------------------------------
+   */
   forgotPassword: (email: string) =>
     apiFetch<{ message: string }>("/auth/forgot-password", {
       method: "POST",
@@ -237,6 +288,11 @@ export const authApi = {
       skipAuth: true,
     }),
 
+  /**
+   * ---------------------------------------------------------------------------
+   * Resett Password API
+   * ---------------------------------------------------------------------------
+   */
   resetPassword: (body: {
     token: string;
     password: string;
@@ -248,12 +304,22 @@ export const authApi = {
       skipAuth: true,
     }),
 
+  /**
+   * ---------------------------------------------------------------------------
+   * Update Profile API
+   * ---------------------------------------------------------------------------
+   */
   updateProfile: (body: { name?: string; email?: string }) =>
     apiFetch<{ user: User }>("/auth/profile", {
       method: "PATCH",
       body: JSON.stringify(body),
     }),
 
+  /**
+   * ---------------------------------------------------------------------------
+   * Change Password API
+   * ---------------------------------------------------------------------------
+   */
   changePassword: (body: {
     currentPassword: string;
     newPassword: string;
@@ -264,14 +330,22 @@ export const authApi = {
       body: JSON.stringify(body),
     }),
 
-  /** Browser-side approval endpoint for CLI login flow. */
+  /**
+   * ---------------------------------------------------------------------------
+   * Browser-side approval endpoint for CLI login flow.
+   * ---------------------------------------------------------------------------
+   * */
   cliApprove: (sessionId: string) =>
     apiFetch<{ success: boolean }>("/auth/cli/approve", {
       method: "POST",
       body: JSON.stringify({ sessionId }),
     }),
 
-  /** Cancel endpoint for CLI login flow (used by cancel button/unload). */
+  /**
+   * ---------------------------------------------------------------------------
+   * Cancel endpoint for CLI login flow (used by cancel button/unload).
+   * ---------------------------------------------------------------------------
+   * */
   cliCancel: (sessionId: string) =>
     apiFetch<{ success: boolean }>("/auth/cli/cancel", {
       method: "POST",
@@ -279,7 +353,11 @@ export const authApi = {
       skipAuth: true,
     }),
 
-  /** Google Docs export — settings-level (no project ID needed) */
+  /**
+   * ---------------------------------------------------------------------------
+   * Google Docs export — settings-level (no project ID needed)
+   * ---------------------------------------------------------------------------
+   * */
   getGoogleDocsStatus: () =>
     apiFetch<{
       connected: boolean;
@@ -288,13 +366,22 @@ export const authApi = {
       connectedAt?: string;
     }>("/auth/google-docs/status"),
 
+  /**
+   * ---------------------------------------------------------------------------
+   * Init Google docs OAuth
+   * ---------------------------------------------------------------------------
+   */
   getGoogleDocsStartUrl: () =>
     apiFetch<{ url: string }>("/auth/google-docs/start"),
 
   disconnectGoogleDocs: () =>
     apiFetch<void>("/auth/google-docs", { method: "DELETE" }),
 
-  /** Notion export — settings-level (per-user API key storage) */
+  /**
+   * ---------------------------------------------------------------------------
+   * Notion export — settings-level (per-user API key storage)
+   * ---------------------------------------------------------------------------
+   * */
   getNotionStatus: () =>
     apiFetch<{
       connected: boolean;
@@ -317,7 +404,11 @@ export const authApi = {
 
   disconnectNotion: () => apiFetch<void>("/auth/notion", { method: "DELETE" }),
 
-  /** Webhook Integration — settings-level (global webhook) */
+  /**
+   * ---------------------------------------------------------------------------
+   * Webhook Integration — settings-level (global webhook)
+   * ---------------------------------------------------------------------------
+   * */
   getWebhookStatus: () =>
     apiFetch<{
       webhookEnabled: boolean;
@@ -359,7 +450,11 @@ export const authApi = {
       body: JSON.stringify({ webhookEnabled }),
     }),
 
-  /** API Tokens — for MCP, CLI, and other integrations */
+  /**
+   * ---------------------------------------------------------------------------
+   * API Tokens — for MCP, CLI, and other integrations
+   * ---------------------------------------------------------------------------
+   * */
   createToken: (body: {
     name: string;
     description?: string;
@@ -425,39 +520,6 @@ export const authApi = {
 };
 
 // ── GitHub ────────────────────────────────────────────────────────────────
-
-export interface GitHubStatus {
-  connected: boolean;
-  githubUsername?: string;
-  scopes?: string[];
-  connectedAt?: string;
-}
-
-export interface GitHubRepo {
-  id: number;
-  name: string;
-  full_name: string;
-  html_url: string;
-  description?: string;
-  private: boolean;
-  updated_at: string;
-  language?: string;
-}
-
-export interface GitHubReposResponse {
-  repos: GitHubRepo[];
-  page: number;
-  perPage: number;
-  hasNextPage: boolean;
-}
-
-export interface GitHubOrg {
-  id: number;
-  login: string;
-  description: string | null;
-  avatarUrl: string;
-}
-
 export const githubApi = {
   getStatus: () => apiFetch<GitHubStatus>("/github/status"),
 
@@ -487,31 +549,6 @@ export const githubApi = {
 };
 
 // ── GitLab ────────────────────────────────────────────────────────────────
-
-export interface GitLabStatus {
-  connected: boolean;
-  gitlabUsername?: string;
-  scopes?: string[];
-  connectedAt?: string;
-}
-
-export interface GitLabRepo {
-  id: number;
-  name: string;
-  path_with_namespace: string;
-  web_url: string;
-  description?: string;
-  visibility: "public" | "private" | "internal";
-  last_activity_at: string;
-}
-
-export interface GitLabReposResponse {
-  repos: GitLabRepo[];
-  page: number;
-  perPage: number;
-  hasNextPage: boolean;
-}
-
 export const gitlabApi = {
   getStatus: () => apiFetch<GitLabStatus>("/gitlab/status"),
 
@@ -535,31 +572,6 @@ export const gitlabApi = {
 };
 
 // ── Bitbucket ─────────────────────────────────────────────────────────────
-
-export interface BitbucketStatus {
-  connected: boolean;
-  bitbucketUsername?: string;
-  scopes?: string[];
-  connectedAt?: string;
-}
-
-export interface BitbucketRepo {
-  uuid: string;
-  name: string;
-  full_slug: string;
-  links: { html: { href: string } };
-  description?: string;
-  is_private: boolean;
-  updated_on: string;
-}
-
-export interface BitbucketReposResponse {
-  repos: BitbucketRepo[];
-  page: number;
-  perPage: number;
-  hasNextPage: boolean;
-}
-
 export const bitbucketApi = {
   getStatus: () => apiFetch<BitbucketStatus>("/bitbucket/status"),
 
@@ -582,31 +594,6 @@ export const bitbucketApi = {
 };
 
 // ── Azure DevOps ──────────────────────────────────────────────────────────
-
-export interface AzureStatus {
-  connected: boolean;
-  azureUsername?: string;
-  scopes?: string[];
-  connectedAt?: string;
-}
-
-export interface AzureRepo {
-  id: string;
-  name: string;
-  webUrl: string;
-  projectName: string;
-  projectId?: string;
-  isPrivate: boolean;
-  lastUpdated?: string;
-}
-
-export interface AzureReposResponse {
-  repos: AzureRepo[];
-  page: number;
-  perPage: number;
-  hasNextPage: boolean;
-}
-
 export const azureApi = {
   getStatus: () => apiFetch<AzureStatus>("/azure/status"),
 
@@ -628,104 +615,6 @@ export const azureApi = {
 };
 
 // ── Projects ──────────────────────────────────────────────────────────────
-
-export type ApiProjectStatus =
-  | "queued"
-  | "running"
-  | "done"
-  | "error"
-  | "archived";
-
-export interface ApiProjectEditedSection {
-  section: string;
-  editedAt: string;
-  stale: boolean;
-}
-
-export interface ApiProjectMeta {
-  name: string;
-  description: string | null;
-  language: string;
-  stars: number;
-  defaultBranch: string;
-  topics: string[];
-}
-
-export interface ApiProjectStats {
-  filesAnalysed: number;
-  endpoints: number;
-  models: number;
-  relationships: number;
-  components: number;
-}
-
-export interface ApiProjectSecurity {
-  counts: {
-    CRITICAL: number;
-    HIGH: number;
-    MEDIUM: number;
-    LOW: number;
-  };
-  score: number;
-  grade: string;
-  findings: any[];
-}
-
-export interface ApiProjectOutput {
-  readme?: string;
-  internalDocs?: string;
-  apiReference?: string;
-  schemaDocs?: string;
-  securityReport?: string;
-}
-
-export interface ApiProject {
-  meta: ApiProjectMeta;
-  _id: string;
-  userId: string;
-  repoUrl: string;
-  repoOwner: string;
-  repoName: string;
-  jobId: string;
-  status: ApiProjectStatus;
-  techStack: string[];
-  lastDocumentedCommit: string;
-  stats: ApiProjectStats;
-  security: ApiProjectSecurity;
-  output: ApiProjectOutput;
-  editedOutput: ApiProjectOutput;
-  editedSections: ApiProjectEditedSection[];
-  customTabs?: CustomTab[];
-  createdAt: string;
-  updatedAt: string;
-  chatSessionId?: string;
-}
-
-export interface ProjectGetResponse {
-  project: ApiProject;
-  effectiveOutput: ApiProjectOutput;
-  editedSections: ApiProjectEditedSection[];
-  lastSyncedCommit: string;
-  shareRole: "owner" | "editor" | "viewer";
-}
-
-export interface PipelineEvent {
-  step: string;
-  status?: string;
-  msg?: string;
-  detail?: string;
-  ts: string;
-  result?: Record<string, unknown>;
-}
-
-export interface ProjectsListResponse {
-  projects: ApiProject[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
 export const projectsApi = {
   list: (
     params: {
@@ -907,23 +796,6 @@ export const projectsApi = {
 };
 
 // ── Version history ───────────────────────────────────────────────────────
-
-export interface DocVersion {
-  _id: string;
-  projectId: string;
-  section: string;
-  source: "ai_full" | "ai_incremental" | "user";
-  meta: {
-    commitSha?: string;
-    changedFiles?: string[];
-    agentsRun?: string[];
-    changeSummary?: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-  content?: string; // only present when fetched individually
-}
-
 export const versionsApi = {
   list: (projectId: string, section: string) =>
     apiFetch<{
@@ -949,20 +821,6 @@ export const versionsApi = {
 };
 
 // ── Attachments (Other Docs) ──────────────────────────────────────────────
-
-export interface ApiAttachment {
-  _id: string;
-  projectId: string;
-  userId: string;
-  uploaderName: string;
-  fileName: string;
-  mimeType: string;
-  size: number; // bytes
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export const attachmentsApi = {
   /** List all attachments for a project (no file data). */
   list: (projectId: string) =>
@@ -1007,34 +865,6 @@ export const attachmentsApi = {
 };
 
 // ── Sharing ───────────────────────────────────────────────────────────────
-
-export type ShareRole = "owner" | "editor" | "viewer";
-export type ShareStatus = "pending" | "accepted" | "revoked";
-
-export interface ApiShare {
-  _id: string;
-  projectId: string;
-  inviteeEmail: string;
-  inviteeUser: { _id: string; name?: string; email?: string } | null;
-  role: "viewer" | "editor";
-  status: ShareStatus;
-  createdAt: string;
-  updatedAt: string;
-  expiresAt: string;
-}
-
-export interface ApiSharedProject {
-  _id: string;
-  repoUrl: string;
-  repoOwner: string;
-  repoName: string;
-  status: string;
-  meta?: { name?: string };
-  createdAt: string;
-  updatedAt: string;
-  shareRole: "viewer" | "editor";
-}
-
 export const sharingApi = {
   /** Invite one or more users to a project. */
   invite: (
@@ -1152,87 +982,7 @@ export const chatApi = {
     apiFetch<void>(`/projects/${projectId}/chat`, { method: "DELETE" }),
 };
 
-// ── Public Documentation Portal ──────────────────────────────────────────
-
-export type PortalSectionVisibility = "public" | "internal" | "coming_soon";
-export type PortalAccessMode = "public" | "password";
-
-export type PortalSectionKey =
-  | "readme"
-  | "internalDocs"
-  | "apiReference"
-  | "schemaDocs"
-  | "securityReport";
-
-export interface PortalSectionConfig {
-  sectionKey: PortalSectionKey;
-  visibility: PortalSectionVisibility;
-}
-
-export interface PortalFooterLink {
-  label: string;
-  href: string;
-}
-
-export interface PortalBranding {
-  logo?: string;
-  favicon?: string;
-  primaryColor?: string;
-  bgColor?: string;
-  accentColor?: string;
-  headerText?: string;
-  footerText?: string;
-  footerLinks?: PortalFooterLink[];
-}
-
-export interface ApiPortal {
-  _id?: string;
-  projectId?: string;
-  slug: string;
-  isPublished: boolean;
-  accessMode: PortalAccessMode;
-  branding: PortalBranding;
-  sections: PortalSectionConfig[];
-  seoTitle?: string;
-  seoDescription?: string;
-  customDomain?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface PublicPortalData {
-  portal: ApiPortal;
-  project: {
-    repoOwner: string;
-    repoName: string;
-    meta: ApiProjectMeta;
-    techStack: string[];
-  };
-  protected: boolean;
-  /** null when password-protected and not yet verified */
-  content: Record<PortalSectionKey, string | null> | null;
-  /** null when password-protected and not yet verified */
-  sectionVisibility: Record<PortalSectionKey, PortalSectionVisibility> | null;
-}
-
-export const PORTAL_SECTION_LABELS: Record<PortalSectionKey, string> = {
-  readme: "README",
-  internalDocs: "Internal Docs",
-  apiReference: "API Reference",
-  schemaDocs: "Schema Docs",
-  securityReport: "Security Report",
-};
-
-export const PORTAL_SECTION_KEYS: PortalSectionKey[] = [
-  "readme",
-  "internalDocs",
-  "apiReference",
-  "schemaDocs",
-  "securityReport",
-];
-
 // ── Owner portal API ──────────────────────────────────────────
-
 export const portalApi = {
   /** Get portal settings for a project (owner only). Returns null portal if not set up yet. */
   get: (projectId: string) =>
@@ -1264,7 +1014,6 @@ export const portalApi = {
 };
 
 // ── Public portal API (no auth required) ─────────────────────
-
 export const publicPortalApi = {
   /**
    * Fetch a public portal by slug.
@@ -1288,102 +1037,7 @@ export const publicPortalApi = {
     }),
 };
 
-// ── API Spec (OpenAPI / Postman importer) ─────────────────────
-
-export type ApiSpecSource = "file" | "url" | "raw";
-export type ApiSpecVersion = "2.0" | "3.0" | "3.1" | "postman" | "unknown";
-
-export interface ApiSpecParameter {
-  in: "path" | "query" | "header" | "cookie" | "body";
-  name: string;
-  required: boolean;
-  description: string;
-  schema: Record<string, unknown>;
-  example?: unknown;
-}
-
-export interface ApiSpecRequestBodyContent {
-  schema: Record<string, unknown>;
-  example?: unknown;
-}
-
-export interface ApiSpecRequestBody {
-  required: boolean;
-  description: string;
-  content: Record<string, ApiSpecRequestBodyContent>;
-}
-
-export interface ApiSpecResponseContent {
-  schema: Record<string, unknown>;
-  example?: unknown;
-}
-
-export interface ApiSpecResponse {
-  description: string;
-  content: Record<string, ApiSpecResponseContent>;
-}
-
-export interface ApiSpecEndpoint {
-  id: string; // "GET /users/{id}"
-  method: string; // uppercase
-  path: string;
-  summary: string;
-  description: string;
-  tags: string[];
-  operationId: string;
-  parameters: ApiSpecParameter[];
-  requestBody: ApiSpecRequestBody | null;
-  responses: Record<string, ApiSpecResponse>;
-  security: unknown;
-  deprecated: boolean;
-  customNote: string;
-}
-
-export interface ApiSpecInfo {
-  title: string;
-  version: string;
-  description: string;
-  contact?: unknown;
-  license?: unknown;
-  termsOfService?: string;
-}
-
-export interface ApiSpecServer {
-  url: string;
-  description: string;
-}
-
-export interface ApiSpecTag {
-  name: string;
-  description: string;
-}
-
-export interface ApiSpec {
-  _id: string;
-  projectId: string;
-  source: ApiSpecSource;
-  sourceUrl?: string;
-  specVersion: ApiSpecVersion;
-  info: ApiSpecInfo;
-  servers: ApiSpecServer[];
-  tags: ApiSpecTag[];
-  endpoints: ApiSpecEndpoint[];
-  schemas: Record<string, unknown>;
-  securitySchemes: Record<string, unknown>;
-  autoSync: boolean;
-  lastSyncedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface TryItResult {
-  status: number;
-  headers: Record<string, string>;
-  body: string;
-}
-
 // ── apiSpecApi ────────────────────────────────────────────────
-
 export const apiSpecApi = {
   /** Get the imported spec for a project (null if none). */
   get: (projectId: string) =>
@@ -1446,19 +1100,6 @@ export const apiSpecApi = {
 };
 
 // ── Custom Tabs ───────────────────────────────────────────────────────────
-
-export interface CustomTab {
-  _id: string;
-  name: string;
-  description: string;
-  content: string;
-  order: number;
-  isNative: boolean;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-}
-
 export const customTabsApi = {
   /** List all custom tabs for a project (sorted by order). */
   list: (projectId: string) =>
@@ -1510,122 +1151,8 @@ export const customTabsApi = {
 };
 
 // ---------------------------------------------------------------------------
-// Billing types
-// ---------------------------------------------------------------------------
-
-export interface BillingPlanLimits {
-  projects: number | null;
-  seats: number | null;
-  extraSeatPriceMonthly: number | null;
-  attachmentsPerProject: number | null;
-  maxFileSizeMb: number;
-  aiChatsPerMonth: number | null;
-  portals: number | null;
-  versionHistoryDays: number | null;
-  exportFormats: string[];
-}
-
-export interface BillingPlanFeatures {
-  shareViewOnly: boolean;
-  shareEdit: boolean;
-  maxShares: number | null;
-  archiveRestore: boolean;
-  customDomain: boolean;
-  docApproval: boolean;
-  progressTracker: boolean;
-  openApiImporter: boolean;
-  apiWebhookAccess: boolean;
-  githubSync: boolean;
-}
-
-export interface BillingPlan {
-  id: string;
-  name: string;
-  tagline: string;
-  prices: {
-    monthly: number; // dollars
-    annual: number; // dollars per month
-    annualTotal: number | null;
-    savingsPercent: number;
-  };
-  limits: BillingPlanLimits;
-  features: BillingPlanFeatures;
-}
-
-export type SubscriptionStatus =
-  | "free"
-  | "trialing"
-  | "active"
-  | "past_due"
-  | "cancelled"
-  | "paused";
-
-export interface SubscriptionData {
-  plan: string;
-  planName: string;
-  billingCycle: "monthly" | "annual" | null;
-  status: SubscriptionStatus;
-  seats: number;
-  extraSeats: number;
-  trialEndsAt: string | null;
-  currentPeriodStart: string | null;
-  currentPeriodEnd: string | null;
-  cancelAtPeriodEnd: boolean;
-  pendingPlan: string | null;
-  pauseEndsAt: string | null;
-  limits: BillingPlanLimits;
-  features: BillingPlanFeatures;
-}
-
-export interface UsageData {
-  aiChatsUsed: number;
-  aiChatsResetAt: string | null;
-  projectCount: number;
-  portalCount: number;
-  activeShareCount: number;
-}
-
-export type InvoiceStatus = "pending" | "paid" | "failed" | "refunded" | "void";
-
-export interface InvoiceData {
-  _id: string;
-  invoiceNumber: string;
-  amount: number; // cents
-  currency: string;
-  description: string;
-  status: InvoiceStatus;
-  paymentMethodSnapshot: string | null;
-  paidAt: string | null;
-  periodStart: string | null;
-  periodEnd: string | null;
-  createdAt: string;
-}
-
-export interface PaymentMethodData {
-  _id: string;
-  type: "card" | "mobile_money" | "bank_transfer";
-  isDefault: boolean;
-  displayLabel: string;
-  /** ISO currency code the token was issued in (e.g. NGN, KES, USD) */
-  currency: string;
-  card?: {
-    last4: string;
-    brand: string;
-    expMonth: number;
-    expYear: number;
-  };
-  mobileMoney?: {
-    phone: string;
-    network: string;
-    country: string;
-  };
-  createdAt: string;
-}
-
-// ---------------------------------------------------------------------------
 // Billing API
 // ---------------------------------------------------------------------------
-
 export const billingApi = {
   /** Public — no auth required. Returns all plan definitions. */
   getPlans: () =>
@@ -1762,52 +1289,6 @@ export const billingApi = {
 // ---------------------------------------------------------------------------
 // ── Admin (super-admin only) ─────────────────────────────────────────────
 // ---------------------------------------------------------------------------
-
-export interface AdminStats {
-  totalUsers: number;
-  totalProjects: number;
-  newUsersLast30Days: number;
-  newProjectsLast30Days: number;
-  planBreakdown: Record<string, number>;
-  estimatedMRR: number;
-  paidSubscriptions: number;
-}
-
-export interface AdminUser {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-  provider: string;
-  createdAt: string;
-  subscription: { plan: string; status: string; billingCycle?: string | null };
-}
-
-export interface AdminProject {
-  _id: string;
-  name: string;
-  repoOwner: string;
-  repoName: string;
-  createdAt: string;
-  userId: { _id: string; name: string; email: string } | null;
-}
-
-export interface AdminSubscription {
-  _id: string;
-  plan: string;
-  status: string;
-  billingCycle: string | null;
-  createdAt: string;
-  userId: { _id: string; name: string; email: string } | null;
-}
-
-export interface Pagination {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
-
 export const adminApi = {
   getStats: () => apiFetch<AdminStats>("/admin/stats"),
 

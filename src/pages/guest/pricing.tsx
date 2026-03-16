@@ -12,47 +12,16 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { billingApi, BillingPlan } from "@/lib/api"
+import { billingApi } from "@/lib/api"
 import { useAuthStore } from "@/store/auth"
 import { useSubscriptionStore } from "@/store/subscription"
 import { cn } from "@/lib/utils"
 import BackgroundGrid from "@/components/ui/background-grid"
-import TopHeader from "@/components/header"
-import Footer from "@/components/footer"
 import { Switch } from "@/components/ui/switch"
 import PlanCard from "@/components/billing/PlanCard"
 import Loader1 from "@/components/ui/loader1"
-
-
-// ── Accent per plan ───────────────────────────────────────────────────────────
-const PLAN_ACCENT: Record<string, string> = {
-    free: "text-muted-foreground",
-    starter: "text-blue-400",
-    pro: "text-primary",
-    team: "text-primary",
-}
-
-// Feature comparison rows shown at the bottom of the page
-const COMPARISON_ROWS = [
-    { label: "Projects", key: "projects" as const },
-    { label: "Team seats", key: "seats" as const },
-    { label: "AI chats / month", key: "aiChatsPerMonth" as const },
-    { label: "Portals", key: "portals" as const },
-    { label: "Max file size (MB)", key: "maxFileSizeMb" as const },
-    { label: "Version history (days)", key: "versionHistoryDays" as const },
-]
-
-const FEATURE_ROWS: { label: string; key: keyof BillingPlan["features"] }[] = [
-    { label: "Share (view only)", key: "shareViewOnly" },
-    { label: "Share (edit access)", key: "shareEdit" },
-    { label: "Archive & restore", key: "archiveRestore" },
-    { label: "OpenAPI importer", key: "openApiImporter" },
-    { label: "GitHub sync", key: "githubSync" },
-    { label: "Custom domain", key: "customDomain" },
-    { label: "Doc approval workflow", key: "docApproval" },
-    { label: "API / webhook access", key: "apiWebhookAccess" },
-]
-
+import { BillingPlan } from "@/types/BillingTypes"
+import { COMPARISON_ROWS, FEATURE_ROWS, PLAN_ACCENT } from "@/configs/BillingConfig"
 
 // ── Comparison table ─────────────────────────────────────────────────────────
 function ComparisonTable({ plans }: { plans: BillingPlan[] }) {

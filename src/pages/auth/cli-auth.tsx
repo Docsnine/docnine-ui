@@ -9,8 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ApiException, API_BASE, authApi } from "@/lib/api";
+import { API_BASE, authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
+import { ApiException } from "@/types/ApiTypes";
 
 type CliAuthState = "idle" | "approving" | "approved" | "cancelled" | "error";
 

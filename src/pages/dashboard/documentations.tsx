@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { Link } from "react-router-dom"
 import { formatDistanceToNow } from "date-fns"
-import { projectsApi, ApiProject } from "@/lib/api"
+import { projectsApi } from "@/lib/api"
 import { mapApiStatus } from "@/store/projects"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -28,8 +28,11 @@ import {
     ArrowRight,
 } from "lucide-react"
 import TopBar from "@/components/projects/top-bar"
-import { DocStatusBadge, DocStatusDot, DOC_STATUS_ORDER, type DocStatus } from "@/components/projects/doc-status"
+import { DocStatusBadge } from "@/components/projects/doc-status"
 import { useDocTrackerStore } from "@/store/doc-tracker"
+import { DocStatus } from "@/types/DocStatusTypes"
+import { DOC_STATUS_ORDER } from "@/configs/DocStatusConfig"
+import { ApiProject } from "@/types/ProjectTypes"
 
 // ── Security grade colour ────────────────────────────────────────────────────
 function gradeColour(grade?: string) {

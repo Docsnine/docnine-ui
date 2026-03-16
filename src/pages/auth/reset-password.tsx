@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { BookOpen, ArrowLeft, KeyRound } from "lucide-react"
-import { authApi, ApiException } from "@/lib/api"
+import { authApi } from "@/lib/api"
 import BackgroundGrid from "@/components/ui/background-grid"
-import TopHeader from "@/components/header"
+import { ApiException } from "@/types/ApiTypes"
 import Loader1 from "@/components/ui/loader1"
 
 const resetPasswordSchema = z

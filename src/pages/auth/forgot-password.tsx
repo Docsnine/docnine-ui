@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { BookOpen, ArrowLeft } from "lucide-react"
-import { authApi, ApiException } from "@/lib/api"
-import TopHeader from "@/components/header"
+import { ArrowLeft } from "lucide-react"
+import { authApi } from "@/lib/api"
 import BackgroundGrid from "@/components/ui/background-grid"
 import Loader1 from "@/components/ui/loader1"
+import { ApiException } from "@/types/ApiTypes"
 
 const forgotPasswordSchema = z.object({
     email: z.string().email("Invalid email address"),

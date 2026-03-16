@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react"
-import { authApi, ApiException } from "@/lib/api"
+import { authApi } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -241,11 +241,10 @@ export function APITokensCard() {
 
           {feedback && (
             <div
-              className={`rounded-lg p-3 text-sm ${
-                feedback.type === "success"
-                  ? "bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-200"
-                  : "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-200"
-              }`}
+              className={`rounded-lg p-3 text-sm ${feedback.type === "success"
+                ? "bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-200"
+                : "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-200"
+                }`}
             >
               {feedback.message}
             </div>

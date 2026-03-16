@@ -3,12 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Users2, ArrowRight } from "lucide-react"
-import { Project } from "@/store/projects"
-
-interface SharedProjectsProps {
-    projects: Project[]
-    isLoading: boolean
-}
+import { SharedProjectsProps } from "@/types/DashboardTypes"
 
 export function SharedProjects({ projects, isLoading }: SharedProjectsProps) {
     if (!isLoading && projects.length === 0) {

@@ -1193,7 +1193,7 @@ export const billingApi = {
   /** Upgrade, downgrade or switch billing cycle. */
   changePlan: (planId: string, cycle: "monthly" | "annual", seats?: number) =>
     apiFetch<{
-      type: "upgrade" | "downgrade" | "none";
+      type: "upgrade" | "downgrade" | "immediate_no_charge" | "none";
       immediate?: boolean; // true = card charged on the spot
       paymentLink?: string; // present when no saved card → redirect here
       effectiveAt?: string; // ISO date, for downgrades

@@ -156,6 +156,11 @@ function ChangePlanModal({
                     setResultMsg({ type: "success", text: "Upgraded successfully! Your new plan is now active." })
                     setTimeout(() => { setResultMsg(null); onClose() }, 2000)
                 }
+            } else if (result.type === "immediate_no_charge") {
+                // Upgrade with no payment required (prorated amount is 0 or negative)
+                await onRefresh()
+                setResultMsg({ type: "success", text: "Plan upgraded successfully! No additional charge needed." })
+                setTimeout(() => { setResultMsg(null); onClose() }, 2000)
             } else if (result.type === "downgrade") {
                 await onRefresh()
                 const date = result.effectiveAt ? format(new Date(result.effectiveAt), "MMM d, yyyy") : "next renewal"
@@ -710,8 +715,7 @@ function SeatsCard({
                 </CardTitle>
                 <CardDescription>
                     You have {sub.seats + sub.extraSeats} seats (
-                    {sub.extraSeats > 0 && `${sub.extraSeats} extra`}). Add more seats —
-                    charged prorated for the current period.
+                    {sub.extraSeats > 0 && `${sub.extraSeats} extra`}). Add more seats.
                 </CardDescription>
             </CardHeader>
             <CardContent>

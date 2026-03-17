@@ -143,6 +143,7 @@ export async function apiFetch<T = unknown>(
   }
 
   const token = _accessToken;
+  
   if (token && !skipAuth) {
     headers.set("Authorization", `Bearer ${token}`);
   }
@@ -193,11 +194,16 @@ export async function apiFetch<T = unknown>(
     };
 
     // Handle session expiration (401 error after refresh attempt failed)
+    // Only show the modal if the user was actually authenticated before
+    // (a 401 on first load for new users is expected, not an error)
     if (res.status === 401) {
       const authState = useAuthStore.getState();
       const sessionState = useSessionStore.getState();
-      authState.clearAuth();
-      sessionState.showSessionExpired();
+      
+      if (authState.isAuthenticated) {
+        authState.clearAuth();
+        sessionState.showSessionExpired();
+      }
     }
 
     throw new ApiException(res.status, err);

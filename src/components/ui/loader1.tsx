@@ -13,59 +13,62 @@ const SIZE_MAP: Record<LoaderSize, number> = {
 interface LoaderProps {
     /** Preset size or an explicit px number. Default: "md" */
     size?: LoaderSize | number
-    /** Explicit color. Falls back to currentColor (inherits text color). */
+    /** Explicit color. Falls back to currentColor. Default: uses CSS var(--color-primary) */
     color?: string
-    /** Animation duration. Default: "0.8s" */
-    speed?: string
-    /** Stroke thickness in px. Default: 2.5 */
-    strokeWidth?: number
-    /** Additional Tailwind / CSS classes (e.g. "text-primary"). */
+    /** Additional Tailwind / CSS classes */
     className?: string
     /** Accessible label. Default: "Loading" */
     label?: string
 }
 
 export default function Loader1({
-    size = "md",
+    size = "lg",
     color,
-    speed = "0.8s",
-    strokeWidth = 2.5,
     className,
     label = "Loading",
 }: LoaderProps) {
     const px = typeof size === "number" ? size : SIZE_MAP[size]
+    const primaryColor = color || "var(--color-primary)"
+    const dotSize = Math.max(px / 5, 4)
 
     return (
-        <svg
-            width={px}
-            height={px}
-            viewBox="0 0 24 24"
-            fill="none"
+        <div
             role="status"
             aria-label={label}
-            className={cn("animate-spin", className)}
-            style={{
-                color: color ?? undefined,
-                animationDuration: speed,
-            }}
+            className={cn("flex items-center justify-center gap-2", className)}
         >
-            {/* Background track */}
-            <circle
-                cx="12"
-                cy="12"
-                r="9.5"
-                stroke="currentColor"
-                strokeWidth={strokeWidth}
-                strokeLinecap="round"
-                opacity={0.2}
-            />
-            {/* Spinning arc */}
-            <path
-                d="M12 2.5a9.5 9.5 0 0 1 9.5 9.5"
-                stroke="currentColor"
-                strokeWidth={strokeWidth}
-                strokeLinecap="round"
-            />
-        </svg>
+            <style>{`
+                @keyframes apple-bounce {
+                    0%, 80%, 100% {
+                        transform: scale(0.6);
+                        opacity: 0.5;
+                    }
+                    40% {
+                        transform: scale(1);
+                        opacity: 1;
+                    }
+                }
+                
+                .loader-dot {
+                    width: ${dotSize}px;
+                    height: ${dotSize}px;
+                    border-radius: 50%;
+                    background-color: ${primaryColor};
+                    animation: apple-bounce 1.4s infinite ease-in-out both;
+                }
+                
+                .loader-dot:first-child {
+                    animation-delay: -0.32s;
+                }
+                
+                .loader-dot:nth-child(2) {
+                    animation-delay: -0.16s;
+                }
+            `}</style>
+
+            <div className="loader-dot" />
+            <div className="loader-dot" />
+            <div className="loader-dot" />
+        </div>
     )
 }

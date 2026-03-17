@@ -18,6 +18,7 @@ import { GuestLayout } from "./layout/guest"
 import { AuthLayout } from "./layout/auth"
 import { ApplicationLogo } from "./components/common"
 import { SeoConfig } from "./types/SeoTypes"
+import Loader from "./components/ui/loader"
 
 // ─── Lazy-loaded pages ────────────────────────────────────────────
 
@@ -60,7 +61,7 @@ const ContactPage = lazy(() => import("@/pages/guest/contact").then(m => ({ defa
 
 function PageLoader() {
   return (
-    <div className="flex min-h-screen items-center justify-center gap-3 bg-background">
+    <div className="flex min-h-screen items-center gap-3 justify-center bg-background">
       <ApplicationLogo className="h-18" />
       <Loader1 size="md" className="text-muted-foreground" />
     </div>
@@ -339,10 +340,12 @@ function AppRoutes() {
       "/auth/github", "/auth/gitlab", "/auth/bitbucket", "/auth/azure",
       "/github/oauth/complete", "/gitlab/oauth/complete", "/bitbucket/oauth/complete", "/azure/oauth/complete"
     ]
+
     if (oauthPaths.includes(window.location.pathname)) {
       useAuthStore.setState({ initialized: true })
       return
     }
+
     initAuth()
   }, [initAuth])
 

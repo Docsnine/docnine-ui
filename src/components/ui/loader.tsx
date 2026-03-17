@@ -32,15 +32,6 @@ export default function Loader({
     size in SIZE_MAP ? SIZE_MAP[size as LoaderSize] : size
 
   return (
-    <span
-      className={cn("loader", className)}
-      style={{
-        fontSize: resolvedSize,
-        ...(color && { "--loader-color": color }),
-        ...(speed && { "--loader-speed": speed }),
-      } as React.CSSProperties}
-      role="status"
-      aria-label="Loading"
-    />
+    <span className="loader-c2"></span>
   )
 }

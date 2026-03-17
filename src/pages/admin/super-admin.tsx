@@ -104,7 +104,7 @@ function StatCard({
   iconClass?: string
 }) {
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
         <div className={`p-2 rounded-md ${iconClass ?? "bg-primary/10"}`}>
@@ -408,7 +408,7 @@ export function SuperAdminPage() {
               </div>
 
               {/* Plan breakdown */}
-              <Card>
+              <Card className="shadow-none">
                 <CardHeader>
                   <CardTitle className="text-base">Users by Plan</CardTitle>
                 </CardHeader>

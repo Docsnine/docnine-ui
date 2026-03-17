@@ -28,6 +28,7 @@ export function useProviderRepos() {
             path_with_namespace: repo.path_with_namespace,
             full_name: repo.full_name || repo.path_with_namespace || repo.full_slug || repo.name,
             description: repo.description,
+            // GitHub uses html_url, GitLab uses web_url, Bitbucket uses links.html.href, Azure uses webUrl
             html_url: repo.html_url || repo.web_url || repo.links?.html?.href || repo.webUrl || "",
             web_url: repo.web_url || repo.webUrl,
         }
@@ -59,12 +60,18 @@ export function useProviderRepos() {
                 }))
             }
         } catch (err: any) {
+            console.error(`[useProviderRepos] Failed to load ${provider} repositories:`, {
+                provider,
+                page,
+                error_code: err?.code,
+                error_message: err?.message,
+            });
             // Don't show error if provider is not connected - this is expected
             if (err?.code !== "GITHUB_NOT_CONNECTED" && 
                 err?.code !== "GITLAB_NOT_CONNECTED" && 
                 err?.code !== "BITBUCKET_NOT_CONNECTED" &&
                 err?.code !== "AZURE_NOT_CONNECTED") {
-                setApiError(`Failed to load ${provider} repositories.`)
+                setApiError(`Failed to load ${provider} repositories. ${err?.message || "Please try again."}`)
             }
         } finally {
             setReposState((prev) => ({ ...prev, loading: false }))

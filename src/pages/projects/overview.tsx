@@ -31,6 +31,8 @@ import {
     Lock,
 } from "lucide-react"
 import Loader1 from "@/components/ui/loader1"
+import { useConfirm } from "@/hooks"
+import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog"
 
 // ── Helper for file downloads ──────────────────────────────────────────
 const triggerDownload = (blob: Blob, filename: string) => {
@@ -62,6 +64,7 @@ export function ProjectOverviewPage() {
     const { subscription } = useSubscriptionStore()
     const [upgradeOpen, setUpgradeOpen] = useState(false)
     const [upgradeFeature, setUpgradeFeature] = useState<{ name: string; plan: string; description?: string }>({ name: "", plan: "starter" })
+    const { confirm, state: confirmState, handleConfirm, handleCancel } = useConfirm()
 
     function requirePlan(featureName: string, plan: string, description: string, cb: () => void) {
         if (!meetsMinPlan(subscription, plan)) {
@@ -166,33 +169,71 @@ export function ProjectOverviewPage() {
             const result = await retryProject(project.id)
             navigate(`/projects/${project.id}/live`)
         } catch (err: any) {
-            alert(err?.message ?? "Failed to retry pipeline.")
+            await confirm({
+                title: "Action Failed",
+                message: err?.message ?? "Failed to continue pipeline",
+                confirmText: "Try Again",
+                cancelText: "Cancel",
+                isDangerous: true,
+            });
         } finally {
             setActionLoading(null)
         }
     }
 
     const handleArchive = async () => {
-        if (!confirm("Archive this project?")) return
+        const confirmed = await confirm({
+            title: "Action Required",
+            message: "Are you sure about this, Archive this project?",
+            confirmText: "Yes, Archive",
+            cancelText: "Cancel",
+            isDangerous: true,
+        });
+
+        if (!confirmed) return
+
         setActionLoading("archive")
+
         try {
             await archiveProject(project.id)
             setProject((p) => p ? { ...p, status: "archived" as const, apiStatus: "archived" } : p)
         } catch (err: any) {
-            alert(err?.message ?? "Failed to archive project.")
+            await confirm({
+                title: "Action Failed",
+                message: err?.message ?? "Failed to archive project, Try again later.",
+                confirmText: "Ok",
+                cancelText: "Cancel",
+                isDangerous: true,
+            });
         } finally {
             setActionLoading(null)
         }
     }
 
     const handleDelete = async () => {
-        if (!confirm("Delete this project? This cannot be undone.")) return
+        const confirmed = await confirm({
+            title: "Action Required",
+            message: "Are you sure about this, Delete this project?",
+            confirmText: "Yes, Delete",
+            cancelText: "Cancel",
+            isDangerous: true,
+        });
+
+        if (!confirmed) return
+
         setActionLoading("delete")
+
         try {
             await deleteProject(project.id)
             navigate("/dashboard")
         } catch (err: any) {
-            alert(err?.message ?? "Failed to delete project.")
+            const confirmed = await confirm({
+                title: "Action Failed",
+                message: err?.message ?? "Failed to delete project. Try again later.",
+                confirmText: "Try Again",
+                cancelText: "Cancel",
+                isDangerous: true,
+            });
             setActionLoading(null)
         }
     }
@@ -642,6 +683,18 @@ export function ProjectOverviewPage() {
                 featureName={upgradeFeature.name}
                 requiredPlan={upgradeFeature.plan}
                 description={upgradeFeature.description}
+            />
+
+            {/* Confirmation Dialog */}
+            <ConfirmDialog
+                isOpen={confirmState.isOpen}
+                title={confirmState.title}
+                message={confirmState.message}
+                confirmText={confirmState.confirmText}
+                cancelText={confirmState.cancelText}
+                isDangerous={confirmState.isDangerous}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
             />
         </>
     )

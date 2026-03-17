@@ -10,7 +10,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({
   children,
-  defaultTheme = "light",
+  defaultTheme = "system",
   storageKey = "docnine-ui-theme",
   ...props
 }: ThemeProviderProps) {

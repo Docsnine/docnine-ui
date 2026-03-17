@@ -57,6 +57,8 @@ import { DocStatus } from "@/types/DocStatusTypes"
 import { DOC_STATUS_CONFIG, DOC_STATUS_ORDER } from "@/configs/DocStatusConfig"
 import { DocTab, NativeTab, TabDef } from "@/types/DocumentationTypes"
 import { NATIVE_TABS, TAB_TO_SECTION } from "@/configs/DocumentationConfig"
+import { useConfirm } from "@/hooks"
+import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog"
 
 // ── Main component ────────────────────────────────────────────────────────────
 export function DocumentationViewerPage() {
@@ -123,6 +125,27 @@ export function DocumentationViewerPage() {
   const { subscription } = useSubscriptionStore()
   const [upgradeOpen, setUpgradeOpen] = useState(false)
   const [upgradeFeature, setUpgradeFeature] = useState<{ name: string; plan: string; description?: string }>({ name: "", plan: "starter" })
+  const { confirm, state: confirmState, handleConfirm, handleCancel } = useConfirm()
+
+  // API Spec (FT4)
+  const [apiSpec, setApiSpec] = useState<ApiSpec | null>(null)
+  const [apiSpecLoading, setApiSpecLoading] = useState(false)
+  const [apiSpecImportOpen, setApiSpecImportOpen] = useState(false)
+  const [apiSubTab, setApiSubTab] = useState<"document" | "spec">("document")
+  const [syncingSpec, setSyncingSpec] = useState(false);
+
+  // Editable content per tab (initialized from project data)
+  const [editedContent, setEditedContent] = useState<Record<string, string>>({
+    readme: "",
+    api: "",
+    schema: "",
+    internal: "",
+    security: "",
+    other_docs: "",
+  })
+
+  // Dynamic tabs list (native + custom)
+  const [allTabs, setAllTabs] = useState<TabDef[]>(NATIVE_TABS)
 
   useEffect(() => {
     if (!statusDropdownOpen) return
@@ -154,26 +177,6 @@ export function DocumentationViewerPage() {
     }
     cb()
   }
-
-  // API Spec (FT4)
-  const [apiSpec, setApiSpec] = useState<ApiSpec | null>(null)
-  const [apiSpecLoading, setApiSpecLoading] = useState(false)
-  const [apiSpecImportOpen, setApiSpecImportOpen] = useState(false)
-  const [apiSubTab, setApiSubTab] = useState<"document" | "spec">("document")
-  const [syncingSpec, setSyncingSpec] = useState(false)
-
-  // Editable content per tab (initialized from project data)
-  const [editedContent, setEditedContent] = useState<Record<string, string>>({
-    readme: "",
-    api: "",
-    schema: "",
-    internal: "",
-    security: "",
-    other_docs: "",
-  })
-
-  // Dynamic tabs list (native + custom)
-  const [allTabs, setAllTabs] = useState<TabDef[]>(NATIVE_TABS)
 
   // Load project on mount + fetch version counts
   useEffect(() => {
@@ -317,7 +320,13 @@ export function DocumentationViewerPage() {
 
       setIsEditMode(false);
     } catch (err: any) {
-      alert(err?.message ?? "Failed to save. Please try again.");
+      const confirmed = await confirm({
+        title: "Action Failed",
+        message: "Failed to save changes. Please try again.",
+        confirmText: "Try Again",
+        cancelText: "Cancel",
+        isDangerous: true,
+      });
     } finally {
       setActionLoading(null);
     }
@@ -374,7 +383,13 @@ export function DocumentationViewerPage() {
         setCreateTabModalOpen(false);
       }
     } catch (err: any) {
-      alert(err?.message ?? "Failed to create tab");
+      const confirmed = await confirm({
+        title: "Action Failed",
+        message: err?.message ?? "Failed to create tab",
+        confirmText: "Try Again",
+        cancelText: "Cancel",
+        isDangerous: true,
+      });
     } finally {
       setActionLoading(null);
     }
@@ -1333,6 +1348,18 @@ export function DocumentationViewerPage() {
         onClose={() => setCreateTabModalOpen(false)}
         onCreate={handleCreateTab}
         isLoading={actionLoading === "create-tab"}
+      />
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={confirmState.isOpen}
+        title={confirmState.title}
+        message={confirmState.message}
+        confirmText={confirmState.confirmText}
+        cancelText={confirmState.cancelText}
+        isDangerous={confirmState.isDangerous}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
       />
     </div>
   )

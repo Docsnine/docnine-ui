@@ -15,6 +15,8 @@ import { Copy, Check, Trash2, Eye, EyeOff, Copy as CopyIcon, Plus, AlertTriangle
 import { format } from "date-fns"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
+import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog"
+import { useConfirm } from "@/hooks/useConfirm"
 
 interface Token {
   id: string
@@ -55,6 +57,7 @@ export function APITokensCard() {
   const [isCreating, setIsCreating] = useState(false)
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const { confirm, state, handleConfirm, handleCancel } = useConfirm()
   const [createForm, setCreateForm] = useState({
     name: "",
     description: "",
@@ -121,7 +124,13 @@ export function APITokensCard() {
   }
 
   const handleRevokeToken = async (tokenId: string) => {
-    if (!confirm("Revoke this token? Applications using it will stop working.")) return
+    const confirmed = await confirm({
+      title: "Revoke Token",
+      message: "Revoke this token? Applications using it will stop working immediately.",
+      isDangerous: true,
+      confirmText: "Revoke"
+    })
+    if (!confirmed) return
 
     setRevokeLoading(tokenId)
     try {

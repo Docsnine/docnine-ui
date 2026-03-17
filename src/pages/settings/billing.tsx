@@ -156,17 +156,23 @@ function ChangePlanModal({
                     setResultMsg({ type: "success", text: "Upgraded successfully! Your new plan is now active." })
                     setTimeout(() => { setResultMsg(null); onClose() }, 2000)
                 }
-            } else if (result.type === "immediate_no_charge") {
-                // Upgrade with no payment required (prorated amount is 0 or negative)
+            } 
+            
+            // Upgrade with no payment required (prorated amount is 0 or negative)
+            else if (result.type === "immediate_no_charge") {
                 await onRefresh()
                 setResultMsg({ type: "success", text: "Plan upgraded successfully! No additional charge needed." })
                 setTimeout(() => { setResultMsg(null); onClose() }, 2000)
-            } else if (result.type === "downgrade") {
+            } 
+            
+            else if (result.type === "downgrade") {
                 await onRefresh()
                 const date = result.effectiveAt ? format(new Date(result.effectiveAt), "MMM d, yyyy") : "next renewal"
                 setResultMsg({ type: "scheduled", text: `Downgrade scheduled — takes effect on ${date}.` })
                 setTimeout(() => { setResultMsg(null); onClose() }, 3000)
-            } else {
+            } 
+            
+            else {
                 // type === "none" — same plan/cycle
                 setResultMsg({ type: "success", text: "No change needed — you're already on this plan." })
                 setTimeout(() => { setResultMsg(null); onClose() }, 1500)

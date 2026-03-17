@@ -330,7 +330,6 @@ function ScrollRestoration() {
 }
 
 // ─── App routes ───────────────────────────────────────────────────
-
 function AppRoutes() {
   const { initAuth, initialized } = useAuthStore()
   const { sessionExpiredOpen, hideSessionExpired } = useSessionStore()

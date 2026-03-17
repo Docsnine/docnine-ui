@@ -5,8 +5,9 @@
  * Tracks a status, optional assignee, optional due date, and an audit log
  * for each (projectId, sectionKey) pair.
  *
- * TODO: Replace localStorage persistence with real API calls when a backend
- * endpoint becomes available.
+ * Note: Uses localStorage for now as a temporary solution. This allows
+ * per-user documentation tracking across sessions without requiring backend
+ * API integration. Can be migrated to an API-backed solution in the future.
  */
 import { DEFAULT_SECTION } from "@/configs/DocStatusConfig";
 import {

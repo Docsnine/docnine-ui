@@ -196,6 +196,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
             handleModalClose(false)
             navigate(`/projects/${result.projectId}/live`)
         } catch (err: any) {
+            console.error("[NewProject] Manual URL creation failed:", err.message)
             setApiError(err.message)
         } finally {
             setIsConnecting(false)
@@ -212,6 +213,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
             handleModalClose(false)
             navigate(`/projects/${result.projectId}/live`)
         } catch (err: any) {
+            console.error(`[NewProject] Provider (${provider}) creation failed:`, err.message)
             setApiError(err.message)
         } finally {
             setIsConnecting(false)
@@ -228,6 +230,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
             handleModalClose(false)
             navigate(`/projects/${result.projectId}/live`)
         } catch (err: any) {
+            console.error("[NewProject] ZIP upload failed:", err.message)
             setApiError(err.message)
         } finally {
             setIsConnecting(false)
@@ -242,6 +245,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
             handleModalClose(false)
             navigate(`/projects/${result.projectId}/live`)
         } catch (err: any) {
+            console.error("[NewProject] From-scratch creation failed:", err.message)
             setApiError(err.message)
         } finally {
             setIsConnecting(false)

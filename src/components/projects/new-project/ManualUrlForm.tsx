@@ -32,13 +32,38 @@ export function ManualUrlForm({
         }
     }
 
+    /**
+     * Parse error to provide helpful suggestions
+     */
+    const getErrorSuggestion = (err: string): string | null => {
+        if (err.includes("PROJECT_LIMIT")) {
+            return "💡 Tip: Upgrade your plan to create more projects or archive unused ones."
+        }
+        if (err.includes("not connected")) {
+            return "💡 Tip: Go to Settings and connect your provider account before importing."
+        }
+        if (err.includes("pipeline is already running")) {
+            return "💡 Tip: Wait for the existing pipeline to complete before importing the same repository."
+        }
+        return null
+    }
+
+    const suggestion = error ? getErrorSuggestion(error) : null
+
     return (
         <form onSubmit={form.handleSubmit(handleSubmit)}>
             <div className="grid gap-4 py-4">
                 {error && (
-                    <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4 shrink-0" />
-                        {error}
+                    <div className="space-y-2">
+                        <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive flex items-center gap-2">
+                            <AlertCircle className="h-4 w-4 shrink-0" />
+                            <span>{error}</span>
+                        </div>
+                        {suggestion && (
+                            <p className="text-xs text-amber-700 bg-amber-50 rounded p-2 border border-amber-200">
+                                {suggestion}
+                            </p>
+                        )}
                     </div>
                 )}
 

@@ -48,7 +48,6 @@ export function BitbucketOAuthCompletePage() {
         } else {
             // If not a popup, just show a message to the user
             // Don't navigate - let the parent handle its own routing
-            console.log("[Bitbucket OAuth Complete] Not a popup window, staying on this page")
         }
 
         return () => { } // No cleanup needed

@@ -194,10 +194,10 @@ export async function apiFetch<T = unknown>(
 
     // Handle session expiration (401 error after refresh attempt failed)
     if (res.status === 401) {
-      const authStore = useAuthStore();
-      const sessionStore = useSessionStore();
-      authStore.clearAuth();
-      sessionStore.showSessionExpired();
+      const authState = useAuthStore.getState();
+      const sessionState = useSessionStore.getState();
+      authState.clearAuth();
+      sessionState.showSessionExpired();
     }
 
     throw new ApiException(res.status, err);

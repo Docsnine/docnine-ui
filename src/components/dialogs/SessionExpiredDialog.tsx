@@ -50,7 +50,7 @@ export function SessionExpiredDialog({
                     </Button>
                     <Button
                         onClick={handleLoginAgain}
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="bg-primary"
                     >
                         Log In Again
                     </Button>

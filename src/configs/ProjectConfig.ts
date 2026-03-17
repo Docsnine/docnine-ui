@@ -1,16 +1,10 @@
-/**
- * Centralized constants and configs for project creation flow
- */
 import {
   GithubIcon,
   GitlabIcon,
   Code2Icon,
   CloudCheckIcon,
 } from "lucide-react";
-import type {
-  ProviderKey,
-  ProviderConfig,
-} from "@/types/ProjectTypes";
+import type { ProviderKey, ProviderConfig } from "@/types/ProjectTypes";
 
 // ── Storage Keys ──────────────────────────────────────────────────────────
 export const SELECTED_ORG_KEY = "docnine:selected-org" as const;

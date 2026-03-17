@@ -21,8 +21,8 @@ export function BitbucketOAuthCompletePage() {
 
     useEffect(() => {
         const status = searchParams.get("bitbucket")  // "connected" | "error"
-        const user   = searchParams.get("user")       // bitbucket username
-        const msg    = searchParams.get("msg")        // error message
+        const user = searchParams.get("user")       // bitbucket username
+        const msg = searchParams.get("msg")        // error message
 
         // 1. Write to localStorage so the parent modal's poller picks it up
         try {
@@ -48,10 +48,9 @@ export function BitbucketOAuthCompletePage() {
         } else {
             // If not a popup, just show a message to the user
             // Don't navigate - let the parent handle its own routing
-            console.log("[Bitbucket OAuth Complete] Not a popup window, staying on this page")
         }
 
-        return () => {} // No cleanup needed
+        return () => { } // No cleanup needed
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     return (

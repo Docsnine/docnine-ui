@@ -21,8 +21,8 @@ export function AzureOAuthCompletePage() {
 
     useEffect(() => {
         const status = searchParams.get("azure")  // "connected" | "error"
-        const user   = searchParams.get("user")   // azure username
-        const msg    = searchParams.get("msg")    // error message
+        const user = searchParams.get("user")   // azure username
+        const msg = searchParams.get("msg")    // error message
 
         // 1. Write to localStorage so the parent modal's poller picks it up
         try {
@@ -48,10 +48,9 @@ export function AzureOAuthCompletePage() {
         } else {
             // If not a popup, just show a message to the user
             // Don't navigate - let the parent handle its own routing
-            console.log("[Azure OAuth Complete] Not a popup window, staying on this page")
         }
 
-        return () => {} // No cleanup needed
+        return () => { } // No cleanup needed
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     return (

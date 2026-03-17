@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from "react"
 import { useSearchParams } from "react-router-dom"
-import { githubApi, gitlabApi, bitbucketApi, azureApi, authApi, GitHubStatus, API_BASE } from "@/lib/api"
+import { githubApi, gitlabApi, bitbucketApi, azureApi, authApi, API_BASE } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog"
+import { useConfirm } from "@/hooks/useConfirm"
 import {
     Github,
     CheckCircle2,
@@ -37,6 +39,18 @@ import Loader1 from "@/components/ui/loader1"
 import { CopyButton } from "@/components/common"
 import { GeneralSettingsCard } from "@/components/settings/GeneralSettingsCard"
 import { APITokensCard } from "@/components/settings/APITokensCard"
+import { GoogleDocsStatusData, NotionStatusData } from "@/types/OauthIntergrationTypes"
+import { GitHubStatus } from "@/types/GithubTypes"
+
+// ── Tab nav ───────────────────────────────────────────────────────────────────
+const TABS = [
+    { id: "general", label: "General", icon: User },
+    { id: "integrations", label: "Integrations", icon: Puzzle },
+    { id: "billing", label: "Billings", icon: CreditCard },
+    { id: "api-tokens", label: "Tokens", icon: KeyRound },
+] as const;
+
+type TabId = typeof TABS[number]["id"];
 
 // ── GitHub Integration card ──────────────────────────────────────────────────
 function GitHubCard() {
@@ -44,6 +58,7 @@ function GitHubCard() {
     const [isLoading, setIsLoading] = useState(true)
     const [actionLoading, setActionLoading] = useState<"connect" | "disconnect" | null>(null)
     const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
+    const { confirm, state, handleConfirm, handleCancel } = useConfirm()
 
     const loadStatus = useCallback(async () => {
         setIsLoading(true)
@@ -72,7 +87,14 @@ function GitHubCard() {
     }
 
     const handleDisconnect = async () => {
-        if (!confirm("Disconnect your GitHub account? You will no longer be able to import private repositories.")) return
+        const confirmed = await confirm({
+            title: "Disconnect GitHub",
+            message: "Disconnect your GitHub account? You will no longer be able to import private repositories.",
+            isDangerous: true,
+            confirmText: "Disconnect"
+        })
+        if (!confirmed) return
+
         setActionLoading("disconnect")
         setFeedback(null)
         try {
@@ -87,112 +109,125 @@ function GitHubCard() {
     }
 
     return (
-        <Card className="shadow-none">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Github className="h-5 w-5" />
-                    GitHub Integration
-                </CardTitle>
-                <CardDescription>
-                    Connect your GitHub account to import repositories and run the documentation pipeline.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {feedback && (
-                    <div
-                        className={`flex items-center gap-2 rounded-lg border px-4 py-3 text-sm ${feedback.type === "success"
-                            ? "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400"
-                            : "border-destructive/30 bg-destructive/10 text-destructive"
-                            }`}
-                    >
-                        {feedback.type === "success"
-                            ? <CheckCircle2 className="h-4 w-4 shrink-0" />
-                            : <AlertTriangle className="h-4 w-4 shrink-0" />
-                        }
-                        {feedback.message}
-                    </div>
-                )}
-
-                {isLoading ? (
-                    <div className="flex items-center gap-3">
-                        <Skeleton className="h-5 w-5 rounded-full" />
-                        <Skeleton className="h-4 w-48" />
-                    </div>
-                ) : status?.connected ? (
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3 rounded-lg border border-green-500/20 bg-green-500/5 px-4 py-3">
-                            <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
-                            <div>
-                                <p className="font-medium text-sm">
-                                    Connected as <span className="text-primary">@{status.githubUsername}</span>
-                                </p>
-                                {status.connectedAt && (
-                                    <p className="text-xs text-muted-foreground mt-0.5">
-                                        Since {format(new Date(status.connectedAt), "d MMM yyyy")}
-                                    </p>
-                                )}
-                            </div>
+        <>
+            <Card className="shadow-none">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Github className="h-5 w-5" />
+                        GitHub Integration
+                    </CardTitle>
+                    <CardDescription>
+                        Connect your GitHub account to import repositories and run the documentation pipeline.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {feedback && (
+                        <div
+                            className={`flex items-center gap-2 rounded-lg border px-4 py-3 text-sm ${feedback.type === "success"
+                                ? "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400"
+                                : "border-destructive/30 bg-destructive/10 text-destructive"
+                                }`}
+                        >
+                            {feedback.type === "success"
+                                ? <CheckCircle2 className="h-4 w-4 shrink-0" />
+                                : <AlertTriangle className="h-4 w-4 shrink-0" />
+                            }
+                            {feedback.message}
                         </div>
+                    )}
 
-                        {status.scopes && status.scopes.length > 0 && (
-                            <div>
-                                <p className="text-xs text-muted-foreground mb-1.5">Granted scopes</p>
-                                <div className="flex flex-wrap gap-1.5">
-                                    {status.scopes.map((s) => (
-                                        <span key={s} className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted font-mono">
-                                            {s}
-                                        </span>
-                                    ))}
+                    {isLoading ? (
+                        <div className="flex items-center gap-3">
+                            <Skeleton className="h-5 w-5 rounded-full" />
+                            <Skeleton className="h-4 w-48" />
+                        </div>
+                    ) : status?.connected ? (
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 rounded-lg border border-green-500/20 bg-green-500/5 px-4 py-3">
+                                <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
+                                <div>
+                                    <p className="font-medium text-sm">
+                                        Connected as <span className="text-primary">@{status.githubUsername}</span>
+                                    </p>
+                                    {status.connectedAt && (
+                                        <p className="text-xs text-muted-foreground mt-0.5">
+                                            Since {format(new Date(status.connectedAt), "d MMM yyyy")}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
-                        )}
 
-                        <div className="flex items-center gap-2">
+                            {status.scopes && status.scopes.length > 0 && (
+                                <div>
+                                    <p className="text-xs text-muted-foreground mb-1.5">Granted scopes</p>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {status.scopes.map((s) => (
+                                            <span key={s} className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted font-mono">
+                                                {s}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={loadStatus}
+                                    className="gap-2"
+                                >
+                                    <RefreshCw className="h-3.5 w-3.5" />
+                                    Refresh
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={handleDisconnect}
+                                    disabled={actionLoading === "disconnect"}
+                                    className="gap-2"
+                                >
+                                    {actionLoading === "disconnect"
+                                        ? <Loader1 className="h-3.5 w-3.5 " />
+                                        : <Unlink className="h-3.5 w-3.5" />
+                                    }
+                                    Disconnect
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
+                                <Github className="h-5 w-5 text-muted-foreground shrink-0" />
+                                <p className="text-sm text-muted-foreground">No GitHub account connected.</p>
+                            </div>
                             <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={loadStatus}
+                                onClick={handleConnect}
+                                disabled={actionLoading === "connect"}
                                 className="gap-2"
                             >
-                                <RefreshCw className="h-3.5 w-3.5" />
-                                Refresh
-                            </Button>
-                            <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={handleDisconnect}
-                                disabled={actionLoading === "disconnect"}
-                                className="gap-2"
-                            >
-                                {actionLoading === "disconnect"
-                                    ? <Loader1 className="h-3.5 w-3.5 " />
-                                    : <Unlink className="h-3.5 w-3.5" />
+                                {actionLoading === "connect"
+                                    ? <Loader1 className="h-4 w-4 " />
+                                    : <Github className="h-4 w-4" />
                                 }
-                                Disconnect
+                                Connect GitHub
                             </Button>
                         </div>
-                    </div>
-                ) : (
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
-                            <Github className="h-5 w-5 text-muted-foreground shrink-0" />
-                            <p className="text-sm text-muted-foreground">No GitHub account connected.</p>
-                        </div>
-                        <Button
-                            onClick={handleConnect}
-                            disabled={actionLoading === "connect"}
-                            className="gap-2"
-                        >
-                            {actionLoading === "connect"
-                                ? <Loader1 className="h-4 w-4 " />
-                                : <Github className="h-4 w-4" />
-                            }
-                            Connect GitHub
-                        </Button>
-                    </div>
-                )}
-            </CardContent>
-        </Card>
+                    )}
+                </CardContent>
+            </Card>
+
+            <ConfirmDialog
+                isOpen={state.isOpen}
+                title={state.title}
+                message={state.message}
+                confirmText={state.confirmText}
+                cancelText={state.cancelText}
+                isDangerous={state.isDangerous}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
+        </>
     )
 }
 
@@ -453,14 +488,7 @@ function WebhookCard() {
     )
 }
 
-// ── Google Docs card ─────────────────────────────────────────────────────────
-interface GoogleDocsStatusData {
-    connected: boolean
-    email?: string
-    name?: string
-    connectedAt?: string
-}
-
+// ── Google Docs Integration card ─────────────────────────────────────────────────
 function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "error" }) {
     const [status, setStatus] = useState<GoogleDocsStatusData | null>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -614,13 +642,6 @@ function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "erro
 }
 
 // ── Notion Integration card ──────────────────────────────────────────────────
-type NotionStatusData = {
-    connected: boolean
-    parentPageId?: string
-    workspaceName?: string | null
-    connectedAt?: string
-}
-
 function NotionCard() {
     const [status, setStatus] = useState<NotionStatusData | null>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -1305,15 +1326,6 @@ function AzureDevOpsCard() {
         </Card>
     )
 }
-
-// ── Tab nav ───────────────────────────────────────────────────────────────────
-const TABS = [
-    { id: "general", label: "General", icon: User },
-    { id: "integrations", label: "Integrations", icon: Puzzle },
-    { id: "billing", label: "Billings", icon: CreditCard },
-    { id: "api-tokens", label: "Tokens", icon: KeyRound },
-] as const
-type TabId = typeof TABS[number]["id"]
 
 // ── Main page ────────────────────────────────────────────────────────────────
 export function SettingsPage() {

@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams, Link } from "react-router-dom"
 import { useProjectStore, mapApiStatus } from "@/store/projects"
-import { projectsApi, versionsApi, customTabsApi, ApiException, ApiProject, ApiShare, sharingApi, portalApi, apiSpecApi, type ApiPortal, type ApiSpec, type ApiProjectEditedSection, type CustomTab } from "@/lib/api"
 import { prepareExportData, getExportSummary, getFormattedTabContent } from "@/lib/export-utils"
 import { generatePDFHTML } from "@/lib/pdf-generator"
 import { Button } from "@/components/ui/button"
@@ -30,8 +29,8 @@ import Markdown from "react-markdown"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { AIChatPanel } from "@/components/projects/ai-chat"
-import { DocRenderer } from "@/components/projects/DocRenderer"
-import { DocStatusDot, DOC_STATUS_ORDER, DOC_STATUS_CONFIG } from "@/components/projects/doc-status"
+import { DocRenderer } from "@/components/projects/doc-render"
+import { DocStatusDot } from "@/components/projects/doc-status"
 import { VersionHistoryPanel } from "@/components/projects/version-history-panel"
 import { OtherDocsPanel } from "@/components/projects/other-docs-panel"
 import { useDocTrackerStore } from "@/store/doc-tracker"
@@ -48,7 +47,18 @@ import { StatusChangeModal } from "@/components/projects/status-change-modal"
 import { StaleSectionBanner } from "@/components/projects/stale-section-banner"
 import { StaleDiffModal } from "@/components/projects/stale-diff-modal"
 import { MarkdownToolbar } from "@/components/projects/markdown-toolbar"
-import { buildTabList, NATIVE_TABS, TAB_TO_SECTION, type NativeTab, type DocTab, type TabDef } from "@/components/projects/documentation-tabs"
+import { buildTabList } from "@/components/projects/documentation-tabs"
+import { ApiProject, ApiProjectEditedSection } from "@/types/ProjectTypes"
+import { ApiShare } from "@/types/ProjectShareTypes"
+import { ApiPortal } from "@/types/PortalTypes"
+import { ApiSpec } from "@/types/ApiSpecTypes"
+import { apiSpecApi, customTabsApi, portalApi, projectsApi, sharingApi, versionsApi } from "@/lib/api"
+import { DocStatus } from "@/types/DocStatusTypes"
+import { DOC_STATUS_CONFIG, DOC_STATUS_ORDER } from "@/configs/DocStatusConfig"
+import { DocTab, NativeTab, TabDef } from "@/types/DocumentationTypes"
+import { NATIVE_TABS, TAB_TO_SECTION } from "@/configs/DocumentationConfig"
+import { useConfirm } from "@/hooks"
+import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog"
 
 // ── Main component ────────────────────────────────────────────────────────────
 export function DocumentationViewerPage() {
@@ -100,7 +110,7 @@ export function DocumentationViewerPage() {
 
   const [statusModal, setStatusModal] = useState<{
     open: boolean
-    pendingStatus: import("@/store/doc-tracker").DocStatus | null
+    pendingStatus: DocStatus | null
   }>({ open: false, pendingStatus: null })
 
   const [projectMembers, setProjectMembers] = useState<ApiShare[]>([])
@@ -115,6 +125,27 @@ export function DocumentationViewerPage() {
   const { subscription } = useSubscriptionStore()
   const [upgradeOpen, setUpgradeOpen] = useState(false)
   const [upgradeFeature, setUpgradeFeature] = useState<{ name: string; plan: string; description?: string }>({ name: "", plan: "starter" })
+  const { confirm, state: confirmState, handleConfirm, handleCancel } = useConfirm()
+
+  // API Spec (FT4)
+  const [apiSpec, setApiSpec] = useState<ApiSpec | null>(null)
+  const [apiSpecLoading, setApiSpecLoading] = useState(false)
+  const [apiSpecImportOpen, setApiSpecImportOpen] = useState(false)
+  const [apiSubTab, setApiSubTab] = useState<"document" | "spec">("document")
+  const [syncingSpec, setSyncingSpec] = useState(false);
+
+  // Editable content per tab (initialized from project data)
+  const [editedContent, setEditedContent] = useState<Record<string, string>>({
+    readme: "",
+    api: "",
+    schema: "",
+    internal: "",
+    security: "",
+    other_docs: "",
+  })
+
+  // Dynamic tabs list (native + custom)
+  const [allTabs, setAllTabs] = useState<TabDef[]>(NATIVE_TABS)
 
   useEffect(() => {
     if (!statusDropdownOpen) return
@@ -146,26 +177,6 @@ export function DocumentationViewerPage() {
     }
     cb()
   }
-
-  // API Spec (FT4)
-  const [apiSpec, setApiSpec] = useState<ApiSpec | null>(null)
-  const [apiSpecLoading, setApiSpecLoading] = useState(false)
-  const [apiSpecImportOpen, setApiSpecImportOpen] = useState(false)
-  const [apiSubTab, setApiSubTab] = useState<"document" | "spec">("document")
-  const [syncingSpec, setSyncingSpec] = useState(false)
-
-  // Editable content per tab (initialized from project data)
-  const [editedContent, setEditedContent] = useState<Record<string, string>>({
-    readme: "",
-    api: "",
-    schema: "",
-    internal: "",
-    security: "",
-    other_docs: "",
-  })
-
-  // Dynamic tabs list (native + custom)
-  const [allTabs, setAllTabs] = useState<TabDef[]>(NATIVE_TABS)
 
   // Load project on mount + fetch version counts
   useEffect(() => {
@@ -202,7 +213,7 @@ export function DocumentationViewerPage() {
         };
 
         // Initialize edited content for custom tabs
-        customTabs.forEach((ct) => {
+        customTabs.forEach((ct: { _id: any; content: string }) => {
           const tabKey = `custom_${ct._id}`;
           newEditedContent[tabKey] = ct.content ?? "";
         });
@@ -222,7 +233,7 @@ export function DocumentationViewerPage() {
         );
 
         // Fetch version counts for custom tabs
-        customTabs.forEach((ct) => {
+        customTabs.forEach((ct: { _id: any }) => {
           const sectionName = `custom_${ct._id}`;
         });
 
@@ -309,7 +320,13 @@ export function DocumentationViewerPage() {
 
       setIsEditMode(false);
     } catch (err: any) {
-      alert(err?.message ?? "Failed to save. Please try again.");
+      const confirmed = await confirm({
+        title: "Action Failed",
+        message: "Failed to save changes. Please try again.",
+        confirmText: "Try Again",
+        cancelText: "Cancel",
+        isDangerous: true,
+      });
     } finally {
       setActionLoading(null);
     }
@@ -329,7 +346,7 @@ export function DocumentationViewerPage() {
 
       // Restore custom tab content from project
       if (project.customTabs) {
-        project.customTabs.forEach((ct) => {
+        project.customTabs.forEach((ct: { _id: any; content: string }) => {
           const key = `custom_${ct._id}`;
           newEditedContent[key] = ct.content ?? "";
         });
@@ -366,7 +383,13 @@ export function DocumentationViewerPage() {
         setCreateTabModalOpen(false);
       }
     } catch (err: any) {
-      alert(err?.message ?? "Failed to create tab");
+      const confirmed = await confirm({
+        title: "Action Failed",
+        message: err?.message ?? "Failed to create tab",
+        confirmText: "Try Again",
+        cancelText: "Cancel",
+        isDangerous: true,
+      });
     } finally {
       setActionLoading(null);
     }
@@ -1325,6 +1348,18 @@ export function DocumentationViewerPage() {
         onClose={() => setCreateTabModalOpen(false)}
         onCreate={handleCreateTab}
         isLoading={actionLoading === "create-tab"}
+      />
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={confirmState.isOpen}
+        title={confirmState.title}
+        message={confirmState.message}
+        confirmText={confirmState.confirmText}
+        cancelText={confirmState.cancelText}
+        isDangerous={confirmState.isDangerous}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
       />
     </div>
   )

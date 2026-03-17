@@ -1,8 +1,5 @@
-import { ThemeToggle } from "@/components/theme-toggle"
-import TopHeader from "@/components/header"
+import { ThemeToggle } from "@/components/common/theme-toggle"
 import BackgroundGrid from "@/components/ui/background-grid"
-import Footer from "@/components/footer"
-import CTA from "@/components/CTA"
 import { HeroSection, StepsSection, FAQSection } from "./sections"
 
 export function HomePage() {

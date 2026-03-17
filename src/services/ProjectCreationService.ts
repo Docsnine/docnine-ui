@@ -3,11 +3,13 @@
  * Unified project creation logic across different import methods
  */
 
-import { projectsApi, ApiException, type ApiProject } from "@/lib/api";
+import { projectsApi } from "@/lib/api";
+import { ApiException } from "@/types/ApiTypes";
 import type {
   ManualProjectFormValues,
   FromScratchFormValues,
   NormalizedRepo,
+  ApiProject,
 } from "@/types/ProjectTypes";
 
 export interface ProjectCreationResult {
@@ -15,7 +17,52 @@ export interface ProjectCreationResult {
   projectId: string;
 }
 
+/**
+ * Map API error codes to user-friendly messages
+ */
+const ERROR_MESSAGES: Record<string, string> = {
+  DUPLICATE_PROJECT: "A pipeline is already running for this repository.",
+  PROJECT_LIMIT_REACHED:
+    "You've reached the maximum number of projects for your current plan. Consider upgrading your subscription.",
+  GITLAB_NOT_CONNECTED:
+    "GitLab account is not connected. Please connect GitLab in Settings first.",
+  GITHUB_NOT_CONNECTED:
+    "GitHub account is not connected. Please connect GitHub in Settings first.",
+  BITBUCKET_NOT_CONNECTED:
+    "Bitbucket account is not connected. Please connect Bitbucket in Settings first.",
+  AZURE_NOT_CONNECTED:
+    "Azure DevOps account is not connected. Please connect Azure DevOps in Settings first.",
+  INVALID_REPO_URL: "The repository URL is invalid or not supported.",
+  INVALID_PROJECT_NAME: "Project name is required.",
+  PROJECT_RUNNING:
+    "This project is already processing. Please wait for it to complete.",
+  PROJECT_ARCHIVED: "This project is archived. Cannot perform this action.",
+  TOKEN_EXPIRED:
+    "Your authentication token has expired. Please reconnect your provider.",
+  NETWORK_ERROR:
+    "Network error occurred. Please check your connection and try again.",
+  PLAN_GATE: "This feature requires a higher subscription plan.",
+};
+
 export class ProjectCreationService {
+  /**
+   * Format API error into user-friendly message
+   */
+  static formatErrorMessage(err: unknown): string {
+    if (err instanceof ApiException) {
+      // Use mapped message if available, otherwise use API message
+      return (
+        ERROR_MESSAGES[err.code] || err.message || "Failed to create project."
+      );
+    }
+
+    if (err instanceof Error) {
+      return err.message;
+    }
+
+    return "An unexpected error occurred.";
+  }
+
   /**
    * Create project from manual repository URL
    */
@@ -24,19 +71,13 @@ export class ProjectCreationService {
   ): Promise<ProjectCreationResult> {
     try {
       const result = await projectsApi.create(values.repoUrl);
-      const project = result.project || result as any;
+      const project = result.project || (result as any);
       return {
         project,
         projectId: project._id,
       };
     } catch (err) {
-      if (err instanceof ApiException) {
-        if (err.code === "DUPLICATE_PROJECT") {
-          throw new Error("A pipeline is already running for this repository.");
-        }
-        throw new Error(err.message);
-      }
-      throw new Error("Failed to create project. Try Again Later.");
+      throw new Error(ProjectCreationService.formatErrorMessage(err));
     }
   }
 
@@ -50,23 +91,20 @@ export class ProjectCreationService {
       const repoUrl = repo.html_url || repo.web_url || "";
 
       if (!repoUrl) {
-        throw new Error("Unable to determine repository URL");
+        throw new Error(
+          "Unable to determine repository URL. Please try again or contact support.",
+        );
       }
 
       const result = await projectsApi.create(repoUrl);
-      const project = result.project || result as any;
+      const project = result.project || (result as any);
+
       return {
         project,
         projectId: project._id,
       };
     } catch (err) {
-      if (err instanceof ApiException) {
-        if (err.code === "DUPLICATE_PROJECT") {
-          throw new Error("A pipeline is already running for this repository.");
-        }
-        throw new Error(err.message);
-      }
-      throw new Error("Failed to create project.");
+      throw new Error(ProjectCreationService.formatErrorMessage(err));
     }
   }
 
@@ -81,10 +119,7 @@ export class ProjectCreationService {
         projectId: result.project._id,
       };
     } catch (err) {
-      if (err instanceof ApiException) {
-        throw new Error(err.message);
-      }
-      throw new Error("Failed to upload ZIP. Try Again Later.");
+      throw new Error(ProjectCreationService.formatErrorMessage(err));
     }
   }
 
@@ -101,10 +136,7 @@ export class ProjectCreationService {
         projectId: result.project._id,
       };
     } catch (err) {
-      if (err instanceof ApiException) {
-        throw new Error(err.message);
-      }
-      throw new Error("Failed to create project.");
+      throw new Error(ProjectCreationService.formatErrorMessage(err));
     }
   }
 

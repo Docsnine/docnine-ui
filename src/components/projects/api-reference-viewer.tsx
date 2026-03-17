@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { apiSpecApi, type ApiSpec, type ApiSpecEndpoint, type ApiSpecParameter } from "@/lib/api"
-import { TryItConsole, METHOD_COLORS } from "./try-it-console"
+import { TryItConsole } from "./try-it-console"
+import { ApiSpec, ApiSpecEndpoint, ApiSpecParameter } from "@/types/ApiSpecTypes"
+import { apiSpecApi } from "@/lib/api"
+import { METHOD_COLORS } from "@/configs/TryConsoleConfig"
 
 // ── Method badge ───────────────────────────────────────────────────────────
-
 function MethodBadge({ method, className }: { method: string; className?: string }) {
     return (
         <span className={cn(

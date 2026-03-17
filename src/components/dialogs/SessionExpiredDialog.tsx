@@ -10,11 +10,7 @@ import {
 import { useNavigate } from "react-router-dom"
 import { useAuthStore } from "@/store/auth"
 import { useSubscriptionStore } from "@/store/subscription"
-
-interface SessionExpiredDialogProps {
-    open: boolean
-    onOpenChange: (open: boolean) => void
-}
+import { SessionExpiredDialogProps } from "@/types/StateTypes"
 
 export function SessionExpiredDialog({
     open,
@@ -54,7 +50,7 @@ export function SessionExpiredDialog({
                     </Button>
                     <Button
                         onClick={handleLoginAgain}
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="bg-primary"
                     >
                         Log In Again
                     </Button>

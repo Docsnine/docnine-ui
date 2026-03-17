@@ -3,15 +3,8 @@
  * Creates beautifully formatted PDF documents with all documentation sections
  */
 
-import type { ExportDocumentData, ExportTabContent } from "./export-utils";
-import { markdownToFormattedText } from "./markdown-converter";
-
-export interface PDFExportOptions {
-  includeTableOfContents?: boolean;
-  includeTimestamp?: boolean;
-  pageNumbers?: boolean;
-  headerFooter?: boolean;
-}
+import { PDFExportOptions } from "@/types/PdfTypes";
+import { ExportDocumentData } from "@/types/ExportTypes";
 
 /**
  * Generate structured HTML for PDF export that preserves formatting

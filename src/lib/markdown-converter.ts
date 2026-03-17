@@ -3,10 +3,6 @@
  * Converts markdown syntax to clean, formatted plain text preserving structure and emphasis
  */
 
-/**
- * Convert markdown content to formatted plain text
- * Preserves hierarchy, emphasis, and structure without markdown syntax
- */
 export function markdownToFormattedText(markdown: string): string {
   let text = markdown;
 

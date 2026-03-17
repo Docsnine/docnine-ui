@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
-import { azureApi, ApiException } from "@/lib/api"
+import { azureApi } from "@/lib/api"
 import Loader1 from "@/components/ui/loader1"
+import { ApiException } from "@/types/ApiTypes"
 
 /**
  * Azure DevOps OAuth Initiator Page

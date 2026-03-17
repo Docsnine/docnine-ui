@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { formatDistanceToNow } from "date-fns"
-import { Project, ProjectStatus } from "@/store/projects"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -19,17 +18,8 @@ import {
   Clock,
 } from "lucide-react"
 import Loader1 from "@/components/ui/loader1"
-
-interface ProjectsGridProps {
-  projects: Project[]
-  isLoading: boolean
-  onDelete: (id: string, e: React.MouseEvent) => void
-  onArchive: (id: string, e: React.MouseEvent) => void
-  onRetry: (id: string, e: React.MouseEvent) => void
-  actionLoading: string | null
-  debouncedSearch: string
-  statusFilter: ProjectStatus | "all"
-}
+import { ProjectsGridProps } from "@/types/DashboardTypes"
+import { ProjectStatus } from "@/types/ProjectTypes"
 
 function getStatusBadge(status: ProjectStatus) {
   switch (status) {

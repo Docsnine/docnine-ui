@@ -6,9 +6,11 @@ import { Bot, Send, User, X, Trash2, Sparkles, Square } from "lucide-react"
 import ReactMarkdown, { type Components } from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { cn } from "@/lib/utils"
-import { chatStream, chatApi, type ApiProject } from "@/lib/api"
-import { CodeBlock } from "@/components/projects/DocRenderer"
+import { chatStream, chatApi } from "@/lib/api"
+import { CodeBlock } from "@/components/projects/doc-render"
 import Loader1 from "../ui/loader1"
+import { ApiProject } from "@/types/ProjectTypes"
+import { AIChatPanelProps, Message } from "@/types/AIChatTypes"
 
 // ── Suggested prompts from real project data ──────────────────────────────────
 function buildSuggestedPrompts(project: ApiProject): string[] {
@@ -31,20 +33,6 @@ function buildSuggestedPrompts(project: ApiProject): string[] {
     `What is the overall architecture of ${project.meta?.name ?? "this project"}?`,
   )
   return prompts.slice(0, 4)
-}
-
-// ── Types ────────────────────────────────────────────────────────────────────
-interface Message {
-  id: string
-  role: "user" | "ai"
-  content: string
-}
-
-interface AIChatPanelProps {
-  project: ApiProject
-  activeSection: string      // e.g. "apiReference"
-  activeSectionContent: string
-  onClose: () => void
 }
 
 // ── localStorage helpers ─────────────────────────────────────────────────────

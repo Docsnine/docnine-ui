@@ -1,19 +1,14 @@
-import { create } from 'zustand'
-
-interface SessionState {
-  sessionExpiredOpen: boolean
-  showSessionExpired: () => void
-  hideSessionExpired: () => void
-}
+import { SessionState } from "@/types/StateTypes";
+import { create } from "zustand";
 
 export const useSessionStore = create<SessionState>((set) => ({
   sessionExpiredOpen: false,
 
   showSessionExpired: () => {
-    set({ sessionExpiredOpen: true })
+    set({ sessionExpiredOpen: true });
   },
 
   hideSessionExpired: () => {
-    set({ sessionExpiredOpen: false })
+    set({ sessionExpiredOpen: false });
   },
-}))
+}));

@@ -2,11 +2,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import TopHeader from "@/components/header"
-import Footer from "@/components/footer"
 import BackgroundGrid from "@/components/ui/background-grid"
 import { Github, Mail, MessageSquare, Send, Twitter } from "lucide-react"
-import CTA from "@/components/CTA"
 
 export function ContactPage() {
     const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" })

@@ -8,10 +8,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuthStore } from "@/store/auth"
-import { authApi, ApiException, API_BASE } from "@/lib/api"
+import { authApi, API_BASE } from "@/lib/api"
 import BackgroundGrid from "@/components/ui/background-grid"
-import TopHeader from "@/components/header"
 import Loader1 from "@/components/ui/loader1"
+import { ApiException } from "@/types/ApiTypes"
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),

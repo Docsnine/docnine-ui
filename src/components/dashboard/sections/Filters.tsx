@@ -1,16 +1,8 @@
 import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
-import { ProjectStatus } from "@/store/projects"
-
-interface DashboardFiltersProps {
-  searchQuery: string
-  onSearchChange: (value: string) => void
-  statusFilter: ProjectStatus | "all"
-  onStatusChange: (value: ProjectStatus | "all") => void
-  sortBy: "updated" | "created" | "name"
-  onSortChange: (value: "updated" | "created" | "name") => void
-}
+import { DashboardFiltersProps } from "@/types/DashboardTypes"
+import { ProjectStatus } from "@/types/ProjectTypes"
 
 export function DashboardFilters({
   searchQuery,

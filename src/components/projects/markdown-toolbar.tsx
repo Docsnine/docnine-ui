@@ -8,10 +8,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
-
-export interface MarkdownToolbarProps {
-  onInsert: (prefix: string, suffix?: string) => void
-}
+import { MarkdownToolbarProps } from "@/types/MarkdownTypes"
 
 export function MarkdownToolbar({ onInsert }: MarkdownToolbarProps) {
   const [headingsOpen, setHeadingsOpen] = useState(false)

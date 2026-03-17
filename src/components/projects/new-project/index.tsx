@@ -152,7 +152,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
 
         // Not connected yet - open OAuth window
         setIsConnecting(true)
-        
+
         try {
             await ProviderOAuthService.openOAuthWindow(
                 provider,
@@ -162,12 +162,12 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
                         if (user) {
                             setProviderUsernames((prev) => ({ ...prev, [provider]: user }))
                         }
-                        
+
                         // Load GitHub orgs if needed
                         if (provider === "github" && githubOrgs.length === 0) {
                             loadGithubOrgs()
                         }
-                        
+
                         // Reload repos after successful connection
                         await loadRepos(
                             provider,
@@ -196,6 +196,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
             handleModalClose(false)
             navigate(`/projects/${result.projectId}/live`)
         } catch (err: any) {
+            console.error("[NewProject] Manual URL creation failed:", err.message)
             setApiError(err.message)
         } finally {
             setIsConnecting(false)
@@ -212,6 +213,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
             handleModalClose(false)
             navigate(`/projects/${result.projectId}/live`)
         } catch (err: any) {
+            console.error(`[NewProject] Provider (${provider}) creation failed:`, err.message)
             setApiError(err.message)
         } finally {
             setIsConnecting(false)
@@ -228,6 +230,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
             handleModalClose(false)
             navigate(`/projects/${result.projectId}/live`)
         } catch (err: any) {
+            console.error("[NewProject] ZIP upload failed:", err.message)
             setApiError(err.message)
         } finally {
             setIsConnecting(false)
@@ -242,6 +245,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
             handleModalClose(false)
             navigate(`/projects/${result.projectId}/live`)
         } catch (err: any) {
+            console.error("[NewProject] From-scratch creation failed:", err.message)
             setApiError(err.message)
         } finally {
             setIsConnecting(false)

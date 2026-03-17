@@ -2,7 +2,7 @@
  * Component: Provider Repository Selector Step
  */
 
-import { Search } from "lucide-react"
+import { Search, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DialogFooter } from "@/components/ui/dialog"
@@ -53,6 +53,7 @@ export function ProviderRepoSelector({
 
     return (
         <div className="grid gap-4 py-4">
+
             {/* GitHub org picker */}
             {provider === "github" && onGithubOrgChange && (
                 <OrgAccountPicker
@@ -72,7 +73,7 @@ export function ProviderRepoSelector({
                     className="pl-9"
                     value={searchQuery}
                     onChange={(e) => onSearchChange(e.target.value)}
-                    disabled={loading || isConnecting}
+                    disabled={loading || isConnecting || repos.length === 0}
                 />
             </div>
 
@@ -95,7 +96,7 @@ export function ProviderRepoSelector({
                 </Button>
                 <Button
                     onClick={onSubmit}
-                    disabled={!selectedRepo || isConnecting}
+                    disabled={!selectedRepo || isConnecting || repos.length === 0}
                 >
                     {isConnecting && <Loader1 className="mr-2 h-4 w-4" />}
                     Import Repository

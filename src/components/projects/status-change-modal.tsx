@@ -1,20 +1,10 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { DOC_STATUS_CONFIG } from "@/components/projects/doc-status"
 import { cn } from "@/lib/utils"
 import Loader1 from "@/components/ui/loader1"
-import type { ApiShare } from "@/lib/api"
-import type { DocStatus } from "@/store/doc-tracker"
-
-export interface StatusChangeModalProps {
-    isOpen: boolean
-    onClose: () => void
-    pendingStatus: DocStatus | null
-    onConfirm: (note: string, taggedMember?: string) => void
-    members: ApiShare[]
-    loadingMembers: boolean
-}
+import { StatusChangeModalProps } from "@/types/DocStatusTypes"
+import { DOC_STATUS_CONFIG } from "@/configs/DocStatusConfig"
 
 export function StatusChangeModal({
     isOpen,

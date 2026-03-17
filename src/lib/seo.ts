@@ -1,35 +1,13 @@
+import { SeoConfig } from "@/types/SeoTypes";
 import { useEffect, useRef } from "react";
 
 // ─── Defaults ─────────────────────────────────────────────────────
 
 const DEFAULT_SITE_NAME = "Docnine";
 const DEFAULT_DESCRIPTION =
-  "Docnine reads your codebase and instantly generates docs that stay in sync with every push — no writing, no maintenance, no stale README.";
+  "Ship better documentations, faster. Stop writing documentation by hand. Create and maintain developer documentation with AI. Docnine generates docs from your codebase, then keeps them up to date as your code evolves.";
 const DEFAULT_IMAGE_PATH = "/web-app-manifest-512x512.png";
 const TITLE_SUFFIX = "";
-
-// ─── Types ────────────────────────────────────────────────────────
-
-export interface SeoConfig {
-  title: string;
-  description?: string;
-  pathname?: string;
-  canonicalUrl?: string;
-  robots?: string;
-  keywords?: string[];
-  type?: "website" | "article";
-  image?: string;
-  imageWidth?: number;
-  imageHeight?: number;
-  twitterCard?: "summary" | "summary_large_image";
-  twitterSite?: string;
-  siteName?: string;
-  locale?: string;
-  structuredData?: Record<string, unknown> | Record<string, unknown>[];
-  structuredDataId?: string;
-  /** Append " | Docnine" suffix. Default: true */
-  appendSiteName?: boolean;
-}
 
 // ─── URL helpers ──────────────────────────────────────────────────
 

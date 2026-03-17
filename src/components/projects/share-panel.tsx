@@ -5,23 +5,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { sharingApi, ApiShare } from "@/lib/api"
+import { sharingApi } from "@/lib/api"
 import { useSubscriptionStore, hasFeature, meetsMinPlan } from "@/store/subscription"
 import { UpgradeModal } from "@/components/billing/UpgradeModal"
+import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog"
+import { useConfirm } from "@/hooks/useConfirm"
 import { formatDistanceToNow } from "date-fns"
 import Loader1 from "../ui/loader1"
-
-// ─────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────
-
-interface SharePanelProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  projectId: string
-  projectName: string
-  isOwner: boolean
-}
+import { ApiShare, SharePanelProps } from "@/types/ProjectShareTypes"
 
 // ─────────────────────────────────────────────────────────────
 // Helpers
@@ -58,11 +49,11 @@ function StatusBadge({ status }: { status: "pending" | "accepted" | "revoked" })
 // ─────────────────────────────────────────────────────────────
 // Main component
 // ─────────────────────────────────────────────────────────────
-
 export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner }: SharePanelProps) {
   const [shares, setShares] = useState<ApiShare[]>([])
   const [isLoadingShares, setIsLoadingShares] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
+  const { confirm, state, handleConfirm, handleCancel } = useConfirm()
 
   // Subscription gates
   const { subscription } = useSubscriptionStore()
@@ -159,28 +150,44 @@ export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner
       const data = await sharingApi.changeRole(projectId, shareId, newRole)
       setShares((s) => s.map((sh) => (sh._id === shareId ? { ...sh, role: data.share.role } : sh)))
     } catch (err: any) {
-      alert(err?.message ?? "Failed to change role.")
+      const confirmed = await confirm({
+        title: "Error",
+        message: err?.message ?? "Failed to change role.",
+        confirmText: "OK",
+        cancelText: ""
+      })
     } finally {
       setRowAction(null)
     }
   }
 
   // ── Revoke ─────────────────────────────────────────────────
-  const handleRevoke = async (shareId: string, email: string) => {
-    if (!confirm(`Remove ${email}'s access?`)) return
+  const handleRevokeAccess = async (shareId: string, email: string) => {
+    const confirmed = await confirm({
+      title: "Revoke Access",
+      message: `Remove ${email}'s access? This cannot be undone.`,
+      isDangerous: true
+    })
+    if (!confirmed) return
+    
     setRowAction({ id: shareId, action: "revoke" })
     try {
       await sharingApi.revokeAccess(projectId, shareId)
       setShares((s) => s.filter((sh) => sh._id !== shareId))
     } catch (err: any) {
-      alert(err?.message ?? "Failed to revoke access.")
+      await confirm({
+        title: "Error",
+        message: err?.message ?? "Failed to revoke access.",
+        confirmText: "OK",
+        cancelText: ""
+      })
     } finally {
       setRowAction(null)
     }
   }
 
   // ── Resend ─────────────────────────────────────────────────
-  const handleResend = async (shareId: string) => {
+  const handleResendInvite = async (shareId: string) => {
     setRowAction({ id: shareId, action: "resend" })
     try {
       await sharingApi.resendInvite(projectId, shareId)
@@ -192,21 +199,37 @@ export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner
         ),
       )
     } catch (err: any) {
-      alert(err?.message ?? "Failed to resend invite.")
+      await confirm({
+        title: "Error",
+        message: err?.message ?? "Failed to resend invite.",
+        confirmText: "OK",
+        cancelText: ""
+      })
     } finally {
       setRowAction(null)
     }
   }
 
   // ── Cancel invite ──────────────────────────────────────────
-  const handleCancel = async (shareId: string, email: string) => {
-    if (!confirm(`Cancel invite for ${email}?`)) return
+  const handleCancelInvite = async (shareId: string, email: string) => {
+    const confirmed = await confirm({
+      title: "Cancel Invite",
+      message: `Cancel invite for ${email}? They will no longer be invited to this project.`,
+      isDangerous: true
+    })
+    if (!confirmed) return
+    
     setRowAction({ id: shareId, action: "cancel" })
     try {
       await sharingApi.cancelInvite(projectId, shareId)
       setShares((s) => s.filter((sh) => sh._id !== shareId))
     } catch (err: any) {
-      alert(err?.message ?? "Failed to cancel invite.")
+      await confirm({
+        title: "Error",
+        message: err?.message ?? "Failed to cancel invite.",
+        confirmText: "OK",
+        cancelText: ""
+      })
     } finally {
       setRowAction(null)
     }
@@ -294,11 +317,10 @@ export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner
         {/* Invite result banner */}
         {inviteResult && (
           <div
-            className={`shrink-0 flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
-              inviteResult.type === "success"
+            className={`shrink-0 flex items-center gap-2 rounded-md px-3 py-2 text-sm ${inviteResult.type === "success"
                 ? "bg-green-50 text-green-800 border border-green-200"
                 : "bg-destructive/10 text-destructive border border-destructive/20"
-            }`}
+              }`}
           >
             {inviteResult.type === "success" ? (
               <Check className="h-4 w-4 shrink-0" />
@@ -390,7 +412,7 @@ export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner
                               className="h-8 w-8 text-muted-foreground hover:text-foreground"
                               title="Resend invite"
                               disabled={busy}
-                              onClick={() => handleResend(share._id)}
+                              onClick={() => handleResendInvite(share._id)}
                             >
                               {busy && rowAction?.action === "resend" ? (
                                 <Loader1 className="h-3.5 w-3.5 " />
@@ -409,8 +431,8 @@ export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner
                             disabled={busy}
                             onClick={() =>
                               share.status === "pending"
-                                ? handleCancel(share._id, share.inviteeEmail)
-                                : handleRevoke(share._id, share.inviteeEmail)
+                                ? handleCancelInvite(share._id, share.inviteeEmail)
+                                : handleRevokeAccess(share._id, share.inviteeEmail)
                             }
                           >
                             {busy && (rowAction?.action === "revoke" || rowAction?.action === "cancel") ? (
@@ -453,6 +475,17 @@ export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner
         featureName={upgradeFeature.name}
         requiredPlan={upgradeFeature.plan}
         description={upgradeFeature.description}
+      />
+
+      <ConfirmDialog
+        isOpen={state.isOpen}
+        title={state.title}
+        message={state.message}
+        confirmText={state.confirmText}
+        cancelText={state.cancelText}
+        isDangerous={state.isDangerous}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
       />
     </Dialog>
   )

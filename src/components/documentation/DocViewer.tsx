@@ -1,10 +1,5 @@
-import { DocRenderer } from "@/components/projects/DocRenderer"
-
-interface DocViewerProps {
-  content: string
-  isLoading: boolean
-  isSkeleton?: boolean
-}
+import { DocRenderer } from "@/components/projects/doc-render"
+import { DocViewerProps } from "@/types/DocumentationTypes"
 
 export function DocViewer({ content, isLoading, isSkeleton }: DocViewerProps) {
   if (isLoading || isSkeleton) {

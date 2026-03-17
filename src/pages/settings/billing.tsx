@@ -38,18 +38,12 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-    billingApi,
-    BillingPlan,
-    InvoiceData,
-    PaymentMethodData,
-    SubscriptionData,
-    UsageData,
-} from "@/lib/api"
 import { useSubscriptionStore, PLAN_LEVEL } from "@/store/subscription"
 import { PlanBadge } from "@/components/billing/PlanBadge"
 import { cn } from "@/lib/utils"
 import Loader1 from "@/components/ui/loader1"
+import { BillingPlan, InvoiceData, SubscriptionData, UsageData, PaymentMethodData } from "@/types/BillingTypes"
+import { billingApi } from "@/lib/api"
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 function fmtMoney(cents: number, currency = "USD") {
@@ -162,12 +156,23 @@ function ChangePlanModal({
                     setResultMsg({ type: "success", text: "Upgraded successfully! Your new plan is now active." })
                     setTimeout(() => { setResultMsg(null); onClose() }, 2000)
                 }
-            } else if (result.type === "downgrade") {
+            } 
+            
+            // Upgrade with no payment required (prorated amount is 0 or negative)
+            else if (result.type === "immediate_no_charge") {
+                await onRefresh()
+                setResultMsg({ type: "success", text: "Plan upgraded successfully! No additional charge needed." })
+                setTimeout(() => { setResultMsg(null); onClose() }, 2000)
+            } 
+            
+            else if (result.type === "downgrade") {
                 await onRefresh()
                 const date = result.effectiveAt ? format(new Date(result.effectiveAt), "MMM d, yyyy") : "next renewal"
                 setResultMsg({ type: "scheduled", text: `Downgrade scheduled — takes effect on ${date}.` })
                 setTimeout(() => { setResultMsg(null); onClose() }, 3000)
-            } else {
+            } 
+            
+            else {
                 // type === "none" — same plan/cycle
                 setResultMsg({ type: "success", text: "No change needed — you're already on this plan." })
                 setTimeout(() => { setResultMsg(null); onClose() }, 1500)
@@ -716,8 +721,7 @@ function SeatsCard({
                 </CardTitle>
                 <CardDescription>
                     You have {sub.seats + sub.extraSeats} seats (
-                    {sub.extraSeats > 0 && `${sub.extraSeats} extra`}). Add more seats —
-                    charged prorated for the current period.
+                    {sub.extraSeats > 0 && `${sub.extraSeats} extra`}). Add more seats.
                 </CardDescription>
             </CardHeader>
             <CardContent>

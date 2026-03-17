@@ -1,26 +1,20 @@
 import { useState } from "react"
 import {
-  Play, ChevronDown, ChevronRight, X, Plus,
+    Play, ChevronDown, ChevronRight, X, Plus,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 import { cn } from "@/lib/utils"
-import { apiSpecApi, type ApiSpec, type ApiSpecEndpoint, type TryItResult } from "@/lib/api"
+import { apiSpecApi } from "@/lib/api"
 import Loader1 from "../ui/loader1"
+import { TryConsoleProps } from "@/types/TryConsoleTypes"
+import { TryItResult } from "@/types/ApiSpecTypes"
+import { METHOD_COLORS } from "@/configs/TryConsoleConfig"
+
+interface KVPair { key: string; value: string }
 
 // ── HTTP method colours ────────────────────────────────────────────────────
-
-export const METHOD_COLORS: Record<string, string> = {
-    GET: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
-    POST: "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20",
-    PUT: "bg-primary/10 text-primary dark:text-primary border-primary/20",
-    PATCH: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
-    DELETE: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
-    OPTIONS: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20",
-    HEAD: "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
-}
-
 function statusColor(code: number) {
     if (code < 300) return "bg-green-500/10 text-green-600 dark:text-green-400"
     if (code < 400) return "bg-blue-500/10 text-blue-600 dark:text-blue-400"
@@ -29,9 +23,6 @@ function statusColor(code: number) {
 }
 
 // ── Key-value row ──────────────────────────────────────────────────────────
-
-interface KVPair { key: string; value: string }
-
 function KVEditor({
     pairs,
     onChange,
@@ -96,15 +87,7 @@ function Section({ title, children, defaultOpen = true }: { title: string; child
 }
 
 // ── TryItConsole ───────────────────────────────────────────────────────────
-
-interface Props {
-    projectId: string
-    endpoint: ApiSpecEndpoint
-    spec: ApiSpec
-    onClose: () => void
-}
-
-export function TryItConsole({ projectId, endpoint, spec, onClose }: Props) {
+export function TryItConsole({ projectId, endpoint, spec, onClose }: TryConsoleProps) {
     const baseServer = spec.servers?.[0]?.url ?? ""
 
     // Path param values

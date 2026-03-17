@@ -5,47 +5,21 @@
  * Tracks a status, optional assignee, optional due date, and an audit log
  * for each (projectId, sectionKey) pair.
  *
- * TODO: Replace localStorage persistence with real API calls when a backend
- * endpoint becomes available.
+ * Note: Uses localStorage for now as a temporary solution. This allows
+ * per-user documentation tracking across sessions without requiring backend
+ * API integration. Can be migrated to an API-backed solution in the future.
  */
+import { DEFAULT_SECTION } from "@/configs/DocStatusConfig";
+import {
+  DocSectionTrack,
+  DocStatus,
+  DocStatusLogEntry,
+  Entries,
+} from "@/types/DocStatusTypes";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// ── Types ────────────────────────────────────────────────────────────────────
-
-export type DocStatus =
-  | "draft"
-  | "in_review"
-  | "changes_requested"
-  | "approved"
-  | "published"
-  | "outdated"
-  | "archived";
-
-export interface DocStatusLogEntry {
-  status: DocStatus;
-  changedAt: string; // ISO
-  changedBy?: string; // display name or email
-  note?: string;
-}
-
-export interface DocSectionTrack {
-  status: DocStatus;
-  assignee?: string; // display name or email string
-  dueDate?: string; // ISO date (date-only part, e.g. "2025-07-01")
-  log: DocStatusLogEntry[];
-}
-
-// projectId → sectionKey → track
-type Entries = Record<string, Record<string, DocSectionTrack>>;
-
-const DEFAULT_SECTION: DocSectionTrack = {
-  status: "draft",
-  log: [],
-};
-
 // ── Store interface ──────────────────────────────────────────────────────────
-
 interface DocTrackerState {
   entries: Entries;
 
@@ -83,7 +57,6 @@ interface DocTrackerState {
 }
 
 // ── Store implementation ─────────────────────────────────────────────────────
-
 export const useDocTrackerStore = create<DocTrackerState>()(
   persist(
     (set, get) => ({

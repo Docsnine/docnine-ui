@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
-import { gitlabApi, ApiException } from "@/lib/api"
+import { gitlabApi } from "@/lib/api"
 import Loader1 from "@/components/ui/loader1"
+import { ApiException } from "@/types/ApiTypes"
 
 /**
  * GitLab OAuth Initiator Page

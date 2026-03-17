@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { useTheme } from "../providers/theme-provider";
+import { useTheme } from "../../providers/theme-provider";
 
-function ApplicationLogo({ link, className }: { link?: string; className?: string }) {
+export function ApplicationLogo({ link, className }: { link?: string; className?: string }) {
     const { theme } = useTheme()
 
     return (
@@ -14,5 +14,3 @@ function ApplicationLogo({ link, className }: { link?: string; className?: strin
         </Link>
     );
 }
-
-export default ApplicationLogo;

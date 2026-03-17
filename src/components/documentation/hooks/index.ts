@@ -1,1 +1,0 @@
-export { useDocumentationTabs } from "./useDocumentationTabs"

@@ -5,18 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
-import { apiSpecApi, type ApiSpec } from "@/lib/api"
+import { apiSpecApi } from "@/lib/api"
 import Loader1 from "../ui/loader1"
-
-interface Props {
-    projectId: string
-    open: boolean
-    onClose: () => void
-    onImported: (spec: ApiSpec) => void
-    existingSpec?: ApiSpec | null
-}
-
-type Tab = "file" | "url" | "raw"
+import { ApiSpec, Props, Tab } from "@/types/ApiSpecTypes"
 
 export function ApiSpecImportModal({ projectId, open, onClose, onImported, existingSpec }: Props) {
     const [tab, setTab] = useState<Tab>("file")

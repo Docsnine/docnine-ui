@@ -14,9 +14,11 @@ import {
   Eye,
   CheckCircle2,
 } from "lucide-react"
-import { versionsApi, type DocVersion } from "@/lib/api"
-import { DocRenderer } from "@/components/projects/DocRenderer"
+import { versionsApi } from "@/lib/api"
+import { DocRenderer } from "@/components/projects/doc-render"
 import { cn } from "@/lib/utils"
+import { SOURCE_CONFIG } from "@/configs/DocVersionConfig"
+import { DocVersion, VersionHistoryPanelProps } from "@/types/DocVersionTypes"
 
 // ── Date helper (avoid dependency on date-fns format) ────────────────────────
 function timeAgo(iso: string): string {
@@ -29,31 +31,6 @@ function timeAgo(iso: string): string {
   const days = Math.floor(hrs / 24)
   if (days < 30) return `${days}d ago`
   return new Date(iso).toLocaleDateString()
-}
-
-// ── Source badge configuration ────────────────────────────────────────────────
-const SOURCE_CONFIG: Record<
-  DocVersion["source"],
-  { label: string; Icon: React.ElementType; badgeClass: string; dotClass: string }
-> = {
-  ai_full: {
-    label: "AI Full Run",
-    Icon: Sparkles,
-    badgeClass: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
-    dotClass: "bg-blue-500",
-  },
-  ai_incremental: {
-    label: "AI Sync",
-    Icon: RefreshCw,
-    badgeClass: "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20",
-    dotClass: "bg-violet-500",
-  },
-  user: {
-    label: "Your Edit",
-    Icon: Pencil,
-    badgeClass: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-    dotClass: "bg-emerald-500",
-  },
 }
 
 // ── Version content preview modal ─────────────────────────────────────────────
@@ -102,13 +79,7 @@ function VersionPreviewModal({
 }
 
 // ── Main Panel ────────────────────────────────────────────────────────────────
-interface VersionHistoryPanelProps {
-  projectId: string
-  section: string      // e.g. "apiReference"
-  sectionLabel: string // e.g. "API Reference"
-  onClose: () => void
-  onRestored: (effectiveOutput: Record<string, string>, editedSections: any[]) => void
-}
+
 
 export function VersionHistoryPanel({
   projectId,

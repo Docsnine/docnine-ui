@@ -5,12 +5,17 @@
  * We map those to the UI status terms (analyzing/completed/failed/archived).
  */
 import { create } from "zustand";
-import { projectsApi, sharingApi, ApiProject, ApiProjectStatus, ApiSharedProject } from "@/lib/api";
+import { projectsApi, sharingApi } from "@/lib/api";
+import {
+  ApiProject,
+  ApiProjectStatus,
+  Project,
+  ProjectState,
+  ProjectStatus,
+} from "@/types/ProjectTypes";
+import { ApiSharedProject } from "@/types/ProjectShareTypes";
 
 // ── Status mapping ────────────────────────────────────────────────────────────
-
-export type ProjectStatus = "analyzing" | "completed" | "failed" | "archived";
-
 export function mapApiStatus(apiStatus: ApiProjectStatus): ProjectStatus {
   switch (apiStatus) {
     case "queued":
@@ -26,28 +31,11 @@ export function mapApiStatus(apiStatus: ApiProjectStatus): ProjectStatus {
   }
 }
 
-// ── Project UI model ──────────────────────────────────────────────────────────
-
-export interface Project {
-  id: string; // = ApiProject._id
-  name: string; // = repoName
-  repoUrl: string;
-  repoOwner: string;
-  status: ProjectStatus;
-  apiStatus: ApiProjectStatus; // raw status from API, needed for PATCH /archive
-  createdAt: string;
-  updatedAt: string;
-  shareRole: 'owner' | 'editor' | 'viewer'; // access level
-  // Documentation fields (populated after a successful pipeline run)
-  readme?: string;
-  apiReference?: string;
-  schemaDocs?: string;
-  internalDocs?: string;
-  securityReport?: string;
-}
-
 /** Convert an API project to the UI model. */
-export function fromApiProject(p: ApiProject, shareRole: 'owner' | 'editor' | 'viewer' = 'owner'): Project {
+export function fromApiProject(
+  p: ApiProject,
+  shareRole: "owner" | "editor" | "viewer" = "owner",
+): Project {
   return {
     id: p._id,
     name: p.meta?.name || p.repoName || p.repoUrl.split("/").pop() || p.repoUrl,
@@ -82,60 +70,6 @@ export function fromSharedApiProject(p: ApiSharedProject): Project {
 }
 
 // ── Store ─────────────────────────────────────────────────────────────────────
-
-interface ProjectState {
-  projects: Project[];
-  total: number;
-  page: number;
-  totalPages: number;
-  isLoading: boolean;
-  error: string | null;
-
-  // Shared-with-me
-  sharedProjects: Project[];
-  sharedLoading: boolean;
-  sharedError: string | null;
-
-  /** Fetch (or refresh) the project list. */
-  fetchProjects: (params?: {
-    page?: number;
-    limit?: number;
-    status?: string;
-    sort?: string;
-    search?: string;
-  }) => Promise<void>;
-
-  /** Create a new project and start the pipeline. Returns the created project. */
-  createProject: (repoUrl: string) => Promise<Project & { streamUrl: string }>;
-
-  /** Hard-delete a project. */
-  deleteProject: (id: string) => Promise<void>;
-
-  /** Archive a project. */
-  archiveProject: (id: string) => Promise<void>;
-
-  /** Re-run the pipeline for a done/error project. Returns the updated project. */
-  retryProject: (id: string) => Promise<Project & { streamUrl: string }>;
-
-  /** Fetch a single project by ID (used by detail pages). */
-  getProject: (id: string) => Promise<Project>;
-
-  /** Fetch a single project by ID without updating the cache (used by SSE handler). */
-  getProjectData: (id: string) => Promise<{
-    project: ApiProject;
-    editedSections: any;
-    effectiveOutput: any;
-    lastSyncedCommit: string;
-    shareRole: 'owner' | 'editor' | 'viewer';
-  }>;
-
-  /** Update a project in the local cache (e.g. after SSE stream completes). */
-  updateLocalProject: (id: string, changes: Partial<Project>) => void;
-
-  /** Fetch all projects shared with the current user. */
-  fetchSharedProjects: () => Promise<void>;
-}
-
 export const useProjectStore = create<ProjectState>((set, get) => ({
   projects: [],
   total: 0,
@@ -204,7 +138,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   getProject: async (id) => {
     const data = await projectsApi.get(id);
-    const project = fromApiProject(data.project, data.shareRole ?? 'owner');
+    const project = fromApiProject(data.project, data.shareRole ?? "owner");
 
     // Update cache
     set((state) => {
@@ -229,13 +163,13 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       editedSections: data.editedSections,
       effectiveOutput: data.effectiveOutput,
       lastSyncedCommit: data.lastSyncedCommit,
-      shareRole: data.shareRole ?? 'owner',
+      shareRole: data.shareRole ?? "owner",
     } as {
       project: ApiProject;
       editedSections: any;
       effectiveOutput: any;
       lastSyncedCommit: string;
-      shareRole: 'owner' | 'editor' | 'viewer';
+      shareRole: "owner" | "editor" | "viewer";
     };
   },
 
@@ -256,7 +190,10 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         sharedLoading: false,
       });
     } catch (err: any) {
-      set({ sharedLoading: false, sharedError: err?.message ?? "Failed to load shared projects." });
+      set({
+        sharedLoading: false,
+        sharedError: err?.message ?? "Failed to load shared projects.",
+      });
     }
   },
 }));

@@ -7,18 +7,9 @@
  *
  * initAuth() is called once at app startup (App.tsx) to restore session.
  */
-import { create } from 'zustand'
-import { authApi, setAccessToken, User } from '@/lib/api'
-
-interface AuthState {
-  user: User | null
-  isAuthenticated: boolean
-  initialized: boolean           // Has the silent-refresh check completed?
-
-  setTokens: (user: User, token: string) => void
-  clearAuth: () => void
-  initAuth: () => Promise<void>  // Called once on app mount
-}
+import { create } from "zustand";
+import { authApi, setAccessToken } from "@/lib/api";
+import { AuthState } from "@/types/StateTypes";
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
@@ -27,14 +18,14 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   /** Called after a successful login / signup. */
   setTokens: (user, token) => {
-    setAccessToken(token)
-    set({ user, isAuthenticated: true })
+    setAccessToken(token);
+    set({ user, isAuthenticated: true });
   },
 
   /** Called on logout or on failed refresh. */
   clearAuth: () => {
-    setAccessToken(null)
-    set({ user: null, isAuthenticated: false })
+    setAccessToken(null);
+    set({ user: null, isAuthenticated: false });
   },
 
   /**
@@ -46,14 +37,14 @@ export const useAuthStore = create<AuthState>((set) => ({
    */
   initAuth: async () => {
     try {
-      const data = await authApi.refresh()
-      setAccessToken(data.accessToken)
-      set({ user: data.user, isAuthenticated: true })
+      const data = await authApi.refresh();
+      setAccessToken(data.accessToken);
+      set({ user: data.user, isAuthenticated: true });
     } catch {
       // No valid session — remain logged out.
-      setAccessToken(null)
+      setAccessToken(null);
     } finally {
-      set({ initialized: true })
+      set({ initialized: true });
     }
   },
-}))
+}));

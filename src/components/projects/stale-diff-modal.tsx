@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { DocRenderer } from "@/components/projects/DocRenderer"
+import { DocRenderer } from "@/components/projects/doc-render"
 import Loader1 from "@/components/ui/loader1"
 
 export interface StaleDiffModalProps {

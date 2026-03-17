@@ -1,17 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { DocSidebarProps } from "@/types/DocumentationTypes"
 
-interface DocSidebarProps {
-  sections: Array<{
-    key: string
-    label: string
-    icon: React.ElementType
-  }>
-  activeTab: string
-  onTabChange: (tab: string) => void
-  isLoading: boolean
-}
 
 export function DocSidebar({
   sections,

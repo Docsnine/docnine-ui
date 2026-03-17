@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
-import { useProjectStore, ProjectStatus, Project } from "@/store/projects"
+import { useProjectStore } from "@/store/projects"
 import { useSubscriptionStore } from "@/store/subscription"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
@@ -8,25 +8,12 @@ import { NewProjectModal } from "@/components/projects/new-project"
 import { UpgradeModal } from "@/components/billing/UpgradeModal"
 import TopBar from "@/components/projects/top-bar"
 import { ErrorBanner, EmptyState } from "@/components/common"
-import { useSearchAndFilter, usePagination } from "@/hooks"
+import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog"
+import { useSearchAndFilter, usePagination, useConfirm } from "@/hooks"
 import { DashboardFilters, ProjectsGrid, SharedProjects } from "./sections"
-import type { GithubNotice } from "./types"
-
-// Map UI status filter values → API status query values
-const STATUS_API_MAP: Record<string, string> = {
-    all: "",
-    analyzing: "queued,running",
-    completed: "done",
-    failed: "error",
-    archived: "archived",
-}
-
-// Map UI sort values → API sort params
-const SORT_API_MAP: Record<string, string> = {
-    updated: "-updatedAt",
-    created: "-createdAt",
-    name: "repoName",
-}
+import type { GithubNotice } from "../../types/DashboardTypes"
+import { SORT_API_MAP, STATUS_API_MAP } from "@/configs/DashboardConfig"
+import { ProjectStatus } from "@/types/ProjectTypes"
 
 // Debounces value changes by `delay` ms to avoid hammering the API on every keystroke
 function useDebounce<T>(value: T, delay: number): T {
@@ -43,6 +30,7 @@ export function DashboardPage() {
         useProjectStore()
     const navigate = useNavigate()
     const { subscription, usage } = useSubscriptionStore()
+    const { confirm, state: confirmState, handleConfirm, handleCancel } = useConfirm()
 
     // State management
     const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false)
@@ -52,6 +40,8 @@ export function DashboardPage() {
     const [actionLoading, setActionLoading] = useState<string | null>(null)
     const [statusFilter, setStatusFilter] = useState<ProjectStatus | "all">("all")
     const [sortBy, setSortBy] = useState<"updated" | "created" | "name">("updated")
+    const [errorMessage, setErrorMessage] = useState<string | null>(null)
+    const [pendingAction, setPendingAction] = useState<{ type: "delete" | "archive", id: string } | null>(null)
 
     // Pagination
     const { currentPage, totalPages: paginationTotalPages, goToPrevious, goToNext, setTotalPages } = usePagination({ initialPage: 1 })
@@ -121,14 +111,31 @@ export function DashboardPage() {
     // Handle project actions
     const handleDelete = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation()
-        if (!confirm("Delete this project? This cannot be undone.")) return
+        setPendingAction({ type: "delete", id })
+        
+        const confirmed = await confirm({
+            title: "Delete Project",
+            message: "This project will be permanently deleted and cannot be undone. Are you sure?",
+            confirmText: "Delete",
+            cancelText: "Cancel",
+            isDangerous: true,
+        })
+
+        if (!confirmed) {
+            setPendingAction(null)
+            return
+        }
+
         setActionLoading(id)
+        
         try {
             await deleteProject(id)
+            setErrorMessage(null)
         } catch (err: any) {
-            alert(err?.message ?? "Failed to delete project.")
+            setErrorMessage(err?.message ?? "Failed to delete project. Please try again.")
         } finally {
             setActionLoading(null)
+            setPendingAction(null)
         }
     }
 
@@ -137,8 +144,9 @@ export function DashboardPage() {
         setActionLoading(id)
         try {
             await archiveProject(id)
+            setErrorMessage(null)
         } catch (err: any) {
-            alert(err?.message ?? "Failed to archive project.")
+            setErrorMessage(err?.message ?? "Failed to archive project. Please try again.")
         } finally {
             setActionLoading(null)
         }
@@ -150,8 +158,9 @@ export function DashboardPage() {
         try {
             const result = await retryProject(id)
             navigate(`/projects/${result.id}/live`)
+            setErrorMessage(null)
         } catch (err: any) {
-            alert(err?.message ?? "Failed to retry project.")
+            setErrorMessage(err?.message ?? "Failed to retry project. Please try again.")
         } finally {
             setActionLoading(null)
         }
@@ -164,6 +173,34 @@ export function DashboardPage() {
                     <Plus className="mr-2 h-4 w-4" /> New Project
                 </Button>
             </TopBar>
+
+            {/* Confirmation Dialog */}
+            <ConfirmDialog
+                isOpen={confirmState.isOpen}
+                title={confirmState.title}
+                message={confirmState.message}
+                confirmText={confirmState.confirmText}
+                cancelText={confirmState.cancelText}
+                isDangerous={confirmState.isDangerous}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
+
+            {/* Error message */}
+            {errorMessage && (
+                <div className="mx-6 mt-4 rounded-lg border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                    <div className="flex items-start gap-3">
+                        <span className="text-base">⚠️</span>
+                        <div className="flex-1">{errorMessage}</div>
+                        <button
+                            onClick={() => setErrorMessage(null)}
+                            className="text-destructive/60 hover:text-destructive"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className="space-y-6">
                 {/* GitHub OAuth return banner */}

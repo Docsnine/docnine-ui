@@ -31,10 +31,11 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { attachmentsApi, ApiAttachment, getAccessToken, API_BASE } from "@/lib/api"
+import { attachmentsApi, getAccessToken } from "@/lib/api"
 import { useSubscriptionStore, meetsMinPlan } from "@/store/subscription"
 import { UpgradeModal } from "@/components/billing/UpgradeModal"
 import Loader1 from "../ui/loader1"
+import { ApiAttachment } from "@/types/DocAttachmentTypes"
 
 // ── File type helpers ──────────────────────────────────────────────────────
 
@@ -536,7 +537,7 @@ export function OtherDocsPanel({ projectId }: OtherDocsPanelProps) {
                     className={`inline-flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border border-border bg-muted/40 hover:bg-muted/70 transition-colors text-sm font-medium text-foreground shrink-0 ${maxAttachments !== null && attachments.length >= maxAttachments ? "opacity-60" : ""}`}
                     onClick={maxAttachments !== null && attachments.length >= maxAttachments ? (e) => {
                         e.preventDefault()
-                        requirePlan("More Attachments", "starter", `Your plan allows up to ${maxAttachments} attachment${maxAttachments === 1 ? "" : "s"} per project. Upgrade to attach unlimited files.`, () => {})
+                        requirePlan("More Attachments", "starter", `Your plan allows up to ${maxAttachments} attachment${maxAttachments === 1 ? "" : "s"} per project. Upgrade to attach unlimited files.`, () => { })
                     } : undefined}
                 >
                     <Upload className="h-4 w-4" />

@@ -1,16 +1,7 @@
 import { Plus, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
-
-interface EmptyStateProps {
-  icon?: React.ElementType
-  title: string
-  description: string
-  actionLabel?: string
-  actionHref?: string
-  onAction?: () => void
-  className?: string
-}
+import { EmptyStateProps } from "@/types/StateTypes"
 
 export function EmptyState({
   icon: Icon = Search,

@@ -16,13 +16,14 @@ import {
   BarChart3,
   RefreshCw,
 } from "lucide-react"
-import { adminApi, AdminUser, AdminProject, AdminSubscription, AdminStats } from "@/lib/api"
+import { adminApi } from "@/lib/api"
 import { useAuthStore } from "@/store/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Loader1 from "@/components/ui/loader1"
+import { AdminProject, AdminStats, AdminSubscription, AdminUser } from "@/types/AdminTypes"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -339,8 +340,8 @@ export function SuperAdminPage() {
             key={id}
             onClick={() => setActiveTab(id)}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${activeTab === id
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
           >
             <Icon className="h-4 w-4" />

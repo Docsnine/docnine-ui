@@ -18,15 +18,7 @@ import {
 import { fetchEventSource } from "@microsoft/fetch-event-source"
 import { cn } from "@/lib/utils"
 import Loader1 from "@/components/ui/loader1"
-
-type LogSeverity = "info" | "warning" | "error" | "success"
-
-interface LogEntry {
-  id: string
-  timestamp: string
-  message: string
-  severity: LogSeverity
-}
+import { LogEntry, LogSeverity } from "@/types/LiveAnalysisTypes"
 
 /** Map a backend pipeline event to a UI severity level. */
 function eventToSeverity(step: string, status?: string): LogSeverity {
@@ -262,7 +254,7 @@ export function LiveAnalysisPage() {
             </Badge>
           )}
         </CardHeader>
-        
+
         <CardContent className="flex-1 overflow-y-auto p-4 font-mono text-sm">
           {logs.length === 0 ? (
             <div className="flex items-center justify-center h-full text-muted-foreground">

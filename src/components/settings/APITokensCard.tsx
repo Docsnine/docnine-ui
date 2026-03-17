@@ -164,21 +164,21 @@ export function APITokensCard() {
           {/* Stats ─────────────────────────────────────────────────────── */}
           {stats && !isLoading && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="rounded-lg bg-muted p-3">
+              <div className="rounded-2xl bg-muted p-3">
                 <div className="text-sm text-muted-foreground">Total</div>
                 <div className="text-2xl font-bold">{stats.total}</div>
               </div>
-              <div className="rounded-lg bg-green-50 dark:bg-green-950 p-3">
-                <div className="text-sm text-green-700 dark:text-green-200">Active</div>
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.active}</div>
+              <div className="rounded-2xl bg-muted p-3">
+                <div className="text-sm text-muted-foreground">Active</div>
+                <div className="text-2xl font-bold">{stats.active}</div>
               </div>
-              <div className="rounded-lg bg-red-50 dark:bg-red-950 p-3">
-                <div className="text-sm text-red-700 dark:text-red-200">Revoked</div>
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.revoked}</div>
+              <div className="rounded-2xl bg-muted p-3">
+                <div className="text-sm text-muted-foreground">Revoked</div>
+                <div className="text-2xl font-bold">{stats.revoked}</div>
               </div>
-              <div className="rounded-lg bg-orange-50 dark:bg-orange-950 p-3">
-                <div className="text-sm text-orange-700 dark:text-orange-200">Expiring Soon</div>
-                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{stats.expiringSoon}</div>
+              <div className="rounded-2xl bg-muted p-3">
+                <div className="text-sm text-muted-foreground">Expiring Soon</div>
+                <div className="text-2xl font-bold">{stats.expiringSoon}</div>
               </div>
             </div>
           )}

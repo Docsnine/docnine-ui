@@ -41,7 +41,6 @@ export const useAuthStore = create<AuthState>((set) => ({
       setAccessToken(data.accessToken);
       set({ user: data.user, isAuthenticated: true });
     } catch {
-      // No valid session — remain logged out.
       setAccessToken(null);
     } finally {
       set({ initialized: true });

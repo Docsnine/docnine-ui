@@ -68,7 +68,7 @@ export function MCPServerCard({ projectId: propProjectId }: MCPServerCardProps) 
 
     if (isLoading) {
         return (
-            <Card>
+            <Card className="shadow-none">
                 <CardHeader>
                     <CardTitle>MCP Server</CardTitle>
                     <CardDescription>Loading server configuration...</CardDescription>
@@ -123,7 +123,7 @@ export function MCPServerCard({ projectId: propProjectId }: MCPServerCardProps) 
     }
 
     return (
-        <Card>
+        <Card className="shadow-none">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">

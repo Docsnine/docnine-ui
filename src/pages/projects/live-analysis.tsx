@@ -266,7 +266,7 @@ export function LiveAnalysisPage() {
                 <div
                   key={log.id}
                   className={cn(
-                    "flex items-start gap-3 py-1 px-2 rounded-sm transition-colors",
+                    "flex items-start gap-3 py-1 px-2 rounded-sm transition-colors text-sm",
                     getSeverityColor(log.severity)
                   )}
                 >

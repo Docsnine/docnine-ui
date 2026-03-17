@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Button } from '../ui/button'
 import { Link } from 'react-router-dom'
 import { ThemeToggle } from './theme-toggle'
-import { Mail, MessageSquare, Menu, X, Sparkles, Loader2 } from 'lucide-react'
+import { Mail, MessageSquare, Menu, X, Sparkles, Loader2, Twitter } from 'lucide-react'
 import { useTheme } from '../../providers/theme-provider'
 import Loader from '../ui/loader'
 import Loader1 from '../ui/loader1'
@@ -18,13 +18,19 @@ export function TopHeader({ className }: { className?: string }) {
             <div className="border-b border-border bg-muted/30">
                 <div className="container mx-auto px-4 h-10 flex items-center justify-between text-xs sm:text-sm">
                     <div className="flex items-center gap-4 text-muted-foreground">
-                        <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" /> docnineai@gmail.com</span>
-                        <span className="hidden sm:flex items-center gap-1.5"><MessageSquare className="h-3.5 w-3.5" /> @docnine</span>
+                        <a href="mailto:docnineai@gmail.com" target='__blank' className="flex items-center gap-1.5">
+                            <Mail className="h-3.5 w-3.5" />
+                            docnineai@gmail.com
+                        </a>
+                        <a href="https://x.com/Docnineai" target="_blank" rel="noreferrer" className="hidden sm:flex items-center gap-1.5">
+                            <Twitter className="h-3.5 w-3.5" />
+                            @docnineai
+                        </a>
                     </div>
                     <div className="flex items-center gap-4">
                         <span className="hidden md:inline-flex items-center gap-1.5 text-primary font-medium">
                             <Sparkles className="h-3.5 w-3.5" />
-                            Now in beta — Documentation that Works as Hard as You Do.
+                            Documentation that Works as Hard as You Do.
                         </span>
                         <ThemeToggle />
                     </div>

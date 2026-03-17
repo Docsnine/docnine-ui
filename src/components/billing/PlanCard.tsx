@@ -71,7 +71,7 @@ function PlanCard({
                 ) : (
                     <div className="flex items-end gap-1">
                         <span className="text-3xl font-bold">${price}</span>
-                        <span className="mb-1 text-sm text-muted-foreground">/mo</span>
+                        <span className="mb-1 text-sm text-muted-foreground">${plan.id == "team" ? "/user" : ""}/mo</span>
                     </div>
                 )}
                 {annual && plan.prices.annualTotal != null && plan.prices.monthly > 0 && (

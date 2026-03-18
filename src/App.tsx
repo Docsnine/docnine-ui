@@ -10,6 +10,7 @@ import {
 } from "react-router-dom"
 import { useAuthStore } from "@/store/auth"
 import { useSessionStore } from "@/store/session"
+import { useTokenRefresh } from "@/hooks/useTokenRefresh"
 import { ThemeProvider } from "@/providers/theme-provider"
 import { useSeo } from "@/lib/seo"
 import { SessionExpiredDialog } from "@/components/dialogs/SessionExpiredDialog"
@@ -159,6 +160,12 @@ function ScrollRestoration() {
 function AppRoutes() {
   const { initAuth, initialized } = useAuthStore()
   const { sessionExpiredOpen, hideSessionExpired } = useSessionStore()
+
+  /**
+   * Activate background token refresh 
+   * (every 24 hours)
+   */
+  useTokenRefresh()
 
   useEffect(() => {
     const oauthPaths = [

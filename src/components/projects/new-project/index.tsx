@@ -30,6 +30,7 @@ import {
     ProjectCreationService,
     ProviderOAuthService,
 } from "@/services"
+import { getAccessToken } from "@/lib/api"
 import {
     PROVIDER_CONFIG,
     readSavedOrg,
@@ -154,8 +155,15 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
         setIsConnecting(true)
 
         try {
+            const token = getAccessToken()
+            if (!token) {
+                setApiError("Not authenticated - please log in")
+                setIsConnecting(false)
+                return
+            }
             await ProviderOAuthService.openOAuthWindow(
                 provider,
+                token,
                 async (status, user, msg) => {
                     if (status === "success") {
                         setProviderStatus((prev) => ({ ...prev, [provider]: true }))

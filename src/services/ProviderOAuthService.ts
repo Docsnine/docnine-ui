@@ -17,17 +17,18 @@ export class ProviderOAuthService {
   /**
    * Get OAuth window URL for a provider
    */
-  static getOAuthUrl(provider: ProviderKey): string {
+  static getOAuthUrl(provider: ProviderKey, accessToken?: string): string {
     const base = window.location.origin;
+    const token = accessToken ? `&token=${encodeURIComponent(accessToken)}` : "";
     switch (provider) {
       case "github":
         return `${base}/auth/github?popup=1`;
       case "gitlab":
-        return `${base}/auth/gitlab?popup=1`;
+        return `${base}/auth/gitlab?popup=1${token}`;
       case "bitbucket":
-        return `${base}/auth/bitbucket?popup=1`;
+        return `${base}/auth/bitbucket?popup=1${token}`;
       case "azure":
-        return `${base}/auth/azure?popup=1`;
+        return `${base}/auth/azure?popup=1${token}`;
       default:
         throw new Error(`Unknown provider: ${provider}`);
     }
@@ -38,6 +39,7 @@ export class ProviderOAuthService {
    */
   static async openOAuthWindow(
     provider: ProviderKey,
+    accessToken: string,
     onStatusChange: (
       status: OAuthStatus,
       user?: string,
@@ -52,7 +54,7 @@ export class ProviderOAuthService {
     const top = window.screenY + (window.outerHeight - height) / 2;
 
     const popup = window.open(
-      this.getOAuthUrl(provider),
+      this.getOAuthUrl(provider, accessToken),
       `${provider}-oauth`,
       `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`,
     );

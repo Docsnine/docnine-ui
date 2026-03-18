@@ -79,9 +79,9 @@ export function TopHeader({ className }: { className?: string }) {
             {mobileOpen && (
                 <div className="md:hidden border-t border-border bg-background px-4 pb-4">
                     <nav className="flex flex-col gap-1 mt-3">
-                        <a href="#features" onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Features</a>
-                        <Link to="/docs" onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Docs</Link>
+                        <a href="/docs" onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Docs</a>
                         <a href="https://github.com/Docsnine" target="_blank" rel="noreferrer" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">GitHub</a>
+                        <Link to="/pricing" onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Pricing</Link>
                         <Link to="/contact" onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Contact Us</Link>
                         <div className="mt-2 pt-2 border-t border-border">
                             <Button asChild className="w-full bg-foreground text-background hover:bg-foreground/90 rounded-full h-9 font-semibold text-sm">

@@ -11,14 +11,14 @@ import {
 import { useAuthStore } from "@/store/auth"
 import { useSessionStore } from "@/store/session"
 import { ThemeProvider } from "@/providers/theme-provider"
-import { getSiteUrl, useSeo } from "@/lib/seo"
+import { useSeo } from "@/lib/seo"
 import { SessionExpiredDialog } from "@/components/dialogs/SessionExpiredDialog"
 import Loader1 from "./components/ui/loader1"
 import { GuestLayout } from "./layout/guest"
 import { AuthLayout } from "./layout/auth"
 import { ApplicationLogo } from "./components/common"
 import { SeoConfig } from "./types/SeoTypes"
-import Loader from "./components/ui/loader"
+import { PUBLIC_PAGES, SYSTEM_PATHS } from "./configs/SeoConfigs"
 
 // ─── Lazy-loaded pages ────────────────────────────────────────────
 
@@ -102,30 +102,7 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 }
 
 // ─── SEO ──────────────────────────────────────────────────────────
-
-const MARKETING_KEYWORDS = [
-  "ai documentation",
-  "developer documentation",
-  "github documentation generator",
-  "auto-generate docs from code",
-  "codebase documentation",
-  "api documentation tool",
-  "multi-agent ai",
-  "docnine",
-  "docnine ai",
-  "documentation generator",
-  "keep docs in sync",
-]
-
-const AUTH_KEYWORDS = [
-  "docnine login",
-  "docnine signup",
-  "developer documentation tool",
-]
-
 function getRouteSeo(pathname: string): SeoConfig | null {
-  const siteUrl = getSiteUrl()
-
   // Dynamic portal — SEO set inside PublicPortalPage itself
   if (matchPath("/docs/:slug", pathname)) return null
 
@@ -147,13 +124,6 @@ function getRouteSeo(pathname: string): SeoConfig | null {
     }
   }
 
-  // System / oauth pages — no indexing
-  const SYSTEM_PATHS = [
-    "/verify", "/auth/callback", "/cli-auth",
-    "/auth/github", "/auth/gitlab", "/auth/bitbucket", "/auth/azure",
-    "/github/oauth/complete", "/gitlab/oauth/complete", "/bitbucket/oauth/complete", "/azure/oauth/complete",
-    "/forgot-password", "/reset-password",
-  ]
   if (
     SYSTEM_PATHS.includes(pathname) ||
     matchPath("/share/accept/:token", pathname)
@@ -165,151 +135,6 @@ function getRouteSeo(pathname: string): SeoConfig | null {
       robots: "noindex, nofollow",
       keywords: [],
     }
-  }
-
-  const PUBLIC_PAGES: Record<string, SeoConfig> = {
-    "/": {
-      title: "Docnine -  AI Documentation for Engineering Teams",
-      description:
-        "Ship better documentations, faster. Stop writing documentation by hand. Create and maintain developer documentation with AI. Docnine generates docs from your codebase, then keeps them up to date as your code evolves.",
-      pathname: "/",
-      keywords: MARKETING_KEYWORDS,
-      appendSiteName: false,
-      imageWidth: 1200,
-      imageHeight: 630,
-      structuredData: {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        name: "Docnine",
-        applicationCategory: "DeveloperApplication",
-        operatingSystem: "Web",
-        url: siteUrl,
-        description:
-          "Generate, publish, and maintain developer documentation from code with AI.",
-        offers: {
-          "@type": "Offer",
-          price: "0",
-          priceCurrency: "USD",
-          availability: "https://schema.org/InStock",
-        },
-      },
-    },
-    "/login": {
-      title: "Sign In To Your Account",
-      description:
-        "Sign in to Docnine to generate, publish, and maintain documentation for your codebase — automatically.",
-      pathname: "/login",
-      keywords: AUTH_KEYWORDS,
-      robots: "index, follow",
-      structuredData: {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "Sign In to Docnine",
-        url: `${siteUrl}/login`,
-        description: "Secure sign-in to the Docnine documentation platform.",
-      },
-    },
-    "/signup": {
-      title: "Create a Free Account",
-      description:
-        "Get started with Docnine for free. Connect your repo and generate your first documentation in minutes.",
-      pathname: "/signup",
-      keywords: [
-        ...AUTH_KEYWORDS,
-        "free developer documentation",
-        "docnine free plan",
-        "github docs generator free",
-      ],
-      robots: "index, follow",
-      structuredData: {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "Sign Up for Docnine",
-        url: `${siteUrl}/signup`,
-        description:
-          "Create a free Docnine account to auto-generate documentation from your codebase.",
-      },
-    },
-    "/pricing": {
-      title: "Pricing Plans",
-      description:
-        "Start free, then scale. Compare Docnine plans for solo developers and teams — including unlimited projects, security audits, and shared portals.",
-      pathname: "/pricing",
-      keywords: [
-        ...MARKETING_KEYWORDS,
-        "documentation pricing",
-        "developer tools pricing",
-        "docnine free plan",
-        "docnine pro",
-      ],
-      structuredData: {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "Docnine Pricing",
-        url: `${siteUrl}/pricing`,
-        description: "Pricing and plan comparison for Docnine's AI documentation platform.",
-      },
-    },
-    "/docs": {
-      title: "Platform Documentation",
-      description:
-        "Everything you need to set up Docnine: GitHub integration, webhooks, AI agent workflows, public portals, exports, and billing.",
-      pathname: "/docs",
-      keywords: [
-        ...MARKETING_KEYWORDS,
-        "docnine docs",
-        "docnine setup guide",
-        "github webhook documentation",
-        "how to use docnine",
-      ],
-      structuredData: {
-        "@context": "https://schema.org",
-        "@type": "TechArticle",
-        headline: "Docnine Platform Documentation",
-        url: `${siteUrl}/docs`,
-        description: "Official setup and usage guide for the Docnine documentation platform.",
-        author: { "@type": "Organization", name: "Docnine", url: siteUrl },
-      },
-    },
-    "/contact": {
-      title: "Contact Us",
-      description:
-        "Reach the Docnine team for support, feature requests, enterprise pricing, or partnership enquiries.",
-      pathname: "/contact",
-      keywords: ["contact docnine", "docnine support", "docnine enterprise"],
-      structuredData: {
-        "@context": "https://schema.org",
-        "@type": "ContactPage",
-        name: "Contact Docnine",
-        url: `${siteUrl}/contact`,
-      },
-    },
-    "/terms": {
-      title: "Terms and Conditions",
-      description:
-        "Review Docnine's terms and conditions — account usage, service limits, data handling, and your legal rights.",
-      pathname: "/terms",
-      keywords: ["docnine terms", "terms and conditions", "docnine legal"],
-      structuredData: {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "Docnine Terms and Conditions",
-        url: `${siteUrl}/terms`,
-      },
-    },
-    "/privacy": {
-      title: "Privacy Policy",
-      description:
-        "Learn how Docnine collects, uses, and safeguards your account data, repository contents, and product usage information.",
-      pathname: "/privacy",
-      keywords: ["docnine privacy", "privacy policy", "data protection", "GDPR"],
-      structuredData: {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "Docnine Privacy Policy",
-        url: `${siteUrl}/privacy`,
-      },
-    },
   }
 
   return PUBLIC_PAGES[pathname] ?? null

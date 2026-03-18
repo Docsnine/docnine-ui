@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useSearchParams } from "react-router-dom"
-import { githubApi, gitlabApi, bitbucketApi, azureApi, authApi, API_BASE } from "@/lib/api"
+import { githubApi, gitlabApi, bitbucketApi, azureApi, authApi, API_BASE, getAccessToken } from "@/lib/api"
+import { ProviderOAuthService } from "@/services/ProviderOAuthService"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -77,13 +78,30 @@ function GitHubCard() {
     const handleConnect = async () => {
         setActionLoading("connect")
         setFeedback(null)
-        try {
-            const data = await githubApi.getOAuthStartUrl()
-            window.location.href = data.url
-        } catch (err: any) {
-            setFeedback({ type: "error", message: err?.message ?? "Failed to start GitHub OAuth flow." })
+        
+        const token = getAccessToken()
+        if (!token) {
+            setFeedback({ type: "error", message: "Not authenticated. Please log in." })
             setActionLoading(null)
+            return
         }
+
+        await ProviderOAuthService.openOAuthWindow(
+            "github",
+            token,
+            async (status, user, message) => {
+                setActionLoading(null)
+                
+                if (status === "success") {
+                    setFeedback({ type: "success", message: "GitHub connected successfully!" })
+                    await loadStatus()
+                } else if (status === "error") {
+                    setFeedback({ type: "error", message: message || "Failed to connect GitHub" })
+                } else if (status === "cancelled") {
+                    setFeedback({ type: "error", message: "Connection cancelled" })
+                }
+            }
+        )
     }
 
     const handleDisconnect = async () => {
@@ -883,12 +901,31 @@ function GitLabCard() {
 
     const handleConnect = async () => {
         setActionLoading("connect")
-        try {
-            window.location.href = `${API_BASE}/gitlab/oauth/url`
-        } catch (error) {
-            setFeedback({ type: "error", message: "Failed to initiate connection" })
+        setFeedback(null)
+        
+        const token = getAccessToken()
+        if (!token) {
+            setFeedback({ type: "error", message: "Not authenticated. Please log in." })
             setActionLoading(null)
+            return
         }
+
+        await ProviderOAuthService.openOAuthWindow(
+            "gitlab",
+            token,
+            async (status, user, message) => {
+                setActionLoading(null)
+                
+                if (status === "success") {
+                    setFeedback({ type: "success", message: "GitLab connected successfully!" })
+                    await loadStatus()
+                } else if (status === "error") {
+                    setFeedback({ type: "error", message: message || "Failed to connect GitLab" })
+                } else if (status === "cancelled") {
+                    setFeedback({ type: "error", message: "Connection cancelled" })
+                }
+            }
+        )
     }
 
     const handleDisconnect = async () => {
@@ -1039,12 +1076,31 @@ function BitbucketCard() {
 
     const handleConnect = async () => {
         setActionLoading("connect")
-        try {
-            window.location.href = `${API_BASE}/bitbucket/oauth/url`
-        } catch (error) {
-            setFeedback({ type: "error", message: "Failed to initiate connection" })
+        setFeedback(null)
+        
+        const token = getAccessToken()
+        if (!token) {
+            setFeedback({ type: "error", message: "Not authenticated. Please log in." })
             setActionLoading(null)
+            return
         }
+
+        await ProviderOAuthService.openOAuthWindow(
+            "bitbucket",
+            token,
+            async (status, user, message) => {
+                setActionLoading(null)
+                
+                if (status === "success") {
+                    setFeedback({ type: "success", message: "Bitbucket connected successfully!" })
+                    await loadStatus()
+                } else if (status === "error") {
+                    setFeedback({ type: "error", message: message || "Failed to connect Bitbucket" })
+                } else if (status === "cancelled") {
+                    setFeedback({ type: "error", message: "Connection cancelled" })
+                }
+            }
+        )
     }
 
     const handleDisconnect = async () => {
@@ -1195,12 +1251,31 @@ function AzureDevOpsCard() {
 
     const handleConnect = async () => {
         setActionLoading("connect")
-        try {
-            window.location.href = `${API_BASE}/azure/oauth/url`
-        } catch (error) {
-            setFeedback({ type: "error", message: "Failed to initiate connection" })
+        setFeedback(null)
+        
+        const token = getAccessToken()
+        if (!token) {
+            setFeedback({ type: "error", message: "Not authenticated. Please log in." })
             setActionLoading(null)
+            return
         }
+
+        await ProviderOAuthService.openOAuthWindow(
+            "azure",
+            token,
+            async (status, user, message) => {
+                setActionLoading(null)
+                
+                if (status === "success") {
+                    setFeedback({ type: "success", message: "Azure DevOps connected successfully!" })
+                    await loadStatus()
+                } else if (status === "error") {
+                    setFeedback({ type: "error", message: message || "Failed to connect Azure DevOps" })
+                } else if (status === "cancelled") {
+                    setFeedback({ type: "error", message: "Connection cancelled" })
+                }
+            }
+        )
     }
 
     const handleDisconnect = async () => {

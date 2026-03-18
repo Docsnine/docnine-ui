@@ -16,13 +16,13 @@ export function Footer() {
                             Documentation that Works as Hard as You Do.
                         </p>
                         <div className="flex items-center gap-4">
-                            <a href="#" className="flex items-center justify-center w-10 h-10 rounded-full bg-primary border border-border text-primary-foreground hover:text-foreground transition-colors">
+                            <a href="https://github.com/Docsnine" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-full bg-primary border border-border text-primary-foreground hover:text-foreground transition-colors">
                                 <Github className="h-4 w-4" />
                             </a>
-                            <a href="#" className="flex items-center justify-center w-10 h-10 rounded-full bg-primary border border-border text-primary-foreground hover:text-foreground transition-colors">
+                            <a href="https://x.com/Docnineai" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-full bg-primary border border-border text-primary-foreground hover:text-foreground transition-colors">
                                 <Twitter className="h-4 w-4" />
                             </a>
-                            <a href="#" className="flex items-center justify-center w-10 h-10 rounded-full bg-primary border border-border text-primary-foreground hover:text-foreground transition-colors">
+                            <a href="https://discord.gg/docnineai" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-full bg-primary border border-border text-primary-foreground hover:text-foreground transition-colors">
                                 <MessageSquare className="h-4 w-4" />
                             </a>
                         </div>

@@ -163,20 +163,20 @@ export function DashboardLayout() {
                         <Link
                           to="/admin"
                           onClick={() => setDropdownOpen(false)}
-                          className="flex w-full items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+                          className="flex w-full items-center justify-between gap-2 px-4 py-2 text-sm text-muted-foreground hover:bg-destructive/10 transition-colors"
                         >
+                          <span>Administration</span>
                           <ShieldAlert className="h-4 w-4" />
-                          Admin Dashboard
                         </Link>
                       </>
                     )}
                     <div className="border-t border-border my-1" />
                     <button
                       onClick={() => { setDropdownOpen(false); handleLogout() }}
-                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+                      className="flex w-full items-center justify-between gap-2 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
                     >
+                      <span>Signout</span>
                       <LogOut className="h-4 w-4" />
-                      Log out
                     </button>
                   </div>
                 )}

@@ -46,6 +46,7 @@ const DashboardPage = lazy(() => import("@/pages/dashboard/dashboard").then(m =>
 const ProjectOverviewPage = lazy(() => import("@/pages/projects/overview").then(m => ({ default: m.ProjectOverviewPage })))
 const LiveAnalysisPage = lazy(() => import("@/pages/projects/live-analysis").then(m => ({ default: m.LiveAnalysisPage })))
 const DocumentationViewerPage = lazy(() => import("@/pages/projects/documentation").then(m => ({ default: m.DocumentationViewerPage })))
+const ProjectSettingsPage = lazy(() => import("@/pages/projects/settings").then(m => ({ default: m.ProjectSettingsPage })))
 const DocumentationsPage = lazy(() => import("@/pages/dashboard/documentations").then(m => ({ default: m.DocumentationsPage })))
 const LogsPage = lazy(() => import("@/pages/dashboard/logs").then(m => ({ default: m.LogsPage })))
 const ProfilePage = lazy(() => import("@/pages/profile/profile").then(m => ({ default: m.ProfilePage })))
@@ -239,6 +240,7 @@ function AppRoutes() {
             <Route path="projects/:id" element={<ProjectOverviewPage />} />
             <Route path="projects/:id/live" element={<LiveAnalysisPage />} />
             <Route path="projects/:id/docs" element={<DocumentationViewerPage />} />
+            <Route path="projects/:id/settings" element={<ProjectSettingsPage />} />
             <Route path="documentations" element={<DocumentationsPage />} />
             <Route path="logs" element={<LogsPage />} />
             <Route path="profile" element={<ProfilePage />} />

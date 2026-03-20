@@ -32,12 +32,14 @@ function eventToSeverity(step: string, status?: string): LogSeverity {
 
 /** Derive a human-readable message from a pipeline event. */
 function eventToMessage(event: Record<string, any>): string {
-  if (event.step === "done") return "✅ Documentation pipeline completed successfully."
-  if (event.step === "error") return `❌ Pipeline error: ${event.msg ?? event.detail ?? "Unknown error"}`
+  if (event.step === "done") return "Documentation completed successfully."
+  if (event.step === "error") return `Pipeline error: ${event.msg ?? event.detail ?? "Unknown error"}`
+
   const parts: string[] = []
-  if (event.step) parts.push(`[${event.step}]`)
+  if (event.step) parts.push(`[${event.step}]...`)
   if (event.msg) parts.push(event.msg)
   if (event.detail) parts.push(event.detail)
+
   return parts.join(" — ") || "Processing…"
 }
 
@@ -193,11 +195,11 @@ export function LiveAnalysisPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold font-mono tracking-tight flex items-center gap-2">
-              Analysing
+              Documenting
               {connectionState === "connected" && (
-                <span className="relative flex h-3 w-3 ml-2">
+                <span className="relative flex h-2 w-2 ml-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
                 </span>
               )}
             </h1>
@@ -258,7 +260,8 @@ export function LiveAnalysisPage() {
         <CardContent className="flex-1 overflow-y-auto p-4 font-mono text-sm">
           {logs.length === 0 ? (
             <div className="flex items-center justify-center h-full text-muted-foreground">
-              <Loader1 className="h-5 w-5 mr-2" /> Waiting for pipeline events…
+              <Loader1 className="h-5 w-5 mr-2" />
+              <span>Waiting for pipeline events...</span>
             </div>
           ) : (
             <div className="space-y-1">
@@ -266,7 +269,7 @@ export function LiveAnalysisPage() {
                 <div
                   key={log.id}
                   className={cn(
-                    "flex items-start gap-3 py-1 px-2 rounded-sm transition-colors text-sm",
+                    "flex items-start gap-3 py-1 px-2 transition-colors text-sm",
                     getSeverityColor(log.severity)
                   )}
                 >

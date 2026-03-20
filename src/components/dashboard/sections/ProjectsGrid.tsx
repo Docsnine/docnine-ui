@@ -125,6 +125,9 @@ export function ProjectsGrid({
                     {project.repoOwner} / {project.name}
                   </span>
                 </div>
+                <div className="flex items-center text-sm text-muted-foreground mt-2" title={project.description}>
+                  <span className="line-clamp-2">{project.description}</span>
+                </div>
               </div>
 
               {/* Action menu */}

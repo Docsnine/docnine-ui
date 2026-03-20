@@ -1428,11 +1428,9 @@ export function SettingsPage() {
         }
     }, [googleDocsStatus, setSearchParams])
 
-    const maxW = activeTab === "billing" ? "max-w-3xl" : "max-w-2xl"
-
     return (
         <div className="flex justify-center py-7 px-4">
-            <div className={cn("w-full space-y-6", maxW)}>
+            <div className={cn("w-full space-y-6", "max-w-3xl")}>
                 {/* Page header */}
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">

@@ -278,6 +278,7 @@ export type ProjectStatus = "analyzing" | "completed" | "failed" | "archived";
 export interface Project {
   id: string; // = ApiProject._id
   name: string; // = repoName
+  description?: string;
   repoUrl: string;
   repoOwner: string;
   status: ProjectStatus;

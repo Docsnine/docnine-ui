@@ -12,6 +12,7 @@ export { useNewProjectForms } from "./useNewProjectForms";
 // Shared page hooks
 export { useSearchAndFilter } from "./useSearchAndFilter";
 export { usePagination } from "./usePagination";
+export { useClientPagination } from "./useClientPagination";
 export { useNotification } from "./useNotification";
 export { useGeneralSettings } from "./useGeneralSettings";
 export { useConfirm } from "./useConfirm";

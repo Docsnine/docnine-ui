@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { useProjectStore } from "@/store/projects"
 import { useSubscriptionStore } from "@/store/subscription"
 import { Button } from "@/components/ui/button"
+import { Pagination } from "@/components/ui/pagination"
 import { Plus } from "lucide-react"
 import { NewProjectModal } from "@/components/projects/new-project"
 import { UpgradeModal } from "@/components/billing/UpgradeModal"
@@ -14,16 +15,6 @@ import { DashboardFilters, ProjectsGrid, SharedProjects } from "./sections"
 import type { GithubNotice } from "../../types/DashboardTypes"
 import { SORT_API_MAP, STATUS_API_MAP } from "@/configs/DashboardConfig"
 import { ProjectStatus } from "@/types/ProjectTypes"
-
-// Debounces value changes by `delay` ms to avoid hammering the API on every keystroke
-function useDebounce<T>(value: T, delay: number): T {
-    const [debounced, setDebounced] = useState(value)
-    useEffect(() => {
-        const t = setTimeout(() => setDebounced(value), delay)
-        return () => clearTimeout(t)
-    }, [value, delay])
-    return debounced
-}
 
 export function DashboardPage() {
     const { projects, total, totalPages, page, isLoading, error, fetchProjects, deleteProject, archiveProject, retryProject, sharedProjects, sharedLoading, fetchSharedProjects } =
@@ -44,6 +35,7 @@ export function DashboardPage() {
     const [pendingAction, setPendingAction] = useState<{ type: "delete" | "archive", id: string } | null>(null)
 
     // Pagination
+    const ITEMS_PER_PAGE = 6
     const { currentPage, totalPages: paginationTotalPages, goToPrevious, goToNext, setTotalPages } = usePagination({ initialPage: 1 })
 
     // Search with URL param sync
@@ -74,7 +66,7 @@ export function DashboardPage() {
     const doFetch = useCallback(() => {
         fetchProjects({
             page: currentPage,
-            limit: 20,
+            limit: ITEMS_PER_PAGE,
             status: STATUS_API_MAP[statusFilter] || undefined,
             sort: SORT_API_MAP[sortBy],
             search: debouncedSearch || undefined,
@@ -112,7 +104,7 @@ export function DashboardPage() {
     const handleDelete = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation()
         setPendingAction({ type: "delete", id })
-        
+
         const confirmed = await confirm({
             title: "Delete Project",
             message: "This project will be permanently deleted and cannot be undone. Are you sure?",
@@ -127,7 +119,7 @@ export function DashboardPage() {
         }
 
         setActionLoading(id)
-        
+
         try {
             await deleteProject(id)
             setErrorMessage(null)
@@ -258,29 +250,13 @@ export function DashboardPage() {
                         />
 
                         {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="flex items-center justify-center gap-2 pt-4">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    disabled={currentPage <= 1}
-                                    onClick={goToPrevious}
-                                >
-                                    Previous
-                                </Button>
-                                <span className="text-sm text-muted-foreground">
-                                    Page {currentPage} of {totalPages}
-                                </span>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    disabled={currentPage >= totalPages}
-                                    onClick={goToNext}
-                                >
-                                    Next
-                                </Button>
-                            </div>
-                        )}
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPreviousClick={goToPrevious}
+                            onNextClick={goToNext}
+                            variant="compact"
+                        />
                     </>
                 )}
 

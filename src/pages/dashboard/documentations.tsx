@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { formatDistanceToNow } from "date-fns"
 import { projectsApi } from "@/lib/api"
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Pagination } from "@/components/ui/pagination"
 import {
     BookOpen,
     FileCode2,
@@ -30,6 +31,7 @@ import {
 import TopBar from "@/components/projects/top-bar"
 import { DocStatusBadge } from "@/components/projects/doc-status"
 import { useDocTrackerStore } from "@/store/doc-tracker"
+import { useClientPagination } from "@/hooks"
 import { DocStatus } from "@/types/DocStatusTypes"
 import { DOC_STATUS_ORDER } from "@/configs/DocStatusConfig"
 import { ApiProject } from "@/types/ProjectTypes"
@@ -274,6 +276,22 @@ export function DocumentationsPage() {
         return SECTION_KEYS.some((k) => getEntry(p._id, k)?.status === statusFilter)
     })
 
+    // ── Pagination ──────────────────────────────────────────────────────
+    const {
+        currentPage,
+        totalPages,
+        paginatedItems: paginatedCompleted,
+        startIdx,
+        endIdx,
+        totalItems,
+        goToPrevious,
+        goToNext,
+    } = useClientPagination({
+        items: filteredCompleted,
+        itemsPerPage: 6,
+        resetOnChange: true,
+    })
+
     // ── Aggregate stats ──────────────────────────────────────────
     const totalFiles = completedProjects.reduce((s, p) => s + (p.stats?.filesAnalysed ?? 0), 0)
     const totalEndpoints = completedProjects.reduce((s, p) => s + (p.stats?.endpoints ?? 0), 0)
@@ -349,13 +367,13 @@ export function DocumentationsPage() {
                                     <button
                                         key={status}
                                         onClick={() => setStatusFilter(isActive ? "all" : status)}
-                                        className={`inline-flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full border transition-colors ${isActive
+                                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${isActive
                                             ? "bg-primary text-primary-foreground border-primary"
                                             : "border-border text-muted-foreground hover:border-muted-foreground"
                                             }`}
                                     >
                                         <DocStatusBadge status={status} compact />
-                                        <span className="font-tabular">{activeCount}</span>
+                                        <span className="font-tabular ml-1">{activeCount}</span>
                                     </button>
                                 )
                             })}
@@ -392,14 +410,27 @@ export function DocumentationsPage() {
                 {/* Empty state */}
                 {!isLoading && !error && completedProjects.length === 0 && <EmptyState />}
 
-                {/* Completed projects grid */}
+                {/* Completed projects grid with pagination */}
                 {!isLoading && filteredCompleted.length > 0 && (
                     <section>
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {filteredCompleted.map((p) => (
+                            {paginatedCompleted.map((p) => (
                                 <DocProjectCard key={p._id} project={p} />
                             ))}
                         </div>
+
+                        {/* Pagination component */}
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPreviousClick={goToPrevious}
+                            onNextClick={goToNext}
+                            showItemCount
+                            itemCount={totalItems}
+                            currentItemStart={startIdx}
+                            currentItemEnd={Math.min(endIdx, totalItems)}
+                        />
+
                         {search && filteredCompleted.length === 0 && (
                             <p className="text-center text-muted-foreground py-12">No projects match "{search}".</p>
                         )}

@@ -24,6 +24,7 @@ import { LogEntry, LogSeverity } from "@/types/LiveAnalysisTypes"
 function eventToSeverity(step: string, status?: string): LogSeverity {
   if (step === "done") return "success"
   if (step === "error") return "error"
+  if (step === "timeout") return "warning"
   if (status === "error") return "error"
   if (status === "warning") return "warning"
   if (step === "security") return "warning"
@@ -34,6 +35,7 @@ function eventToSeverity(step: string, status?: string): LogSeverity {
 function eventToMessage(event: Record<string, any>): string {
   if (event.step === "done") return "Documentation completed successfully."
   if (event.step === "error") return `Pipeline error: ${event.msg ?? event.detail ?? "Unknown error"}`
+  if (event.step === "timeout") return `Pipeline timed out. ${event.msg ?? "Click Retry to continue."}`
 
   const parts: string[] = []
   if (event.step) parts.push(`[${event.step}]...`)
@@ -46,14 +48,17 @@ function eventToMessage(event: Record<string, any>): string {
 export function LiveAnalysisPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { getProject, updateLocalProject } = useProjectStore()
+  const { getProject, updateLocalProject, retryProject } = useProjectStore()
 
   const [projectName, setProjectName] = useState<string>("")
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = useState(false)
   const [connectionState, setConnectionState] = useState<"connecting" | "connected" | "reconnecting" | "disconnected">("connecting")
-  const [pipelineStatus, setPipelineStatus] = useState<"running" | "done" | "error">("running")
+  const [pipelineStatus, setPipelineStatus] = useState<"running" | "done" | "error" | "timeout">("running")
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [isRetrying, setIsRetrying] = useState(false)
+  // Incrementing this forces the SSE useEffect to re-run (clean restart after retry).
+  const [connectionKey, setConnectionKey] = useState(0)
 
   const logsEndRef = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
@@ -135,6 +140,12 @@ export function LiveAnalysisPage() {
                   setPipelineStatus("error")
                   setConnectionState("disconnected")
                   updateLocalProject(id, { status: "failed", apiStatus: "error" })
+                } else if (data.step === "timeout") {
+                  setPipelineStatus("timeout")
+                  setConnectionState("disconnected")
+                  updateLocalProject(id, { status: "failed", apiStatus: "timeout" })
+                  // Abort the controller so fetchEventSource doesn't auto-reconnect.
+                  abortRef.current?.abort()
                 }
               } catch {
                 // Malformed JSON — ignore
@@ -164,7 +175,10 @@ export function LiveAnalysisPage() {
     return () => {
       ctrl.abort()
     }
-  }, [id, getProject, updateLocalProject])
+  // connectionKey is intentionally included: incrementing it re-runs this
+  // effect with a fresh AbortController so retry starts a new SSE session.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, connectionKey])
 
   const getSeverityIcon = (severity: LogSeverity) => {
     switch (severity) {
@@ -220,6 +234,33 @@ export function LiveAnalysisPage() {
           {connectionState === "disconnected" && pipelineStatus === "error" && (
             <Button variant="outline" onClick={() => navigate(`/projects/${id}`)}>
               View Project
+            </Button>
+          )}
+          {connectionState === "disconnected" && pipelineStatus === "timeout" && (
+            <Button
+              variant="outline"
+              disabled={isRetrying}
+              onClick={async () => {
+                if (!id) return
+                setIsRetrying(true)
+                try {
+                  await retryProject(id)
+                  // Reset page state and re-establish SSE connection.
+                  setLogs([])
+                  setPipelineStatus("running")
+                  setConnectionState("connecting")
+                  setConnectionKey((k) => k + 1)
+                } catch {
+                  // Keep the timeout UI visible if retry fails.
+                } finally {
+                  setIsRetrying(false)
+                }
+              }}
+            >
+              {isRetrying
+                ? <Loader1 className="mr-2 h-4 w-4" />
+                : <RefreshCw className="mr-2 h-4 w-4" />}
+              Retry
             </Button>
           )}
           <Button

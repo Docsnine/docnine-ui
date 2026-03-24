@@ -39,6 +39,7 @@ export function fromApiProject(
   return {
     id: p._id,
     name: p.meta?.name || p.repoName || p.repoUrl.split("/").pop() || p.repoUrl,
+    description: p.meta?.description ?? "",
     repoOwner: p.repoOwner || "",
     repoUrl: p.repoUrl,
     status: mapApiStatus(p.status),

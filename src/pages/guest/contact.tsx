@@ -89,16 +89,16 @@ export function ContactPage() {
                                         <div>
                                             <p className="text-sm font-medium text-foreground">Twitter / X</p>
                                             <a
-                                                href="https://twitter.com/docnine"
+                                                href="https://twitter.com/Docnineai"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
                                             >
-                                                @docnine
+                                                @docnineai
                                             </a>
                                         </div>
                                     </li>
-                                    <li className="flex items-start gap-4">
+                                    {/* <li className="flex items-start gap-4">
                                         <div className="flex items-center justify-center w-10 h-10 rounded-full border border-border bg-muted/50 shrink-0">
                                             <MessageSquare className="h-4 w-4 text-primary" />
                                         </div>
@@ -111,7 +111,7 @@ export function ContactPage() {
                                                 Join our Discord
                                             </a>
                                         </div>
-                                    </li>
+                                    </li> */}
                                 </ul>
                             </div>
 

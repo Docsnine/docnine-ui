@@ -32,7 +32,7 @@ export function DocStatusBadge({ status, className, compact }: DocStatusBadgePro
     <span
       className={cn(
         "inline-flex items-center gap-1 rounded-full border font-medium",
-        compact ? "px-1.5 py-0 text-[10px]" : "px-2 py-0.5 text-xs",
+        compact ? "px-1.5 py-0 text-[10px]" : "px-2 py-0.5",
         cfg.badgeClass,
         className,
       )}
@@ -89,7 +89,7 @@ export function DocStatusSelector({ current, onSelect, className }: DocStatusSel
         type="button"
         onClick={() => setOpen((o) => !o)}
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium transition-opacity hover:opacity-80",
+          "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-medium transition-opacity hover:opacity-80",
           cfg.badgeClass,
         )}
       >
@@ -109,7 +109,7 @@ export function DocStatusSelector({ current, onSelect, className }: DocStatusSel
                 type="button"
                 onClick={() => { onSelect(s); setOpen(false) }}
                 className={cn(
-                  "w-full flex items-center gap-2 px-3 py-2 text-xs transition-colors hover:bg-muted text-left",
+                  "w-full flex items-center gap-2 px-3 py-2 transition-colors hover:bg-muted text-left",
                   s === current && "bg-muted font-medium",
                 )}
               >

@@ -29,6 +29,7 @@ import {
     ExternalLink,
     FileCode,
     Lock,
+    Settings,
 } from "lucide-react"
 import Loader1 from "@/components/ui/loader1"
 import { useConfirm } from "@/hooks"
@@ -462,6 +463,18 @@ export function ProjectOverviewPage() {
                             <Button asChild className="w-full md:w-auto">
                                 <Link to={`/projects/${project.id}/docs`}>
                                     <BookOpen className="mr-2 h-4 w-4" /> View Documentation
+                                </Link>
+                            </Button>
+                        )}
+                        {isOwner && (
+                            <Button
+                                asChild
+                                variant="outline"
+                                className="w-full md:w-auto"
+                            >
+                                <Link to={`/projects/${project.id}/settings`}>
+                                    <Settings className="mr-2 h-4 w-4" />
+                                    Settings
                                 </Link>
                             </Button>
                         )}

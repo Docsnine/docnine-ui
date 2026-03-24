@@ -60,6 +60,7 @@ import {
   AdminUser,
   Pagination,
 } from "@/types/AdminTypes";
+import { ActivityLog, ActivityLogsResponse } from "@/types/activity-log";
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -1345,5 +1346,53 @@ export const adminApi = {
       subscriptions: AdminSubscription[];
       pagination: Pagination;
     }>(`/admin/subscriptions?${q}`);
+  },
+};
+
+// ── Activity Logs ──────────────────────────────────────────────────────────
+export type { ActivityLog, ActivityLogsResponse };
+
+export const activityLogsApi = {
+  list: (params: {
+    category?: string;
+    severity?: string;
+    projectId?: string;
+    from?: string;
+    to?: string;
+    page?: number;
+    limit?: number;
+  } = {}) => {
+    const q = new URLSearchParams();
+    if (params.category) q.set("category", params.category);
+    if (params.severity) q.set("severity", params.severity);
+    if (params.projectId) q.set("projectId", params.projectId);
+    if (params.from) q.set("from", params.from);
+    if (params.to) q.set("to", params.to);
+    if (params.page !== undefined) q.set("page", String(params.page));
+    if (params.limit !== undefined) q.set("limit", String(params.limit));
+    return apiFetch<ActivityLogsResponse>(`/activity-logs?${q}`);
+  },
+
+  listByProject: (
+    projectId: string,
+    params: {
+      category?: string;
+      severity?: string;
+      from?: string;
+      to?: string;
+      page?: number;
+      limit?: number;
+    } = {},
+  ) => {
+    const q = new URLSearchParams();
+    if (params.category) q.set("category", params.category);
+    if (params.severity) q.set("severity", params.severity);
+    if (params.from) q.set("from", params.from);
+    if (params.to) q.set("to", params.to);
+    if (params.page !== undefined) q.set("page", String(params.page));
+    if (params.limit !== undefined) q.set("limit", String(params.limit));
+    return apiFetch<ActivityLogsResponse>(
+      `/activity-logs/project/${projectId}?${q}`,
+    );
   },
 };

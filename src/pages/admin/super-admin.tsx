@@ -318,21 +318,6 @@ export function SuperAdminPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-destructive/10">
-          <ShieldAlert className="h-5 w-5 text-destructive" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">Super Admin</h1>
-          <p className="text-sm text-muted-foreground">Platform-wide analytics and controls</p>
-        </div>
-        <Button variant="ghost" size="sm" className="ml-auto gap-1.5" onClick={loadStats}>
-          <RefreshCw className="h-3.5 w-3.5" />
-          Refresh
-        </Button>
-      </div>
-
       {/* Tabs */}
       <div className="flex gap-1 border-b border-border">
         {TABS.map(({ id, label, Icon }) => (

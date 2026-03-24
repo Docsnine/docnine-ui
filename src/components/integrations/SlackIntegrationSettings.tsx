@@ -32,6 +32,9 @@ const EMPTY_CONFIG = {
         low: false,
     },
     lastAlert: null,
+    pendingCustomApp: false,
+    clientIdLast4: "",
+    signingSecretLast4: "",
 };
 
 const ALERT_PREFERENCES = [
@@ -69,8 +72,7 @@ export function SlackIntegrationSettings({ projectId }) {
     const [connecting, setConnecting] = useState(false);
     const [updating, setUpdating] = useState(false);
     const [showDisconnectModal, setShowDisconnectModal] = useState(false);
-    const [showCredentialsModal, setShowCredentialsModal] = useState(false);
-    const [savedCustomCredentials, setSavedCustomCredentials] = useState(null); // { clientIdLast4, signingSecretLast4 }
+    const [showCredentialsForm, setShowCredentialsForm] = useState(false);
 
     const [alertChannelInput, setAlertChannelInput] = useState("");
     const saveChannelTimeout = useRef(null);
@@ -256,15 +258,16 @@ export function SlackIntegrationSettings({ projectId }) {
             const body = await res.json();
             const data = body.data ?? {};
 
-            // Save the credentials and show them
-            setSavedCustomCredentials({
-                clientIdLast4: data.clientIdLast4,
-                signingSecretLast4: credentials.signingSecret.slice(-4),
-            });
+            // Update config to reflect the pending state so it persists on reload
+            setConfig((prev) => ({
+                ...prev,
+                pendingCustomApp: true,
+                clientIdLast4: data.clientIdLast4 || "",
+                signingSecretLast4: data.signingSecretLast4 || credentials.signingSecret.slice(-4),
+            }));
 
-            setShowCredentialsModal(false);
+            setShowCredentialsForm(false);
             showSuccess("Custom Slack app credentials saved successfully");
-            // Reset form but keep modal closed until connect
             setCredentials({ clientId: "", clientSecret: "", signingSecret: "" });
         } catch (err) {
             setError(err.message);
@@ -284,6 +287,7 @@ export function SlackIntegrationSettings({ projectId }) {
     }
 
     const isConfigured = Boolean(config?.configured && config?.workspace);
+    const hasPendingCredentials = Boolean(config?.pendingCustomApp && config?.clientIdLast4);
     const healthStatus = config?.healthStatus ?? "unknown";
     const healthVariant =
         config?.healthStatus === "healthy" ? "success" : config?.healthStatus ? "warning" : "secondary";
@@ -297,7 +301,6 @@ export function SlackIntegrationSettings({ projectId }) {
                     </div>
                     <div>
                         <h3 className="text-lg font-semibold">Slack Integration</h3>
-                        <p className="text-sm text-muted-foreground">Connect a workspace to receive alerts and collaborate in Slack.</p>
                     </div>
                 </div>
                 {isConfigured && <Badge variant="success">Connected</Badge>}
@@ -311,7 +314,7 @@ export function SlackIntegrationSettings({ projectId }) {
             )}
 
             {success && (
-                <div className="flex items-start gap-2 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-700 dark:text-green-400">
+                <div className="flex items-start gap-2 rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
                     <CheckCircle className="h-4 w-4 shrink-0" />
                     <span>{success}</span>
                 </div>
@@ -319,31 +322,31 @@ export function SlackIntegrationSettings({ projectId }) {
 
             {!isConfigured ? (
                 <div className="rounded-xl border border-dashed border-border bg-muted/30 p-6">
-                    {savedCustomCredentials ? (
-                        // Custom credentials saved, ready to connect OAuth
+                    {hasPendingCredentials && !showCredentialsForm ? (
+                        /* ── Credentials saved, show them + OAuth button ── */
                         <div className="space-y-4">
-                            <div className="rounded-lg bg-green-500/5 border border-green-500/30 px-4 py-3">
+                            <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3">
                                 <div className="flex items-start gap-3">
-                                    <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+                                    <CheckCircle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                                     <div>
-                                        <h4 className="font-semibold text-sm text-green-900 dark:text-green-400">
+                                        <h4 className="font-semibold text-sm">
                                             Custom Slack App Credentials Saved
                                         </h4>
-                                        <p className="text-xs text-green-800 dark:text-green-300 mt-1">
-                                            Client ID: <code className="bg-green-500/20 px-2 py-0.5 rounded text-xs">...{savedCustomCredentials.clientIdLast4}</code>
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            Client ID: <code className="bg-primary/10 px-2 py-0.5 rounded text-xs">...{config.clientIdLast4}</code>
                                         </p>
-                                        <p className="text-xs text-green-800 dark:text-green-300 mt-1">
-                                            Signing Secret: <code className="bg-green-500/20 px-2 py-0.5 rounded text-xs">...{savedCustomCredentials.signingSecretLast4}</code>
-                                        </p>
+                                        {config.signingSecretLast4 && (
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                                Signing Secret: <code className="bg-primary/10 px-2 py-0.5 rounded text-xs">...{config.signingSecretLast4}</code>
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
 
-                            <div>
-                                <p className="text-sm text-muted-foreground mb-4">
-                                    Your custom Slack app is configured. Click below to authorize the app in your Slack workspace.
-                                </p>
-                            </div>
+                            <p className="text-sm text-muted-foreground">
+                                Your custom Slack app is configured. Click below to authorize it in your Slack workspace.
+                            </p>
 
                             <div className="flex flex-col gap-2">
                                 <Button
@@ -360,66 +363,109 @@ export function SlackIntegrationSettings({ projectId }) {
                                     ) : (
                                         <>
                                             <Slack className="h-4 w-4" />
-                                            Connect to Slack OAuth
+                                            Connect to Slack
                                         </>
                                     )}
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    onClick={() => setSavedCustomCredentials(null)}
+                                    onClick={() => setShowCredentialsForm(true)}
                                     className="w-full"
                                     disabled={connecting || updating}
                                 >
+                                    <Settings className="h-4 w-4 mr-2" />
                                     Edit Credentials
                                 </Button>
                             </div>
                         </div>
                     ) : (
-                        // Initial state: show connection options
-                        <div className="text-center">
-                            <Slack className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                            <p className="text-sm text-muted-foreground mb-4">
-                                Connect Docnine to your Slack workspace to enable instant answers.
-                            </p>
-                            <div className="flex flex-col justify-center gap-3">
+                        /* ── Credentials form (initial or edit mode) ── */
+                        <div className="space-y-4">
+                            <div className="text-center mb-2">
+                                <Slack className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                                <h4 className="text-sm font-semibold">Configure Custom Slack App</h4>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    Enter your Slack app credentials from{" "}
+                                    <a
+                                        href="https://api.slack.com/apps"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary underline"
+                                    >
+                                        api.slack.com/apps
+                                    </a>{" "}
+                                    → Basic Information → App Credentials.
+                                </p>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="client-id">Client ID</Label>
+                                <Input
+                                    id="client-id"
+                                    value={credentials.clientId}
+                                    onChange={(e) => setCredentials({ ...credentials, clientId: e.target.value })}
+                                    placeholder="e.g. 1234567890.1234567890"
+                                    disabled={updating}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Found in Basic Information → App Credentials
+                                </p>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="client-secret">Client Secret</Label>
+                                <Input
+                                    id="client-secret"
+                                    type="password"
+                                    value={credentials.clientSecret}
+                                    onChange={(e) => setCredentials({ ...credentials, clientSecret: e.target.value })}
+                                    placeholder="Your client secret"
+                                    disabled={updating}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Found in Basic Information → App Credentials
+                                </p>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="signing-secret">Signing Secret</Label>
+                                <Input
+                                    id="signing-secret"
+                                    type="password"
+                                    value={credentials.signingSecret}
+                                    onChange={(e) => setCredentials({ ...credentials, signingSecret: e.target.value })}
+                                    placeholder="Your signing secret"
+                                    disabled={updating}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Found in Basic Information → App Credentials
+                                </p>
+                            </div>
+                            <div className="flex gap-2 pt-2">
+                                {hasPendingCredentials && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => {
+                                            setShowCredentialsForm(false);
+                                            setCredentials({ clientId: "", clientSecret: "", signingSecret: "" });
+                                        }}
+                                        disabled={updating}
+                                        className="flex-1"
+                                    >
+                                        Cancel
+                                    </Button>
+                                )}
                                 <Button
-                                    onClick={handleConnectSlack}
-                                    disabled={connecting}
-                                    className="gap-2"
+                                    onClick={handleSaveCredentials}
+                                    disabled={updating || !credentials.clientId?.trim() || !credentials.clientSecret?.trim() || !credentials.signingSecret?.trim()}
+                                    className="gap-2 flex-1"
                                 >
-                                    {connecting ? (
-                                        <>
-                                            <Loader className="h-4 w-4 animate-spin" />
-                                            Connecting...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Slack className="h-4 w-4" />
-                                            Add to Slack (Default App)
-                                        </>
-                                    )}
-                                </Button>
-                                <div className="relative">
-                                    <div className="absolute inset-0 flex items-center">
-                                        <span className="w-full border-t border-border" />
-                                    </div>
-                                    <div className="relative flex justify-center text-xs uppercase">
-                                        <span className="bg-muted/30 px-2 text-muted-foreground">or</span>
-                                    </div>
-                                </div>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setShowCredentialsModal(true)}
-                                    className="gap-2"
-                                >
-                                    <Settings className="h-4 w-4" />
-                                    Configure Custom Slack App
+                                    {updating && <Loader className="h-4 w-4 animate-spin" />}
+                                    Save Credentials
                                 </Button>
                             </div>
                         </div>
                     )}
                 </div>
             ) : (
+                /* ── Connected state ── */
                 <div className="space-y-6">
                     <div className="rounded-xl border border-border bg-muted/30 p-4">
                         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -437,7 +483,7 @@ export function SlackIntegrationSettings({ projectId }) {
                                     {healthStatus}
                                 </Badge>
                                 <Badge variant="outline" className="text-xs">
-                                    {config?.isCustomApp ? "Custom App" : "Default App"}
+                                    Custom App
                                 </Badge>
                             </div>
                         </div>
@@ -446,7 +492,7 @@ export function SlackIntegrationSettings({ projectId }) {
                     <div className="rounded-xl border border-border bg-card p-5">
                         <div className="flex items-center gap-2 mb-4">
                             <Settings className="h-4 w-4 text-muted-foreground" />
-                            <h4 className="text-sm font-semibold">Alert Channel</h4>
+                            <h4 className="text-sm font-semibold tracking-tight">Alert Channel</h4>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="slack-alert-channel">Send security alerts to</Label>
@@ -459,13 +505,13 @@ export function SlackIntegrationSettings({ projectId }) {
                                 placeholder="#security-alerts"
                             />
                             <p className="text-xs text-muted-foreground">
-                                Channel name (e.g., #security-alerts) - saved automatically
+                                Channel name (e.g., #security-alerts) — saved automatically
                             </p>
                         </div>
                     </div>
 
                     <div className="rounded-xl border border-border bg-card p-5">
-                        <h4 className="text-sm font-semibold mb-4">Alert Preferences</h4>
+                        <h4 className="text-sm font-semibold tracking-tight mb-4">Alert Preferences</h4>
                         <div className="space-y-3">
                             {ALERT_PREFERENCES.map((pref) => (
                                 <label
@@ -501,19 +547,19 @@ export function SlackIntegrationSettings({ projectId }) {
                         </div>
                     )}
 
-                    <div className="rounded-lg border border-border bg-blue-500/5 px-4 py-4 text-sm">
-                        <h4 className="font-semibold text-blue-900 dark:text-blue-400 mb-3">What's Next?</h4>
-                        <ul className="space-y-2 text-blue-800 dark:text-blue-300 text-xs">
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-4 text-sm">
+                        <h4 className="font-semibold mb-3">What's Next?</h4>
+                        <ul className="space-y-2 text-muted-foreground text-xs">
                             <li className="flex gap-2">
-                                <span className="text-blue-600 dark:text-blue-400">•</span>
-                                <span>Use <code className="bg-blue-500/20 px-1 rounded">/ask</code> slash command in Slack to query your documentation</span>
+                                <span className="text-primary">•</span>
+                                <span>Use <code className="bg-primary/10 px-1 rounded text-foreground">/docnine ask</code> slash command in Slack to query your documentation</span>
                             </li>
                             <li className="flex gap-2">
-                                <span className="text-blue-600 dark:text-blue-400">•</span>
+                                <span className="text-primary">•</span>
                                 <span>Security alerts will be sent to the configured channel</span>
                             </li>
                             <li className="flex gap-2">
-                                <span className="text-blue-600 dark:text-blue-400">•</span>
+                                <span className="text-primary">•</span>
                                 <span>Manage who has access to this project via project sharing settings</span>
                             </li>
                         </ul>
@@ -536,6 +582,7 @@ export function SlackIntegrationSettings({ projectId }) {
                 </div>
             )}
 
+            {/* Disconnect confirmation dialog */}
             <Dialog open={showDisconnectModal} onOpenChange={setShowDisconnectModal}>
                 <DialogContent>
                     <DialogHeader>
@@ -560,77 +607,6 @@ export function SlackIntegrationSettings({ projectId }) {
                         >
                             {updating && <Loader className="h-4 w-4 animate-spin" />}
                             Disconnect
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-            <Dialog open={showCredentialsModal} onOpenChange={setShowCredentialsModal}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Configure Custom Slack App</DialogTitle>
-                        <DialogDescription>
-                            Enter your Slack app credentials. After saving, you'll authorize the app in your Slack workspace.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                        <div>
-                            <Label htmlFor="client-id">Client ID</Label>
-                            <Input
-                                id="client-id"
-                                value={credentials.clientId}
-                                onChange={(e) => setCredentials({ ...credentials, clientId: e.target.value })}
-                                placeholder="xoxb-..."
-                                disabled={updating}
-                            />
-                            <p className="text-xs text-muted-foreground mt-1">
-                                Found in "Basic Information" → "App Credentials"
-                            </p>
-                        </div>
-                        <div>
-                            <Label htmlFor="client-secret">Client Secret</Label>
-                            <Input
-                                id="client-secret"
-                                type="password"
-                                value={credentials.clientSecret}
-                                onChange={(e) => setCredentials({ ...credentials, clientSecret: e.target.value })}
-                                placeholder="Your client secret"
-                                disabled={updating}
-                            />
-                            <p className="text-xs text-muted-foreground mt-1">
-                                Found in "Basic Information" → "App Credentials"
-                            </p>
-                        </div>
-                        <div>
-                            <Label htmlFor="signing-secret">Signing Secret</Label>
-                            <Input
-                                id="signing-secret"
-                                type="password"
-                                value={credentials.signingSecret}
-                                onChange={(e) => setCredentials({ ...credentials, signingSecret: e.target.value })}
-                                placeholder="Your signing secret"
-                                disabled={updating}
-                            />
-                            <p className="text-xs text-muted-foreground mt-1">
-                                Found in "Basic Information" → "App Credentials"
-                            </p>
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button
-                            variant="outline"
-                            onClick={() => setShowCredentialsModal(false)}
-                            disabled={updating}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={handleSaveCredentials}
-                            disabled={updating || !credentials.clientId?.trim()}
-                            className="gap-2"
-                        >
-                            {updating && <Loader className="h-4 w-4 animate-spin" />}
-                            Save Credentials
                         </Button>
                     </DialogFooter>
                 </DialogContent>

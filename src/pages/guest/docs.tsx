@@ -9,6 +9,7 @@
  *  - AI chat & editing docs
  *  - Publishing a portal
  *  - Exporting docs
+ *  - Docnine CLI
  *  - Plans & billing
  *  - Support
  */
@@ -110,6 +111,23 @@ const SECTIONS: DocSection[] = [
             { id: "export-yaml", label: "YAML export" },
             { id: "export-notion", label: "Notion export" },
             { id: "export-google-docs", label: "Google Docs export" },
+        ],
+    },
+    {
+        id: "cli",
+        label: "Docnine CLI",
+        icon: <Terminal className="h-4 w-4" />,
+        subsections: [
+            { id: "cli-overview", label: "Overview" },
+            { id: "cli-install", label: "Installation" },
+            { id: "cli-login", label: "Authentication" },
+            { id: "cli-init", label: "Project setup" },
+            { id: "cli-generate", label: "Generate docs" },
+            { id: "cli-ask", label: "Ask your codebase" },
+            { id: "cli-audit", label: "Security audit" },
+            { id: "cli-diff", label: "Diff & changes" },
+            { id: "cli-export", label: "Exporting" },
+            { id: "cli-ci", label: "CI/CD integration" },
         ],
     },
     {
@@ -777,6 +795,256 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`} />
 NOTION_PARENT_PAGE_ID=your_page_id_here`} />
                             </Step>
                             <Step n={4} title="Export from your project">Click <strong>Export → Notion</strong> in the project overview.</Step>
+                        </div>
+                    </section>
+
+                    {/* ────────────────────────────────────────────────── */}
+                    {/* DOCNINE CLI */}
+                    {/* ────────────────────────────────────────────────── */}
+                    <section id="cli">
+                        <H2 id="cli">
+                            <Terminal className="h-6 w-6 text-primary" /> Docnine CLI
+                        </H2>
+
+                        <H3 id="cli-overview">Overview</H3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            The <strong>Docnine CLI</strong> brings all of Docnine's documentation generation, security auditing, and AI features straight to your terminal. You can scan local repositories, generate documentation, ask questions about your codebase, and integrate everything into CI/CD pipelines — without leaving the command line.
+                        </p>
+                        <div className="rounded-xl border border-border divide-y divide-border overflow-hidden my-4">
+                            {[
+                                { cmd: "login / logout", desc: "Authenticate with your Docnine account via browser-based OAuth." },
+                                { cmd: "init", desc: "Initialize a project by selecting a source (GitHub, GitLab, Bitbucket, Azure DevOps, or ZIP upload)." },
+                                { cmd: "generate", desc: "Run the full AI documentation pipeline on your project." },
+                                { cmd: "ask", desc: "Ask natural-language questions about your codebase." },
+                                { cmd: "audit", desc: "Run a security audit and get a vulnerability report." },
+                                { cmd: "diff", desc: "Detect what changed since the last generation and show a summary." },
+                                { cmd: "export", desc: "Export documentation as OpenAPI YAML, Postman collection, or Markdown." },
+                                { cmd: "ci", desc: "Run generate + diff in one step, designed for CI/CD pipelines." },
+                            ].map(({ cmd, desc }) => (
+                                <div key={cmd} className="flex items-start gap-4 px-4 py-3">
+                                    <code className="font-mono text-sm bg-muted px-2 py-0.5 rounded shrink-0 text-primary">{cmd}</code>
+                                    <p className="text-sm text-muted-foreground">{desc}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <H3 id="cli-install">Installation</H3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            Install the CLI globally via npm:
+                        </p>
+                        <CodeBlock language="bash" code="npm install -g @docnineai/cli" />
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            Verify the installation:
+                        </p>
+                        <CodeBlock language="bash" code="docnine --version" />
+                        <Callout type="info">
+                            Requires <strong>Node.js 18+</strong>. The CLI is published as an ESM package.
+                        </Callout>
+
+                        <H3 id="cli-login">Authentication</H3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            The CLI uses browser-based authentication. Running <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">docnine login</code> opens your browser to sign in, then stores a session token locally.
+                        </p>
+                        <CodeBlock language="bash" code={`# Interactive login (opens browser)
+docnine login
+
+# Check who you're logged in as
+docnine whoami
+
+# Log out and remove stored credentials
+docnine logout`} />
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            Credentials are stored in <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">~/.docnine/config.json</code>. For CI/CD environments, use an <strong>API token</strong> instead:
+                        </p>
+                        <CodeBlock language="bash" code={`# Use a token for non-interactive environments
+docnine generate --token YOUR_API_TOKEN
+
+# Or set the environment variable
+export DOCNINE_API_TOKEN=YOUR_API_TOKEN
+docnine generate`} />
+                        <Callout type="tip">
+                            Generate API tokens from <Link to="/settings" className="text-primary hover:underline">Settings → API Tokens</Link> in the Docnine dashboard.
+                        </Callout>
+
+                        <H3 id="cli-init">Project setup</H3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            The <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">init</code> command creates a new Docnine project by walking you through an interactive wizard:
+                        </p>
+                        <div className="rounded-xl border border-border overflow-hidden">
+                            <Step n={1} title="Run docnine init">
+                                <CodeBlock language="bash" code="docnine init" />
+                            </Step>
+                            <Step n={2} title="Choose a source type">
+                                Select one of: <strong>GitHub</strong>, <strong>GitLab</strong>, <strong>Bitbucket</strong>, <strong>Azure DevOps</strong>, or <strong>Upload ZIP</strong>.
+                            </Step>
+                            <Step n={3} title="Enter repository details">
+                                Provide the repo URL (or select from a list). For ZIP uploads, the CLI bundles your local directory and uploads it.
+                            </Step>
+                            <Step n={4} title="Project created">
+                                Once created, a <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">.docnine.json</code> config file is saved in your project root with the project ID.
+                            </Step>
+                        </div>
+                        <Callout type="info">
+                            The <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">.docnine.json</code> file stores your project ID and API URL. Commit it to your repo so the CLI can find your project automatically.
+                        </Callout>
+
+                        <H3 id="cli-generate">Generate docs</H3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            Run the full AI documentation pipeline on your project:
+                        </p>
+                        <CodeBlock language="bash" code={`# Generate documentation for the project in current directory
+docnine generate
+
+# Specify a project ID explicitly
+docnine generate --project <project-id>
+
+# Watch mode — re-generate when files change
+docnine generate --watch`} />
+                        <p className="text-muted-foreground leading-relaxed">
+                            The CLI shows a real-time progress spinner for each pipeline stage (scanning, schema analysis, API extraction, security audit, doc writing). Once complete, your documentation is available in the Docnine dashboard.
+                        </p>
+
+                        <H3 id="cli-ask">Ask your codebase</H3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            Ask natural-language questions about your codebase using the generated documentation as context:
+                        </p>
+                        <CodeBlock language="bash" code={`# Ask a one-off question
+docnine ask "How does authentication work in this project?"
+
+# Interactive REPL mode — keep asking questions
+docnine ask --interactive
+
+# Specify a project explicitly
+docnine ask --project <project-id> "What endpoints are exposed?"`} />
+                        <p className="text-muted-foreground leading-relaxed">
+                            In interactive mode, type your questions one at a time and type <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">exit</code> or press <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">Ctrl+C</code> to quit.
+                        </p>
+
+                        <H3 id="cli-audit">Security audit</H3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            Run a security audit on your project to detect common vulnerabilities:
+                        </p>
+                        <CodeBlock language="bash" code={`# Run a security audit
+docnine audit
+
+# Output results in SARIF format (for GitHub Code Scanning)
+docnine audit --format sarif --output results.sarif
+
+# Fail the process if critical or high severity issues are found
+docnine audit --fail-on high`} />
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            The audit scans for issues like hardcoded secrets, missing authentication, SQL injection risks, insecure dependencies, and more.
+                        </p>
+                        <div className="rounded-xl border border-border divide-y divide-border overflow-hidden my-4">
+                            {[
+                                { flag: "--format", desc: "Output format: table (default), json, or sarif." },
+                                { flag: "--output <file>", desc: "Write results to a file instead of stdout." },
+                                { flag: "--fail-on <level>", desc: "Exit with code 1 if issues at or above this severity are found (critical, high, medium, low)." },
+                            ].map(({ flag, desc }) => (
+                                <div key={flag} className="flex items-start gap-4 px-4 py-3">
+                                    <code className="font-mono text-sm bg-muted px-2 py-0.5 rounded shrink-0 text-primary">{flag}</code>
+                                    <p className="text-sm text-muted-foreground">{desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <Callout type="tip">
+                            Combine <code className="font-mono">--format sarif</code> with GitHub Actions to upload results to the <strong>Security</strong> tab automatically.
+                        </Callout>
+
+                        <H3 id="cli-diff">Diff & changes</H3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            Detect what changed in your codebase since the last documentation generation:
+                        </p>
+                        <CodeBlock language="bash" code={`# Show a diff summary
+docnine diff
+
+# Show changes since a specific date
+docnine diff --since 2024-01-15
+
+# Choose a diff strategy
+docnine diff --strategy snapshot   # compare local files against last snapshot
+docnine diff --strategy server     # compare against server-stored version`} />
+                        <p className="text-muted-foreground leading-relaxed">
+                            The diff output shows which files were added, modified, or deleted, and which documentation sections may need updating.
+                        </p>
+
+                        <H3 id="cli-export">Exporting</H3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            Export your generated documentation to portable formats:
+                        </p>
+                        <CodeBlock language="bash" code={`# Export as OpenAPI YAML
+docnine export --format openapi
+
+# Export as Postman collection
+docnine export --format postman
+
+# Export as Markdown files
+docnine export --format markdown
+
+# Specify an output directory
+docnine export --format markdown --output ./docs`} />
+                        <div className="rounded-xl border border-border divide-y divide-border overflow-hidden my-4">
+                            {[
+                                { fmt: "openapi", desc: "OpenAPI 3.0 YAML specification file." },
+                                { fmt: "postman", desc: "Postman collection JSON for API testing." },
+                                { fmt: "markdown", desc: "Separate Markdown files for each documentation section (README, API, COMPONENTS, SCHEMA, SECURITY, INTERNAL)." },
+                            ].map(({ fmt, desc }) => (
+                                <div key={fmt} className="flex items-start gap-4 px-4 py-3">
+                                    <code className="font-mono text-sm bg-muted px-2 py-0.5 rounded shrink-0 text-primary">{fmt}</code>
+                                    <p className="text-sm text-muted-foreground">{desc}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <H3 id="cli-ci">CI/CD integration</H3>
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            The <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">ci</code> command is designed for automated pipelines. It runs <strong>generate + diff</strong> in a single step and can post results as a PR comment:
+                        </p>
+                        <CodeBlock language="bash" code={`# Run in CI mode
+docnine ci --token $DOCNINE_API_TOKEN`} />
+                        <p className="text-muted-foreground leading-relaxed mb-4">
+                            Here's a complete GitHub Actions workflow example:
+                        </p>
+                        <CodeBlock language="yaml" code={`name: Docnine Documentation
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - run: npm install -g @docnineai/cli
+
+      - name: Generate & diff docs
+        env:
+          DOCNINE_API_TOKEN: \${{ secrets.DOCNINE_API_TOKEN }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        run: docnine ci --token $DOCNINE_API_TOKEN`} />
+                        <Callout type="info">
+                            Set <code className="font-mono">GITHUB_TOKEN</code> to allow the CLI to post a diff summary as a comment on your pull request automatically.
+                        </Callout>
+
+                        <p className="text-muted-foreground leading-relaxed mt-4">
+                            Environment variables reference:
+                        </p>
+                        <div className="rounded-xl border border-border divide-y divide-border overflow-hidden my-4">
+                            {[
+                                { env: "DOCNINE_API_TOKEN", desc: "API token for authentication (required in CI)." },
+                                { env: "DOCNINE_API_URL", desc: "Custom API URL if self-hosting (defaults to https://api.docnineai.com)." },
+                                { env: "GITHUB_TOKEN", desc: "GitHub token for posting PR comments (provided automatically in GitHub Actions)." },
+                            ].map(({ env, desc }) => (
+                                <div key={env} className="flex items-start gap-4 px-4 py-3">
+                                    <code className="font-mono text-sm bg-muted px-2 py-0.5 rounded shrink-0 text-primary">{env}</code>
+                                    <p className="text-sm text-muted-foreground">{desc}</p>
+                                </div>
+                            ))}
                         </div>
                     </section>
 

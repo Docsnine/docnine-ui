@@ -27,6 +27,7 @@ import {
     Clock,
     RefreshCw,
     ArrowRight,
+    FilesIcon,
 } from "lucide-react"
 import TopBar from "@/components/projects/top-bar"
 import { DocStatusBadge } from "@/components/projects/doc-status"
@@ -207,9 +208,9 @@ function EmptyState() {
     return (
         <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="rounded-full bg-primary/10 p-5 mb-5">
-                <BookOpen className="h-12 w-12 text-primary/60" />
+                <FilesIcon className="h-12 w-12 text-primary/60" />
             </div>
-            <h2 className="text-2xl font-bold">No documentation yet</h2>
+            <h2 className="text-2xl font-bold">No files yet</h2>
             <p className="text-muted-foreground mt-2 max-w-sm">
                 Create a project and run the analysis pipeline.
             </p>

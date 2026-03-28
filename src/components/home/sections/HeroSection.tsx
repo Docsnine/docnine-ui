@@ -12,15 +12,15 @@ export function HeroSection() {
       </div>
 
       {/* Headline */}
-      <h1 className="text-[48px] leading-[48px] sm:text-[72px] sm:leading-[72px] md:text-[96px] md:leading-[96px] font-bold tracking-tight mb-8">
+      <h1 className="text-[48px] leading-[48px] font-mono text-center sm:text-[72px] sm:leading-[72px] md:text-[96px] md:leading-[96px] font-bold tracking-tight mb-8">
         <span className="text-foreground">Documentation</span>
         <br />
-        <span className="text-primary">That Evolves.</span>
+        <span className="text-primary">That Evolves</span>
       </h1>
 
       {/* Subheadline */}
       <p className="max-w-3xl text-xl md:text-xl text-muted-foreground font-medium leading-relaxed mb-12">
-        Let AI generate complete, readable documentation, then chat with your codebase like a teammate who knows every line.
+        Generate complete, readable documentation, then chat with your codebase like a teammate who knows every line.
       </p>
 
       {/* CTA Buttons */}

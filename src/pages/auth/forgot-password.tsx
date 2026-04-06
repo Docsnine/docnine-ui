@@ -52,7 +52,7 @@ export function ForgotPasswordPage() {
     }
 
     return (
-        <div className="relative min-h-screen bg-background text-foreground overflow-hidden font-sans">
+        <div>
             <BackgroundGrid />
 
             {/* Top Left Glow */}
@@ -69,7 +69,7 @@ export function ForgotPasswordPage() {
                     </CardHeader>
                     {isSuccess ? (
                         <CardContent className="space-y-4 text-center">
-                            <div className="rounded-md bg-green-50 p-4 text-sm text-green-800 border border-green-200">
+                            <div className="rounded-md bg-green-500/10 p-4 text-sm text-green-700 dark:text-green-400 border border-green-500/20">
                                 If an account exists with that email, we have sent a password reset link.
                             </div>
                             <Button variant="outline" className="w-full mt-4" asChild>

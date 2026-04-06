@@ -1,13 +1,13 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300..800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
 
 @import "tailwindcss";
 
 @theme {
-  --color-brand-dark: #093e44;
-  --color-brand-light: #e4e2dd;
+  --color-brand-dark: #074a51;
+  --color-brand-light: #0d9488;
   --color-brand-white: #ffffff;
+  --color-primary: #074a51;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -26,41 +26,41 @@
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
 
-  --font-sans: "Space Grotesk", sans-serif;
+  --font-sans: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 }
 
 @layer base {
   :root {
     --background: #ffffff;
-    --foreground: #09090b;
+    --foreground: #1a1a1a;
     --card: #ffffff;
-    --card-foreground: #09090b;
-    --primary: #135451;
+    --card-foreground: #1a1a1a;
+    --primary: #074a51;
     --primary-foreground: #ffffff;
-    --muted: #f4f4f5;
-    --muted-foreground: #71717a;
-    --border: #e4e4e7;
+    --muted: #f8f9fa;
+    --muted-foreground: #666666;
+    --border: #e5e7eb;
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
-    --secondary: #f4f4f5;
-    --secondary-foreground: #09090b;
+    --secondary: #f8f9fa;
+    --secondary-foreground: #1a1a1a;
   }
 
   .dark {
-    --background: #000000;
-    --foreground: #ffffff;
-    --card: #0a0a0a;
-    --card-foreground: #ffffff;
-    --primary: #00d2c8;
-    --primary-foreground: #000000;
-    --muted: #111111;
-    --muted-foreground: #a1a1aa;
-    --border: #222222;
+    --background: #0a0f0e;
+    --foreground: #f0f0f0;
+    --card: #111816;
+    --card-foreground: #f0f0f0;
+    --primary: #0d9488;
+    --primary-foreground: #ffffff;
+    --muted: #1a2420;
+    --muted-foreground: #9ca3af;
+    --border: #2a3530;
     --destructive: #7f1d1d;
     --destructive-foreground: #ffffff;
-    --secondary: #111111;
-    --secondary-foreground: #ffffff;
+    --secondary: #1a2420;
+    --secondary-foreground: #f0f0f0;
   }
 }
 

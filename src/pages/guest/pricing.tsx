@@ -152,7 +152,7 @@ export function PricingPage() {
                 <p className="mt-4 text-lg text-muted-foreground">
                     Start free. Upgrade when you're ready.
                     <span className="ml-1 text-primary font-medium">
-                        14-day free trial on all paid plans.
+                        7-day free trial on all paid plans.
                     </span>
                 </p>
 
@@ -179,7 +179,7 @@ export function PricingPage() {
                     >
                         Annual
                         <Badge className="ml-1.5 bg-green-500/10 text-primary border-green-500/20 text-[10px] px-1.5 py-0">
-                            Save up to 20%
+                            Save up to 24%
                         </Badge>
                     </span>
                 </div>

@@ -1230,7 +1230,7 @@ export function BillingPage() {
                     <div>
                         <p className="font-medium">Welcome to your free trial!</p>
                         <p className="mt-0.5 text-green-400/80">
-                            Your 14-day trial has started. Enjoy all{" "}
+                            Your 7-day trial has started. Enjoy all{" "}
                             {subscription.planName} features.
                         </p>
                     </div>

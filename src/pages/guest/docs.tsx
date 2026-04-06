@@ -1082,7 +1082,7 @@ jobs:
 
                         <H3 id="upgrade">Upgrading your plan</H3>
                         <p className="text-muted-foreground leading-relaxed mb-4">
-                            Go to <Link to="/settings" className="text-primary hover:underline">Settings → Billing</Link> or visit the <Link to="/pricing" className="text-primary hover:underline">Pricing page</Link> and click <strong>Start free trial</strong> on any paid plan. All paid plans include a <strong>14-day free trial</strong> — no credit card required to start.
+                            Go to <Link to="/settings" className="text-primary hover:underline">Settings → Billing</Link> or visit the <Link to="/pricing" className="text-primary hover:underline">Pricing page</Link> and click <strong>Start free trial</strong> on any paid plan. All paid plans include a <strong>7-day free trial</strong> — no credit card required to start.
                         </p>
 
                         <H3 id="limits">Limits & quotas</H3>

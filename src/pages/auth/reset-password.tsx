@@ -73,7 +73,7 @@ export function ResetPasswordPage() {
 
     if (!token) {
         return (
-            <div className="relative min-h-screen bg-background text-foreground overflow-hidden font-sans">
+<div>
                 <BackgroundGrid />
 
                 {/* Top Left Glow */}
@@ -119,7 +119,7 @@ export function ResetPasswordPage() {
                     </CardHeader>
                     {isSuccess ? (
                         <CardContent className="space-y-4 text-center">
-                            <div className="rounded-md bg-green-50 p-4 text-sm text-green-800 border border-green-200">
+                            <div className="rounded-md bg-green-500/10 p-4 text-sm text-green-700 dark:text-green-400 border border-green-500/20">
                                 Password reset successful! You can now log in with your new password.
                             </div>
                             <Button className="w-full mt-4" onClick={() => navigate("/login")}>

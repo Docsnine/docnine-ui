@@ -85,7 +85,7 @@ function DocProjectCard({ project }: { project: ApiProject }) {
     })()
 
     return (
-        <Card className="flex flex-col hover:border-primary/40 transition-colors group shadow-none">
+        <Card className="flex flex-col hover:border-primary/40 transition-colors group shadow-none bg-background">
             <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">

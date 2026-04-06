@@ -98,7 +98,7 @@ export function ProjectsGrid({
       {projects.map((project) => (
         <Card
           key={project.id}
-          className="flex flex-col transition-all shadow-none hover:shadow-md hover:border-primary/20"
+          className="flex flex-col transition-all shadow-none bg-background hover:shadow-md hover:border-primary/20"
         >
           <CardHeader className="pb-4">
             <div className="flex items-start justify-between">

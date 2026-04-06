@@ -314,8 +314,8 @@ export function DashboardLayout() {
         <footer className="relative z-10 border-t border-border">
           <div className="container mx-auto max-w-6xl p-6">
             <div className="flex flex-col md:flex-row items-center justify-between text-sm text-muted-foreground">
-              <p>© 2025 Docnine. All Rights Reserved.</p>
-              <div className="flex items-center gap-6">
+              <p>© {new Date().getFullYear()} Docnine. All Rights Reserved.</p>
+              <div className="flex items-center gap-6 mt-2 md:mt-0">
                 <a href="/terms" className="hover:text-foreground transition-colors">Terms</a>
                 <a href="/privacy" className="hover:text-foreground transition-colors">Privacy</a>
                 <a href="/cookies" className="hover:text-foreground transition-colors">Cookies</a>

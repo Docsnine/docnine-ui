@@ -200,7 +200,7 @@ export function LiveAnalysisPage() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto h-[calc(100vh-8rem)] flex flex-col">
-      <div className="flex items-center justify-between shrink-0">
+      <div className="flex items-center justify-between shrink-0 flex-wrap gap-3">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild className="-ml-2">
             <Link to={`/projects/${id}`}>

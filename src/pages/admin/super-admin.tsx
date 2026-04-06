@@ -319,7 +319,7 @@ export function SuperAdminPage() {
   return (
     <div className="space-y-6">
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-border">
+      <div className="flex gap-1 border-b border-border overflow-x-auto">
         {TABS.map(({ id, label, Icon }) => (
           <button
             key={id}

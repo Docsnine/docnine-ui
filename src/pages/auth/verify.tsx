@@ -47,13 +47,18 @@ export function VerifyPage() {
   // ── Case 1: Token in URL, currently verifying ──────────────────────────
   if (token && status === "loading") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-muted/30 p-4">
-        <Card className="w-full max-w-md text-center">
-          <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
-            <Loader1 className="h-10 w-10 text-primary " />
-            <p className="text-muted-foreground">Verifying your email…</p>
-          </CardContent>
-        </Card>
+      <div>
+        <BackgroundGrid />
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
+        <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
+        <section className="flex flex-col items-center justify-center p-4 z-10 my-20">
+          <Card className="w-full max-w-md text-center bg-background/80 backdrop-blur-md">
+            <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
+              <Loader1 className="h-10 w-10 text-primary" />
+              <p className="text-muted-foreground">Verifying your email…</p>
+            </CardContent>
+          </Card>
+        </section>
       </div>
     )
   }
@@ -61,21 +66,26 @@ export function VerifyPage() {
   // ── Case 2: Token verified successfully ───────────────────────────────
   if (token && status === "success") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-muted/30 p-4">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader className="space-y-1">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
-              <CheckCircle2 className="h-6 w-6 text-green-500" />
-            </div>
-            <CardTitle className="text-2xl font-bold">Email verified!</CardTitle>
-            <CardDescription>Your account is active. You can now sign in.</CardDescription>
-          </CardHeader>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button className="w-full" onClick={() => navigate("/login")}>
-              Go to Login
-            </Button>
-          </CardFooter>
-        </Card>
+      <div>
+        <BackgroundGrid />
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
+        <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
+        <section className="flex flex-col items-center justify-center p-4 z-10 my-20">
+          <Card className="w-full max-w-md text-center bg-background/80 backdrop-blur-md">
+            <CardHeader className="space-y-1">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
+                <CheckCircle2 className="h-6 w-6 text-green-500" />
+              </div>
+              <CardTitle className="text-2xl font-bold">Email verified!</CardTitle>
+              <CardDescription>Your account is active. You can now sign in.</CardDescription>
+            </CardHeader>
+            <CardFooter className="flex flex-col space-y-4">
+              <Button className="w-full" onClick={() => navigate("/login")}>
+                Go to Login
+              </Button>
+            </CardFooter>
+          </Card>
+        </section>
       </div>
     )
   }
@@ -83,28 +93,33 @@ export function VerifyPage() {
   // ── Case 3: Token verification failed ────────────────────────────────
   if (token && status === "error") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-muted/30 p-4">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader className="space-y-1">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-              <XCircle className="h-6 w-6 text-destructive" />
-            </div>
-            <CardTitle className="text-2xl font-bold">Verification failed</CardTitle>
-            <CardDescription>{errorMessage}</CardDescription>
-          </CardHeader>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button variant="outline" className="w-full" asChild>
-              <Link to="/login">Back to Login</Link>
-            </Button>
-          </CardFooter>
-        </Card>
+      <div>
+        <BackgroundGrid />
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
+        <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
+        <section className="flex flex-col items-center justify-center p-4 z-10 my-20">
+          <Card className="w-full max-w-md text-center bg-background/80 backdrop-blur-md">
+            <CardHeader className="space-y-1">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+                <XCircle className="h-6 w-6 text-destructive" />
+              </div>
+              <CardTitle className="text-2xl font-bold">Verification failed</CardTitle>
+              <CardDescription>{errorMessage}</CardDescription>
+            </CardHeader>
+            <CardFooter className="flex flex-col space-y-4">
+              <Button variant="outline" className="w-full" asChild>
+                <Link to="/login">Back to Login</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        </section>
       </div>
     )
   }
 
   // ── Case 4: No token → static "check your email" screen ──────────────
   return (
-    <div className="relative min-h-screen bg-background text-foreground overflow-hidden font-sans">
+    <div>
       <BackgroundGrid />
 
       {/* Top Left Glow */}

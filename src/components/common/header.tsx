@@ -16,7 +16,7 @@ export function TopHeader({ className }: { className?: string }) {
         <header className={`relative z-50 w-full border-b border-border bg-background/80 backdrop-blur-md ${className}`}>
             {/* Top strip */}
             <div className="border-b border-border bg-muted/30">
-                <div className="container mx-auto px-4 h-10 flex items-center justify-between text-xs sm:text-sm">
+                <div className="container mx-auto max-w-6xl h-10 flex items-center justify-between text-xs sm:text-sm">
                     <div className="flex items-center gap-4 text-muted-foreground">
                         <a href="mailto:docnineai@gmail.com" target='__blank' className="flex items-center gap-1.5">
                             <Mail className="h-3.5 w-3.5" />
@@ -38,7 +38,7 @@ export function TopHeader({ className }: { className?: string }) {
             </div>
 
             {/* Main nav row */}
-            <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+            <div className="container mx-auto max-w-6xl h-16 flex items-center justify-between">
                 {/* Logo */}
                 <ApplicationLogo />
 
@@ -55,7 +55,7 @@ export function TopHeader({ className }: { className?: string }) {
                     <Link to="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                         Sign In
                     </Link>
-                    <Button asChild className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-6 h-9 font-semibold text-sm">
+                    <Button asChild className="bg-primary dark:bg-foreground text-background hover:bg-foreground/90 rounded-full px-6 h-9 font-semibold text-sm">
                         <Link to="/signup">Get Started</Link>
                     </Button>
                 </div>
@@ -79,7 +79,7 @@ export function TopHeader({ className }: { className?: string }) {
             {mobileOpen && (
                 <div className="md:hidden border-t border-border bg-background px-4 pb-4">
                     <nav className="flex flex-col gap-1 mt-3">
-                        <a href="/docs" onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Docs</a>
+                        <Link to="/docs" onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Docs</Link>
                         <a href="https://github.com/Docsnine" target="_blank" rel="noreferrer" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">GitHub</a>
                         <Link to="/pricing" onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Pricing</Link>
                         <Link to="/contact" onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Contact Us</Link>

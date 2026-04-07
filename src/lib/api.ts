@@ -61,6 +61,11 @@ import {
   Pagination,
 } from "@/types/AdminTypes";
 import { ActivityLog, ActivityLogsResponse } from "@/types/activity-log";
+import {
+  Notification,
+  NotificationsResponse,
+  UnreadCountResponse,
+} from "@/types/NotificationTypes";
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -1395,4 +1400,46 @@ export const activityLogsApi = {
       `/activity-logs/project/${projectId}?${q}`,
     );
   },
+};
+
+// ---------------------------------------------------------------------------
+// Notifications API
+// ---------------------------------------------------------------------------
+export const notificationsApi = {
+  list: (params: {
+    page?: number;
+    limit?: number;
+    unreadOnly?: boolean;
+    archived?: boolean;
+  } = {}) => {
+    const q = new URLSearchParams();
+    if (params.page !== undefined) q.set("page", String(params.page));
+    if (params.limit !== undefined) q.set("limit", String(params.limit));
+    if (params.unreadOnly) q.set("unreadOnly", "true");
+    if (params.archived) q.set("archived", "true");
+    return apiFetch<NotificationsResponse>(`/notifications?${q}`);
+  },
+
+  unreadCount: () =>
+    apiFetch<UnreadCountResponse>("/notifications/unread-count"),
+
+  markAsRead: (id: string) =>
+    apiFetch<{ notification: Notification }>(`/notifications/${id}/read`, {
+      method: "PATCH",
+    }),
+
+  markAllAsRead: () =>
+    apiFetch<{ modifiedCount: number }>("/notifications/read-all", {
+      method: "PATCH",
+    }),
+
+  archive: (id: string) =>
+    apiFetch<{ notification: Notification }>(`/notifications/${id}/archive`, {
+      method: "PATCH",
+    }),
+
+  delete: (id: string) =>
+    apiFetch<{ deleted: boolean }>(`/notifications/${id}`, {
+      method: "DELETE",
+    }),
 };

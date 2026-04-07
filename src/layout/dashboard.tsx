@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { Link, Outlet, useLocation, useNavigate, useSearchParams } from "react-router-dom"
-import { BookOpen, Github, Search, FolderKanban, User, Settings, LogOut, BookDown, TerminalIcon, Menu, X, ShieldAlert, FolderCodeIcon, FilesIcon } from "lucide-react"
+import { BookOpen, Github, Search, FolderKanban, User, Settings, LogOut, BookDown, TerminalIcon, Menu, X, ShieldAlert, FolderCodeIcon, FilesIcon, Bell } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useAuthStore } from "@/store/auth"
 import { useSubscriptionStore } from "@/store/subscription"
@@ -11,6 +11,8 @@ import { useTheme } from "../providers/theme-provider"
 import { ApplicationLogo } from "../components/common/application-logo"
 import { PlanBadge } from "@/components/billing/PlanBadge"
 import { ErrorBoundary } from "@/components/common/ErrorBoundary"
+import { useNotificationStore } from "@/store/useNotificationStore"
+import { NotificationPanel } from "@/components/notifications/NotificationPanel"
 
 export function DashboardLayout() {
   const location = useLocation()
@@ -45,7 +47,11 @@ export function DashboardLayout() {
 
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [notificationPanelOpen, setNotificationPanelOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const notificationPanelRef = useRef<HTMLDivElement>(null)
+
+  const { unreadCount, fetchUnreadCount } = useNotificationStore()
 
   useEffect(() => {
     setMobileMenuOpen(false)
@@ -56,10 +62,19 @@ export function DashboardLayout() {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false)
       }
+      if (notificationPanelRef.current && !notificationPanelRef.current.contains(e.target as Node)) {
+        setNotificationPanelOpen(false)
+      }
     }
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
+
+  useEffect(() => {
+    fetchUnreadCount()
+    const interval = setInterval(fetchUnreadCount, 30_000)
+    return () => clearInterval(interval)
+  }, [fetchUnreadCount])
 
   const initials = user?.name
     ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase()
@@ -93,7 +108,7 @@ export function DashboardLayout() {
       <div className="min-h-screen bg-muted/30">
         {/* Top Navbar */}
         <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
-          <div className="flex h-14 items-center justify-between container mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="relative flex h-14 items-center justify-between container mx-auto max-w-7xl px-4 sm:px-6">
 
             {/* Left: logo + github (desktop) */}
             <div className="flex items-center gap-4">
@@ -121,17 +136,38 @@ export function DashboardLayout() {
               </a>
             </div>
 
-            {/* Right: search (desktop) + avatar */}
-            <div className="flex items-center gap-3">
-              <div className="relative w-56 hidden md:block">
+            {/* Center: search (desktop) */}
+            <div className="absolute left-1/2 -translate-x-1/2 hidden md:block w-96">
+              <div className="relative">
                 <Search className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Search projects..."
-                  className="w-full bg-muted/50 pl-9 border-border focus:ring-0 focus-visible:ring-1 rounded-2xl"
+                  className="w-full bg-muted/50 pl-9 border-border focus:ring-0 focus-visible:ring-1 rounded-3xl"
                   value={searchValue}
                   onChange={handleSearchChange}
                 />
+              </div>
+            </div>
+
+            {/* Right: bell + avatar */}
+            <div className="flex items-center gap-3">
+
+              {/* Notification bell */}
+              <div className="relative" ref={notificationPanelRef}>
+                <button
+                  onClick={() => setNotificationPanelOpen((p) => !p)}
+                  className="relative flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  aria-label="Notifications"
+                >
+                  <Bell className="h-5 w-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary" />
+                  )}
+                </button>
+                {notificationPanelOpen && (
+                  <NotificationPanel onClose={() => setNotificationPanelOpen(false)} />
+                )}
               </div>
 
               {/* Avatar dropdown */}

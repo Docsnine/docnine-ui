@@ -261,11 +261,11 @@ function LogEntry({ log }: { log: ActivityLog }) {
         )}
       </div>
 
-      {/* Timestamp */}
+      {/* Timestamp — visible on all screen sizes */}
       <time
         dateTime={log.createdAt}
         title={absTime}
-        className="text-xs text-muted-foreground shrink-0 whitespace-nowrap mt-1 cursor-default hidden sm:block"
+        className="text-[11px] text-muted-foreground shrink-0 whitespace-nowrap mt-1 cursor-default"
       >
         {relTime}
       </time>

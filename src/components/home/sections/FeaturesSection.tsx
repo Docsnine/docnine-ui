@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react"
 import { FileText, Users, MessageSquare } from "lucide-react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { NoiseOverlay } from "@/components/ui/noise-overlay"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -135,7 +136,8 @@ export function FeaturesSection() {
     }, [])
 
     return (
-        <section ref={ref} className="relative z-10 py-24 px-4 bg-background">
+        <section ref={ref} className="relative z-10 overflow-hidden py-24 px-4 bg-background">
+            <NoiseOverlay opacity={0.18} />
             <div className="container mx-auto max-w-6xl text-center">
                 {/* Section Tag */}
                 <div className="features-heading">

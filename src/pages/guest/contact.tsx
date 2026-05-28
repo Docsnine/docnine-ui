@@ -128,7 +128,7 @@ export function ContactPage() {
                         <div className="md:col-span-3">
                             <form
                                 onSubmit={handleSubmit}
-                                className="rounded-xl border border-border bg-background/80 backdrop-blur-md p-8 space-y-6"
+                                className="rounded-xl border border-border bg-background/80 backdrop-blur-md p-4 sm:p-8 space-y-6"
                             >
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div className="space-y-2">

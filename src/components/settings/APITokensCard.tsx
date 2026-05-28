@@ -147,14 +147,14 @@ export function APITokensCard() {
   return (
     <>
       <Card className="shadow-none">
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <CardTitle>API Tokens</CardTitle>
             <CardDescription>
               Create tokens for API access, MCP integration, CLI, and more.
             </CardDescription>
           </div>
-          <Button onClick={() => setShowCreateDialog(true)} size="sm" className="gap-2">
+          <Button onClick={() => setShowCreateDialog(true)} size="sm" className="gap-2 shrink-0 w-full sm:w-auto">
             <Plus className="h-4 w-4" />
             New Token
           </Button>

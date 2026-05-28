@@ -1086,27 +1086,31 @@ jobs:
                         </p>
 
                         <H3 id="limits">Limits & quotas</H3>
-                        <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
-                            {[
-                                { limit: "Projects", free: "2", starter: "Unlimited", pro: "Unlimited", team: "Unlimited" },
-                                { limit: "Portals", free: "0", starter: "1", pro: "Unlimited", team: "Unlimited" },
-                                { limit: "AI chats/mo", free: "0", starter: "0", pro: "50", team: "Unlimited" },
-                                { limit: "File size", free: "5 MB", starter: "20 MB", pro: "50 MB", team: "100 MB" },
-                                { limit: "Attachments", free: "3/project", starter: "Unlimited", pro: "Unlimited", team: "Unlimited" },
-                                { limit: "Version history", free: "None", starter: "30 days", pro: "Full", team: "Full" },
-                            ].map(({ limit, free, starter, pro, team }) => (
-                                <div key={limit} className="grid grid-cols-5 px-4 py-2.5 text-xs">
-                                    <div className="font-medium text-foreground">{limit}</div>
-                                    <div className="text-muted-foreground">{free}</div>
-                                    <div className="text-muted-foreground">{starter}</div>
-                                    <div className="text-muted-foreground">{pro}</div>
-                                    <div className="text-muted-foreground">{team}</div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="grid grid-cols-5 px-4 py-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground border border-border border-t-0 rounded-b-xl bg-muted/40">
-                            <div />
-                            <div>Free</div><div>Starter</div><div>Pro</div><div>Team</div>
+                        <div className="overflow-x-auto rounded-xl">
+                          <div className="min-w-[400px]">
+                            <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
+                                {[
+                                    { limit: "Projects", free: "2", starter: "Unlimited", pro: "Unlimited", team: "Unlimited" },
+                                    { limit: "Portals", free: "0", starter: "1", pro: "Unlimited", team: "Unlimited" },
+                                    { limit: "AI chats/mo", free: "0", starter: "0", pro: "50", team: "Unlimited" },
+                                    { limit: "File size", free: "5 MB", starter: "20 MB", pro: "50 MB", team: "100 MB" },
+                                    { limit: "Attachments", free: "3/project", starter: "Unlimited", pro: "Unlimited", team: "Unlimited" },
+                                    { limit: "Version history", free: "None", starter: "30 days", pro: "Full", team: "Full" },
+                                ].map(({ limit, free, starter, pro, team }) => (
+                                    <div key={limit} className="grid grid-cols-5 px-4 py-2.5 text-xs">
+                                        <div className="font-medium text-foreground">{limit}</div>
+                                        <div className="text-muted-foreground">{free}</div>
+                                        <div className="text-muted-foreground">{starter}</div>
+                                        <div className="text-muted-foreground">{pro}</div>
+                                        <div className="text-muted-foreground">{team}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="grid grid-cols-5 px-4 py-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground border border-border border-t-0 rounded-b-xl bg-muted/40">
+                                <div />
+                                <div>Free</div><div>Starter</div><div>Pro</div><div>Team</div>
+                            </div>
+                          </div>
                         </div>
                     </section>
 

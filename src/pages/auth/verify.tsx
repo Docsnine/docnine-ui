@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react"
 import { Link, useSearchParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { BookOpen, MailCheck, CheckCircle2, XCircle } from "lucide-react"
+import { MailCheck, CheckCircle2, XCircle } from "lucide-react"
 import { authApi } from "@/lib/api"
-import BackgroundGrid from "@/components/ui/background-grid"
 import Loader1 from "@/components/ui/loader1"
 import { ApiException } from "@/types/ApiTypes"
+import { AuthShell } from "@/components/common/auth-shell"
 
 /**
- * VerifyPage handles two cases:
- *   1. ?token=<token> in the URL → call POST /auth/verify-email automatically
- *   2. No token param → static "check your email" message (landed here after signup)
+ * Handles two cases:
+ *   1. ?token=<token> → calls POST /auth/verify-email automatically
+ *   2. No token param → static "check your email" screen (after signup)
  */
 export function VerifyPage() {
   const [searchParams] = useSearchParams()
@@ -22,8 +21,7 @@ export function VerifyPage() {
   const [errorMessage, setErrorMessage] = useState<string>("")
 
   useEffect(() => {
-    if (!token) return // No token → show the static "check email" card
-
+    if (!token) return
     setStatus("loading")
     authApi
       .verifyEmail(token)
@@ -44,111 +42,80 @@ export function VerifyPage() {
       })
   }, [token])
 
-  // ── Case 1: Token in URL, currently verifying ──────────────────────────
+  // ── Verifying… ─────────────────────────────────────────────────────────
   if (token && status === "loading") {
     return (
-      <div>
-        <BackgroundGrid />
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
-        <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
-        <section className="flex flex-col items-center justify-center p-4 z-10 my-20">
-          <Card className="w-full max-w-md text-center bg-background/80 backdrop-blur-md">
-            <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
-              <Loader1 className="h-10 w-10 text-primary" />
-              <p className="text-muted-foreground">Verifying your email…</p>
-            </CardContent>
-          </Card>
-        </section>
-      </div>
+      <AuthShell>
+        <div className="flex flex-col items-center justify-center space-y-4 py-8">
+          <Loader1 className="h-8 w-8 text-primary" />
+          <p className="text-[14px] text-muted-foreground">Verifying your email…</p>
+        </div>
+      </AuthShell>
     )
   }
 
-  // ── Case 2: Token verified successfully ───────────────────────────────
+  // ── Verified ────────────────────────────────────────────────────────────
   if (token && status === "success") {
     return (
-      <div>
-        <BackgroundGrid />
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
-        <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
-        <section className="flex flex-col items-center justify-center p-4 z-10 my-20">
-          <Card className="w-full max-w-md text-center bg-background/80 backdrop-blur-md">
-            <CardHeader className="space-y-1">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
-                <CheckCircle2 className="h-6 w-6 text-green-500" />
-              </div>
-              <CardTitle className="text-2xl font-bold">Email verified!</CardTitle>
-              <CardDescription>Your account is active. You can now sign in.</CardDescription>
-            </CardHeader>
-            <CardFooter className="flex flex-col space-y-4">
-              <Button className="w-full" onClick={() => navigate("/login")}>
-                Go to Login
-              </Button>
-            </CardFooter>
-          </Card>
-        </section>
-      </div>
+      <AuthShell>
+        <div className="space-y-6">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-500/10 border border-green-500/20">
+            <CheckCircle2 className="h-5 w-5 text-green-500" />
+          </div>
+          <div className="space-y-1.5">
+            <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Email verified</h1>
+            <p className="text-[14px] text-muted-foreground">
+              Your account is active. You can now sign in and start building documentation.
+            </p>
+          </div>
+          <Button
+            className="w-full h-11 rounded-xl text-[14px] font-medium"
+            onClick={() => navigate("/login")}
+          >
+            Go to sign in
+          </Button>
+        </div>
+      </AuthShell>
     )
   }
 
-  // ── Case 3: Token verification failed ────────────────────────────────
+  // ── Verification failed ─────────────────────────────────────────────────
   if (token && status === "error") {
     return (
-      <div>
-        <BackgroundGrid />
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
-        <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
-        <section className="flex flex-col items-center justify-center p-4 z-10 my-20">
-          <Card className="w-full max-w-md text-center bg-background/80 backdrop-blur-md">
-            <CardHeader className="space-y-1">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-                <XCircle className="h-6 w-6 text-destructive" />
-              </div>
-              <CardTitle className="text-2xl font-bold">Verification failed</CardTitle>
-              <CardDescription>{errorMessage}</CardDescription>
-            </CardHeader>
-            <CardFooter className="flex flex-col space-y-4">
-              <Button variant="outline" className="w-full" asChild>
-                <Link to="/login">Back to Login</Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        </section>
-      </div>
+      <AuthShell>
+        <div className="space-y-6">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-destructive/10 border border-destructive/20">
+            <XCircle className="h-5 w-5 text-destructive" />
+          </div>
+          <div className="space-y-1.5">
+            <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Verification failed</h1>
+            <p className="text-[14px] text-muted-foreground">{errorMessage}</p>
+          </div>
+          <Button variant="outline" className="w-full h-11 rounded-xl text-[14px]" asChild>
+            <Link to="/login">Back to sign in</Link>
+          </Button>
+        </div>
+      </AuthShell>
     )
   }
 
-  // ── Case 4: No token → static "check your email" screen ──────────────
+  // ── No token — "check your email" screen (after signup) ────────────────
   return (
-    <div>
-      <BackgroundGrid />
-
-      {/* Top Left Glow */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
-
-      {/* Center Cyan Glow */}
-      <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
-
-      <section className="flex flex-col items-center justify-center p-4 z-10 my-20">
-        <Card className="w-full max-w-md bg-background/80 backdrop-blur-md">
-          <CardHeader className="space-y-1">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <MailCheck className="h-6 w-6 text-primary" />
-            </div>
-            <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
-            <CardDescription>We've sent a verification link to your email address.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Please click the link in the email to verify your account and continue to the dashboard.
-            </p>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button variant="outline" className="w-full" asChild>
-              <Link to="/login">Back to login</Link>
-            </Button>
-          </CardFooter>
-        </Card>
-      </section>
-    </div>
+    <AuthShell>
+      <div className="space-y-6">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
+          <MailCheck className="h-5 w-5 text-primary" />
+        </div>
+        <div className="space-y-1.5">
+          <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Check your email</h1>
+          <p className="text-[14px] text-muted-foreground leading-relaxed">
+            We've sent a verification link to your email address. Click the link to activate your account and continue to the dashboard.
+          </p>
+        </div>
+        <Button variant="outline" className="w-full h-11 rounded-xl text-[14px]" asChild>
+          <Link to="/login">Back to sign in</Link>
+        </Button>
+      </div>
+    </AuthShell>
   )
 }

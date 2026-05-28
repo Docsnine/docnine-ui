@@ -2,6 +2,7 @@ import { ChevronDown } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { NoiseOverlay } from "@/components/ui/noise-overlay"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -47,7 +48,8 @@ export function FAQSection() {
   }, [])
 
   return (
-    <section ref={ref} id="faq" className="relative z-10 py-24 px-4 bg-background">
+    <section ref={ref} id="faq" className="relative z-10 overflow-hidden py-24 px-4 bg-background">
+      <NoiseOverlay opacity={0.16} />
       <div className="container mx-auto max-w-3xl">
         <div className="mb-16 text-center">
           <p className="font-mono text-sm text-primary mb-4">// FAQ //</p>

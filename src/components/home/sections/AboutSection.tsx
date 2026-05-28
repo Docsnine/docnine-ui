@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { NoiseOverlay } from "@/components/ui/noise-overlay"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -74,7 +75,8 @@ export function AboutSection() {
     }, [])
 
     return (
-        <section ref={sectionRef} className="relative z-10 py-24 px-4 bg-secondary">
+        <section ref={sectionRef} className="relative z-10 overflow-hidden py-24 px-4 bg-secondary">
+            <NoiseOverlay opacity={0.16} />
             <div className="container mx-auto max-w-6xl">
                 {/* Section Tag */}
                 <p className="about-text font-mono text-sm text-primary mb-6">// About Our Platform //</p>

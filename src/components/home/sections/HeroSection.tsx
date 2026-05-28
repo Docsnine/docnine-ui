@@ -4,43 +4,7 @@ import { Link } from "react-router-dom"
 import { useEffect, useRef } from "react"
 import gsap from "gsap"
 import type { LucideIcon } from "lucide-react"
-
-function FloatingCard({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!ref.current) return
-    gsap.to(ref.current, {
-      y: -12,
-      duration: 2.5 + delay * 0.5,
-      ease: "sine.inOut",
-      yoyo: true,
-      repeat: -1,
-      delay,
-    })
-  }, [delay])
-
-  return (
-    <div ref={ref} className={className}>
-      {children}
-    </div>
-  )
-}
-
-function FeatureCard({ Icon, title, subtitle, badge, className }: { Icon: LucideIcon; title: string; subtitle: string; badge?: string; className?: string }) {
-  return (
-    <div className={`flex items-center gap-3 bg-white dark:bg-card rounded-3xl border border-border px-4 py-3 shadow-[0_2px_10px_rgba(0,0,0,0.2)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.2)] ${className || ""}`}>
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center flex-shrink-0">
-        <Icon className="w-4.5 h-4.5 text-primary" />
-      </div>
-      <div className="min-w-0">
-        <p className="text-sm font-semibold text-foreground leading-tight">{title}</p>
-        <p className="text-xs text-muted-foreground">{subtitle}</p>
-        {badge && <span className="inline-block mt-1 text-[10px] font-medium text-primary bg-primary/10 rounded-full px-2 py-0.5">{badge}</span>}
-      </div>
-    </div>
-  )
-}
+import { NoiseOverlay } from "@/components/ui/noise-overlay"
 
 export function HeroSection() {
   const heroRef = useRef<HTMLDivElement>(null)
@@ -83,51 +47,10 @@ export function HeroSection() {
 
   return (
     <section ref={heroRef} className="relative z-10 overflow-hidden pt-12 pb-8 px-4">
+      <NoiseOverlay opacity={0.22} blendMode="overlay" />
+      <NoiseOverlay opacity={0.12} blendMode="soft-light" className="[background-size:150px_150px]" />
+
       <div className="container mx-auto max-w-6xl relative min-h-[520px] sm:min-h-[560px] md:min-h-[600px]">
-        {/* ── Floating User Cards ────────────────────────────── */}
-        {/* Top-left: API Docs */}
-        <FloatingCard className="floating-card hidden lg:block absolute -left-0 top-6 z-20" delay={0}>
-          <FeatureCard Icon={FileText} title="API Documentation" subtitle="Auto-generated from code" badge="Instant" />
-        </FloatingCard>
-
-        {/* Bottom-left: Security */}
-        <FloatingCard className="floating-card hidden lg:block absolute -left-0 bottom-36 z-20" delay={0.8}>
-          <FeatureCard Icon={ShieldCheck} title="Security Audit" subtitle="Vulnerability scanning" badge="AI-Powered" />
-        </FloatingCard>
-
-        {/* Top-right: Schema */}
-        <FloatingCard className="floating-card hidden lg:block absolute -right-0 top-10 z-20" delay={0.4}>
-          <FeatureCard Icon={Database} title="Schema Analysis" subtitle="Database & model docs" />
-        </FloatingCard>
-
-        {/* Bottom-right: Export */}
-        <FloatingCard className="floating-card hidden lg:block absolute -right-0 bottom-40 z-20" delay={1.0}>
-          <FeatureCard Icon={PackageOpen} title="Smart Exports" subtitle="Markdown, Postman & more" />
-        </FloatingCard>
-
-        {/* ── Center Floating App Card (like template) ───── */}
-        <FloatingCard className="floating-card hidden lg:block absolute -right-40 top-40 -translate-x-1/2 z-30" delay={0.5}>
-          <div className="bg-white dark:bg-card rounded-3xl border border-border px-5 py-4 w-[220px] shadow-[0_2px_10px_rgba(0,0,0,0.2)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.2)]">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-xs font-mono text-muted-foreground">docnine/scan</span>
-            </div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center"><Zap className="w-4 h-4 text-primary" /></div>
-              <div>
-                <p className="text-sm font-bold text-foreground leading-tight">Repo Scanned</p>
-                <p className="text-xs text-muted-foreground leading-tight">12 endpoints found</p>
-              </div>
-            </div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-base font-extrabold text-foreground">98%</span>
-              <span className="text-[10px] text-muted-foreground">coverage</span>
-            </div>
-            <div className="mt-3 h-1.5 w-full rounded-full bg-primary/20">
-              <div className="h-full w-[98%] rounded-full bg-primary" />
-            </div>
-          </div>
-        </FloatingCard>
 
         {/* ── Hero Content ────────────────────────────────── */}
         <div className="flex flex-col items-center justify-center text-center pt-20 pb-12 relative z-10">

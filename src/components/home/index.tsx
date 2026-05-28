@@ -1,4 +1,5 @@
 import BackgroundGrid from "@/components/ui/background-grid"
+import { NoiseOverlay } from "@/components/ui/noise-overlay"
 import {
   HeroSection,
   AboutSection,
@@ -8,22 +9,19 @@ import {
 
 export function HomePage() {
   return (
-    <div>
-      {/* Subtle grid background for hero area */}
-      <div className="absolute inset-x-0 top-0 h-[600px] overflow-hidden pointer-events-none">
+    <div className="relative">
+      {/* ── Page-level structural grid ─────────────────────────────
+          Spans the full hero + about area, fades out at the bottom.   */}
+      <div className="absolute inset-x-0 top-0 h-[900px] overflow-hidden pointer-events-none">
         <BackgroundGrid />
       </div>
 
-      {/* Soft green glow */}
-      <div className="absolute top-[-10%] left-[20%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px] pointer-events-none z-0" />
-
-      {/* Sections */}
+      {/* ── Sections ───────────────────────────────────────────────  */}
       <HeroSection />
       <AboutSection />
       <div id="features">
         <FeaturesSection />
       </div>
-      {/* <PricingSection /> */}
       <FAQSection />
     </div>
   )

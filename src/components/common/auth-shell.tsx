@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils"
 import { ApplicationLogo } from "./application-logo"
 import { NoiseOverlay } from "../ui/noise-overlay"
+import { Link } from "react-router-dom"
 
 interface AuthShellProps {
   children: React.ReactNode
@@ -14,58 +15,46 @@ const FEATURES = [
   "Developer-first workflows",
 ]
 
+const HERO_IMAGE = "https://images.unsplash.com/photo-1668181736908-0d86519cc01a?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+
 export function AuthShell({ children, className }: AuthShellProps) {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* ── Left panel — brand identity ─────────────────────────── */}
       <div className="hidden lg:flex lg:w-[45%] flex-col justify-between bg-page p-10 relative overflow-hidden border-r border-sidebar-border">
-        <NoiseOverlay opacity={0.22} blendMode="overlay" />
-        <NoiseOverlay opacity={0.12} blendMode="soft-light" className="[background-size:150px_150px]" />
-
-        {/* Ambient radial glows */}
-        <div className="absolute inset-0 pointer-events-none select-none">
-          <div className="absolute top-1/3 left-1/4 w-[480px] h-[480px] rounded-full bg-primary/[0.07] blur-[140px]" />
-          <div className="absolute bottom-1/4 right-1/3 w-[280px] h-[280px] rounded-full bg-primary/[0.04] blur-[100px]" />
+        <div aria-hidden="true" className="absolute inset-0 z-0">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url("${HERO_IMAGE}")`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }}
+          />
         </div>
 
-        {/* Abstract grid accent — very subtle */}
-        <div
-          className="absolute inset-0 opacity-[0.025] pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(var(--color-foreground) 1px, transparent 1px), linear-gradient(90deg, var(--color-foreground) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        />
+        <NoiseOverlay opacity={1} blendMode="overlay" />
+        <NoiseOverlay opacity={1} blendMode="soft-light" className="[background-size:150px_150px]" />
 
         {/* Top: logo */}
         <div className="relative z-10">
-          <ApplicationLogo link="/" className="!h-7" />
+          <Link to={"/"}>
+            <img
+              src={"/logo-light.png"}
+              alt="Docnine Logo"
+              className={`h-8 w-auto`}
+            />
+          </Link>
         </div>
 
         {/* Center: headline + features */}
         <div className="relative z-10 space-y-8">
-          <div className="space-y-3">
-            <h1 className="text-[28px] font-semibold text-foreground leading-snug tracking-tight">
-              Turn your projects into<br />intelligent documentation.
-            </h1>
-            <p className="text-[14px] text-muted-foreground leading-relaxed max-w-[300px]">
-              The documentation workspace built for modern development teams.
-            </p>
-          </div>
 
-          <div className="space-y-3">
-            {FEATURES.map((feat) => (
-              <div key={feat} className="flex items-center gap-3 text-[13px] text-muted-foreground">
-                <span className="flex h-1.5 w-1.5 shrink-0 rounded-full bg-primary opacity-80" />
-                {feat}
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Bottom: copyright */}
-        <p className="relative z-10 text-[12px] text-muted-foreground/50 select-none">
+        <p className="relative z-10 text-[12px] text-primary-foreground select-none">
           © {new Date().getFullYear()} Docnine. All rights reserved.
         </p>
       </div>

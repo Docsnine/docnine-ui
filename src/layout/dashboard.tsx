@@ -118,8 +118,13 @@ function SidebarContent({
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Zone 1 — Workspace identity */}
-      <div className="px-4 pt-4 pb-3 border-b border-sidebar-border shrink-0">
+      <div className="px-4 pt-4 pb-3 shrink-0">
         <ApplicationLogo link="/projects" className="!h-7" />
+      </div>
+
+      <div className="border-t border-sidebar-border" />
+
+      <div className="px-4 pb-3 border-b border-sidebar-border shrink-0">
         {user && (
           <div className="mt-3 flex items-center gap-2 min-w-0">
             <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-semibold select-none">
@@ -183,17 +188,13 @@ function SidebarContent({
           )}
         </div>
 
+      </div>
+
+      <div className="border-t border-sidebar-border" />
+
+      <div className="px-3 pt-2 pb-3 border-t border-sidebar-border shrink-0">
         {/* Bottom utility row */}
         <div className="mt-2 flex items-center justify-between px-2">
-          <a
-            href="https://github.com/Docsnine"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1.5 text-[12px] text-sidebar-muted hover:text-sidebar-foreground transition-colors"
-          >
-            <Github className="h-3.5 w-3.5" />
-            GitHub
-          </a>
           <ThemeToggle />
         </div>
 
@@ -274,11 +275,11 @@ export function DashboardLayout() {
 
   const initials = user?.name
     ? user.name
-        .split(" ")
-        .map((w) => w[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase()
+      .split(" ")
+      .map((w) => w[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase()
     : "?"
 
   const handleLogout = async () => {
@@ -305,7 +306,7 @@ export function DashboardLayout() {
       <div className="flex h-screen overflow-hidden bg-page">
 
         {/* ── Desktop sidebar (always visible ≥ md) ─────────────── */}
-        <aside className="hidden md:flex fixed inset-y-0 left-0 z-40 w-[260px] flex-col bg-sidebar border-r border-sidebar-border">
+        <aside className="hidden md:flex fixed inset-y-0 left-0 z-40 w-[260px] flex-col bg-page">
           <SidebarContent {...sidebarProps} />
         </aside>
 
@@ -326,7 +327,8 @@ export function DashboardLayout() {
         </aside>
 
         {/* ── Main workspace ─────────────────────────────────────── */}
-        <div className="flex flex-1 flex-col md:ml-[260px] overflow-hidden bg-workspace">
+
+        <div className="flex flex-1 flex-col md:ml-[260px] overflow-hidden bg-workspace rounded-3xl m-2">
 
           {/* Top bar */}
           <header className="flex h-12 shrink-0 items-center justify-between border-b border-workspace-border px-4 sm:px-6">
@@ -435,7 +437,7 @@ export function DashboardLayout() {
 
           {/* Scrollable content */}
           <main className="flex-1 overflow-y-auto">
-            <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12 py-8">
+            <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-5 py-8">
               <Outlet />
             </div>
           </main>

@@ -1429,8 +1429,8 @@ export function SettingsPage() {
             <div className={cn("w-full space-y-6", "max-w-3xl")}>
                 {/* Page header */}
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-                        <Settings className="h-7 w-7" />
+                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-3">
+                        <Settings className="h-6 w-6 sm:h-7 sm:w-7" />
                         Settings
                     </h1>
                     <p className="text-muted-foreground mt-1">

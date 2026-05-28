@@ -6,158 +6,167 @@ import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { BookOpen, ArrowLeft, KeyRound } from "lucide-react"
+import { ArrowLeft, CheckCircle2, KeyRound } from "lucide-react"
 import { authApi } from "@/lib/api"
-import BackgroundGrid from "@/components/ui/background-grid"
-import { ApiException } from "@/types/ApiTypes"
 import Loader1 from "@/components/ui/loader1"
+import { ApiException } from "@/types/ApiTypes"
+import { AuthShell } from "@/components/common/auth-shell"
 
 const resetPasswordSchema = z
-    .object({
-        password: z.string().min(8, "Password must be at least 8 characters"),
-        confirmPassword: z.string(),
-    })
-    .refine((d) => d.password === d.confirmPassword, {
-        message: "Passwords don't match",
-        path: ["confirmPassword"],
-    })
+  .object({
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  })
 
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>
 
 export function ResetPasswordPage() {
-    const navigate = useNavigate()
-    const [searchParams] = useSearchParams()
-    const token = searchParams.get("token")
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const token = searchParams.get("token")
 
-    const [isLoading, setIsLoading] = useState(false)
-    const [isSuccess, setIsSuccess] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<ResetPasswordFormValues>({
-        resolver: zodResolver(resetPasswordSchema),
-    })
+  const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswordFormValues>({
+    resolver: zodResolver(resetPasswordSchema),
+  })
 
-    const onSubmit = async (data: ResetPasswordFormValues) => {
-        if (!token) {
-            setError("No reset token found. Please request a new password reset link.")
-            return
-        }
-        setIsLoading(true)
-        setError(null)
-        try {
-            await authApi.resetPassword({ token, password: data.password, confirmPassword: data.confirmPassword })
-            setIsSuccess(true)
-        } catch (err) {
-            if (err instanceof ApiException) {
-                if (err.code === "TOKEN_EXPIRED") {
-                    setError("This reset link has expired. Please request a new one.")
-                } else if (err.code === "TOKEN_INVALID") {
-                    setError("This reset link is invalid or has already been used.")
-                } else if (err.code === "VALIDATION_ERROR" && err.fields?.length) {
-                    setError(err.fields.map((f) => f.message).join(". "))
-                } else {
-                    setError(err.message)
-                }
-            } else {
-                setError("A network error occurred. Please try again.")
-            }
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
+  const onSubmit = async (data: ResetPasswordFormValues) => {
     if (!token) {
-        return (
-<div>
-                <BackgroundGrid />
-
-                {/* Top Left Glow */}
-                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
-
-                {/* Center Cyan Glow */}
-                <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
-
-                <section className="flex flex-col items-center justify-center p-4 z-10 my-20">
-                    <Card className="w-full max-w-md bg-background/80 backdrop-blur-md">
-                        <CardHeader>
-                            <CardTitle className="text-2xl font-bold">Invalid Link</CardTitle>
-                            <CardDescription>
-                                This password reset link is missing a token. Please request a new one.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardFooter>
-                            <Button className="w-full" asChild>
-                                <Link to="/forgot-password">Request Reset Link</Link>
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                </section>
-            </div>
-        )
+      setError("No reset token found. Please request a new password reset link.")
+      return
     }
+    setIsLoading(true)
+    setError(null)
+    try {
+      await authApi.resetPassword({ token, password: data.password, confirmPassword: data.confirmPassword })
+      setIsSuccess(true)
+    } catch (err) {
+      if (err instanceof ApiException) {
+        if (err.code === "TOKEN_EXPIRED") {
+          setError("This reset link has expired. Please request a new one.")
+        } else if (err.code === "TOKEN_INVALID") {
+          setError("This reset link is invalid or has already been used.")
+        } else if (err.code === "VALIDATION_ERROR" && err.fields?.length) {
+          setError(err.fields.map((f) => f.message).join(". "))
+        } else {
+          setError(err.message)
+        }
+      } else {
+        setError("A network error occurred. Please try again.")
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
+  if (!token) {
     return (
-        <div>
-            <BackgroundGrid />
-
-            {/* Top Left Glow */}
-            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
-
-            {/* Center Cyan Glow */}
-            <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
-
-            <section className="flex flex-col items-center justify-center p-4 z-10 my-20">
-                <Card className="w-full max-w-md bg-background/80 backdrop-blur-md">
-                    <CardHeader className="space-y-1 text-center">
-                        <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
-                        <CardDescription>Enter your new password below.</CardDescription>
-                    </CardHeader>
-                    {isSuccess ? (
-                        <CardContent className="space-y-4 text-center">
-                            <div className="rounded-md bg-green-500/10 p-4 text-sm text-green-700 dark:text-green-400 border border-green-500/20">
-                                Password reset successful! You can now log in with your new password.
-                            </div>
-                            <Button className="w-full mt-4" onClick={() => navigate("/login")}>
-                                Go to Login
-                            </Button>
-                        </CardContent>
-                    ) : (
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <CardContent className="space-y-4">
-                                {error && <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">{error}</div>}
-                                <div className="space-y-2">
-                                    <Label htmlFor="password">New Password</Label>
-                                    <Input id="password" type="password" {...register("password")} />
-                                    {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="confirmPassword">Confirm Password</Label>
-                                    <Input id="confirmPassword" type="password" {...register("confirmPassword")} />
-                                    {errors.confirmPassword && (
-                                        <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
-                                    )}
-                                </div>
-                            </CardContent>
-                            <CardFooter className="flex flex-col space-y-4">
-                                <Button type="submit" className="w-full" disabled={isLoading}>
-                                    {isLoading && <Loader1 className="mr-2 h-4 w-4 " />}
-                                    Reset Password
-                                </Button>
-                                <div className="text-center text-sm text-muted-foreground">
-                                    <Link to="/login" className="text-primary hover:underline flex items-center justify-center">
-                                        <ArrowLeft className="mr-2 h-4 w-4" /> Back to login
-                                    </Link>
-                                </div>
-                            </CardFooter>
-                        </form>
-                    )}
-                </Card>
-            </section>
+      <AuthShell>
+        <div className="space-y-6">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-destructive/10 border border-destructive/20">
+            <KeyRound className="h-5 w-5 text-destructive" />
+          </div>
+          <div className="space-y-1.5">
+            <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Invalid link</h1>
+            <p className="text-[14px] text-muted-foreground">
+              This password reset link is missing a token. Please request a new one.
+            </p>
+          </div>
+          <Button className="w-full h-11 rounded-xl text-[14px]" asChild>
+            <Link to="/forgot-password">Request reset link</Link>
+          </Button>
         </div>
+      </AuthShell>
     )
+  }
+
+  if (isSuccess) {
+    return (
+      <AuthShell>
+        <div className="space-y-6">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-500/10 border border-green-500/20">
+            <CheckCircle2 className="h-5 w-5 text-green-500" />
+          </div>
+          <div className="space-y-1.5">
+            <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Password updated</h1>
+            <p className="text-[14px] text-muted-foreground">
+              Your password has been reset. You can now sign in with your new password.
+            </p>
+          </div>
+          <Button className="w-full h-11 rounded-xl text-[14px] font-medium" onClick={() => navigate("/login")}>
+            Go to sign in
+          </Button>
+        </div>
+      </AuthShell>
+    )
+  }
+
+  return (
+    <AuthShell>
+      <div className="space-y-7">
+        <div className="space-y-1.5">
+          <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Set new password</h1>
+          <p className="text-[14px] text-muted-foreground">Choose a strong password for your account.</p>
+        </div>
+
+        {error && (
+          <div className="rounded-xl bg-destructive/10 border border-destructive/20 px-4 py-3 text-[13px] text-destructive">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="password" className="text-[13px] font-medium">New password</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Min. 8 characters"
+              className="h-11 rounded-xl border-border/70 bg-muted/30 text-[14px] focus-visible:ring-1 focus-visible:ring-primary"
+              {...register("password")}
+            />
+            {errors.password && <p className="text-[12px] text-destructive">{errors.password.message}</p>}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="confirmPassword" className="text-[13px] font-medium">Confirm password</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="Repeat your password"
+              className="h-11 rounded-xl border-border/70 bg-muted/30 text-[14px] focus-visible:ring-1 focus-visible:ring-primary"
+              {...register("confirmPassword")}
+            />
+            {errors.confirmPassword && (
+              <p className="text-[12px] text-destructive">{errors.confirmPassword.message}</p>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full h-11 rounded-xl text-[14px] font-medium"
+            disabled={isLoading}
+          >
+            {isLoading && <Loader1 className="mr-2 h-4 w-4" />}
+            Reset password
+          </Button>
+        </form>
+
+        <Link
+          to="/login"
+          className="flex items-center justify-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to sign in
+        </Link>
+      </div>
+    </AuthShell>
+  )
 }

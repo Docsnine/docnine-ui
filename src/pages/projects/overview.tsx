@@ -392,19 +392,19 @@ export function ProjectOverviewPage() {
     return (
         <>
             <div className="space-y-4 mt-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-                    <Link to="/dashboard" className="hover:text-foreground flex items-center gap-1 transition-colors">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4 min-w-0">
+                    <Link to="/dashboard" className="hover:text-foreground flex items-center gap-1 transition-colors shrink-0">
                         <ArrowLeft className="h-4 w-4" /> Dashboard
                     </Link>
-                    <span>/</span>
-                    <span className="text-foreground font-medium">{project.name}</span>
+                    <span className="shrink-0">/</span>
+                    <span className="text-foreground font-medium truncate">{project.name}</span>
                 </div>
 
                 {/* Header card */}
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-card p-6 rounded-xl border border-border">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-card p-4 sm:p-6 rounded-xl border border-border">
                     <div className="space-y-2">
                         <div className="flex items-center gap-3 flex-wrap">
-                            <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
+                            <h1 className="text-xl sm:text-3xl font-bold tracking-tight">{project.name}</h1>
                             {getStatusBadge()}
                         </div>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">

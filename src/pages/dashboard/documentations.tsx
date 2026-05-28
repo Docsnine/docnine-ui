@@ -335,11 +335,11 @@ export function DocumentationsPage() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     {/* Search */}
                     {!isLoading && completedProjects.length > 0 && (
-                        <div className="relative max-w-sm">
+                        <div className="relative w-full sm:max-w-sm">
                             <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
                                 placeholder="Search by name, language, or tech..."
-                                className="pl-9 rounded-2xl"
+                                className="pl-9 rounded-2xl w-full"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                             />

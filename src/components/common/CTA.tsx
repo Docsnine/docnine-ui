@@ -52,12 +52,12 @@ export function CTA() {
                     </div>
 
                     {/* Right Side - Feature Cards (staggered wave) */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {([
                             { Icon: Rocket, title: "One-Click Generation", desc: "Docs ready in seconds", rotate: "" },
                             { Icon: Bot, title: "AI-Powered Insights", desc: "Smart analysis & suggestions", rotate: "" },
-                            { Icon: RefreshCw, title: "Always In Sync", desc: "Auto-updates with your code", rotate: "rotate-[5deg]" },
-                            { Icon: FileText, title: "API Documentation", desc: "Auto-generated from code", rotate: "-rotate-[5deg]" },
+                            { Icon: RefreshCw, title: "Always In Sync", desc: "Auto-updates with your code", rotate: "sm:rotate-[5deg]" },
+                            { Icon: FileText, title: "API Documentation", desc: "Auto-generated from code", rotate: "sm:-rotate-[5deg]" },
                             { Icon: ShieldCheck, title: "Security Audits", desc: "Vulnerability scanning built-in", rotate: "" },
                             { Icon: Layers, title: "Multi-Format Export", desc: "Markdown, Postman & more", rotate: "" },
                         ] as { Icon: LucideIcon; title: string; desc: string; rotate: string }[]).map((item) => {

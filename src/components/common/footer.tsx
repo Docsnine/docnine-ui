@@ -10,20 +10,20 @@ export function Footer() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-12 mb-16">
                     <div className="sm:col-span-2 md:col-span-2">
                         <div className="flex items-center mb-6">
-                            <ApplicationLogo className='!h-24' />
+                            <ApplicationLogo className='!h-9' />
                         </div>
                         <p className="text-muted-foreground leading-relaxed max-w-sm mb-6">
                             Documentation that Works as Hard as You Do.
                         </p>
 
                         {/* Email Subscribe */}
-                        <div className="flex items-center gap-2 max-w-sm">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 max-w-sm">
                             <input
                                 type="email"
                                 placeholder="Enter your email"
                                 className="flex-1 h-10 px-4 rounded-full border border-border bg-secondary text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                             />
-                            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full h-10 px-5 text-sm font-semibold">
+                            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full h-10 px-5 text-sm font-semibold shrink-0">
                                 Subscribe
                             </Button>
                         </div>

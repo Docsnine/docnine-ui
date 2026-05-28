@@ -31,10 +31,10 @@ export function StepsSection() {
   return (
     <section className="relative z-10 py-24 px-4 bg-background">
       <div className="container mx-auto max-w-5xl text-center">
-        <h2 className="text-[48px] leading-[48px] font-bold tracking-tight text-foreground mb-6">
+        <h2 className="text-[28px] leading-tight sm:text-[38px] lg:text-[48px] font-bold tracking-tight text-foreground mb-4 sm:mb-6">
           Up and running in 4 steps
         </h2>
-        <p className="text-xl text-muted-foreground mb-20">
+        <p className="text-base sm:text-xl text-muted-foreground mb-10 sm:mb-16">
           No complex config. No enterprise sales calls. Your docs are live in minutes.
         </p>
 

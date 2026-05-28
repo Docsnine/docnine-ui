@@ -26,6 +26,18 @@
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
 
+  /* Layout layer tokens */
+  --color-page: var(--page);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-active-bg: var(--sidebar-active-bg);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-workspace: var(--workspace);
+  --color-workspace-border: var(--workspace-border);
+
   --font-sans: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 }
@@ -38,29 +50,53 @@
     --card-foreground: #1a1a1a;
     --primary: #074a51;
     --primary-foreground: #ffffff;
-    --muted: #f8f9fa;
-    --muted-foreground: #666666;
-    --border: #e5e7eb;
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+    --border: #e4e4e7;
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
-    --secondary: #f8f9fa;
+    --secondary: #f4f4f5;
     --secondary-foreground: #1a1a1a;
+
+    /* Layout layer — light */
+    --page: #f0f0f0;
+    --sidebar: #f7f7f8;
+    --sidebar-foreground: #18181b;
+    --sidebar-muted: #71717a;
+    --sidebar-border: #e4e4e7;
+    --sidebar-active: #074a51;
+    --sidebar-active-bg: rgba(7, 74, 81, 0.08);
+    --sidebar-hover: rgba(0, 0, 0, 0.04);
+    --workspace: #ffffff;
+    --workspace-border: #e4e4e7;
   }
 
   .dark {
-    --background: #0a0f0e;
-    --foreground: #f0f0f0;
-    --card: #111816;
-    --card-foreground: #f0f0f0;
+    --background: #171717;
+    --foreground: #e5e5e5;
+    --card: #1f1f1f;
+    --card-foreground: #e5e5e5;
     --primary: #0d9488;
     --primary-foreground: #ffffff;
-    --muted: #1a2420;
-    --muted-foreground: #9ca3af;
-    --border: #2a3530;
-    --destructive: #7f1d1d;
+    --muted: #262626;
+    --muted-foreground: #a3a3a3;
+    --border: #2a2a2a;
+    --destructive: #dc2626;
     --destructive-foreground: #ffffff;
-    --secondary: #1a2420;
-    --secondary-foreground: #f0f0f0;
+    --secondary: #262626;
+    --secondary-foreground: #e5e5e5;
+
+    /* Layout layer — dark (GitBook-inspired neutral depth) */
+    --page: #0d0d0d;
+    --sidebar: #121212;
+    --sidebar-foreground: #e5e5e5;
+    --sidebar-muted: #737373;
+    --sidebar-border: #1f1f1f;
+    --sidebar-active: #f5f5f5;
+    --sidebar-active-bg: rgba(255, 255, 255, 0.07);
+    --sidebar-hover: rgba(255, 255, 255, 0.04);
+    --workspace: #171717;
+    --workspace-border: #262626;
   }
 }
 

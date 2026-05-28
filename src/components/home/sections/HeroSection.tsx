@@ -1,46 +1,11 @@
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Play, FileText, ShieldCheck, Database, PackageOpen, Zap } from "lucide-react"
+import { ArrowRight, Play } from "lucide-react"
 import { Link } from "react-router-dom"
 import { useEffect, useRef } from "react"
 import gsap from "gsap"
-import type { LucideIcon } from "lucide-react"
+import { NoiseOverlay } from "@/components/ui/noise-overlay"
 
-function FloatingCard({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!ref.current) return
-    gsap.to(ref.current, {
-      y: -12,
-      duration: 2.5 + delay * 0.5,
-      ease: "sine.inOut",
-      yoyo: true,
-      repeat: -1,
-      delay,
-    })
-  }, [delay])
-
-  return (
-    <div ref={ref} className={className}>
-      {children}
-    </div>
-  )
-}
-
-function FeatureCard({ Icon, title, subtitle, badge, className }: { Icon: LucideIcon; title: string; subtitle: string; badge?: string; className?: string }) {
-  return (
-    <div className={`flex items-center gap-3 bg-white dark:bg-card rounded-3xl border border-border px-4 py-3 shadow-[0_2px_10px_rgba(0,0,0,0.2)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.2)] ${className || ""}`}>
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center flex-shrink-0">
-        <Icon className="w-4.5 h-4.5 text-primary" />
-      </div>
-      <div className="min-w-0">
-        <p className="text-sm font-semibold text-foreground leading-tight">{title}</p>
-        <p className="text-xs text-muted-foreground">{subtitle}</p>
-        {badge && <span className="inline-block mt-1 text-[10px] font-medium text-primary bg-primary/10 rounded-full px-2 py-0.5">{badge}</span>}
-      </div>
-    </div>
-  )
-}
+const HERO_IMAGE = "https://images.unsplash.com/photo-1668181736908-0d86519cc01a?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
 
 export function HeroSection() {
   const heroRef = useRef<HTMLDivElement>(null)
@@ -69,89 +34,55 @@ export function HeroSection() {
         ease: "power3.out",
         delay: 0.6,
       })
-      gsap.from(".floating-card", {
-        scale: 0.8,
-        opacity: 0,
-        duration: 0.8,
-        ease: "back.out(1.7)",
-        stagger: 0.15,
-        delay: 0.3,
-      })
     }, heroRef)
     return () => ctx.revert()
   }, [])
 
   return (
     <section ref={heroRef} className="relative z-10 overflow-hidden pt-12 pb-8 px-4">
-      <div className="container mx-auto max-w-6xl relative min-h-[520px] sm:min-h-[560px] md:min-h-[600px]">
-        {/* ── Floating User Cards ────────────────────────────── */}
-        {/* Top-left: API Docs */}
-        <FloatingCard className="floating-card hidden lg:block absolute -left-0 top-6 z-20" delay={0}>
-          <FeatureCard Icon={FileText} title="API Documentation" subtitle="Auto-generated from code" badge="Instant" />
-        </FloatingCard>
+      <div aria-hidden="true" className="absolute inset-0 z-0">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url("${HERO_IMAGE}")`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+      </div>
 
-        {/* Bottom-left: Security */}
-        <FloatingCard className="floating-card hidden lg:block absolute -left-0 bottom-36 z-20" delay={0.8}>
-          <FeatureCard Icon={ShieldCheck} title="Security Audit" subtitle="Vulnerability scanning" badge="AI-Powered" />
-        </FloatingCard>
+      <NoiseOverlay opacity={1} blendMode="overlay" />
+      <NoiseOverlay opacity={1} blendMode="soft-light" className="[background-size:150px_150px]" />
 
-        {/* Top-right: Schema */}
-        <FloatingCard className="floating-card hidden lg:block absolute -right-0 top-10 z-20" delay={0.4}>
-          <FeatureCard Icon={Database} title="Schema Analysis" subtitle="Database & model docs" />
-        </FloatingCard>
+      <div className="container mx-auto max-w-6xl relative z-10 min-h-[500px] sm:min-h-[540px] md:min-h-[580px]">
+        <div className="flex flex-col items-center justify-center text-center pt-20 pb-12">
 
-        {/* Bottom-right: Export */}
-        <FloatingCard className="floating-card hidden lg:block absolute -right-0 bottom-40 z-20" delay={1.0}>
-          <FeatureCard Icon={PackageOpen} title="Smart Exports" subtitle="Markdown, Postman & more" />
-        </FloatingCard>
-
-        {/* ── Center Floating App Card (like template) ───── */}
-        <FloatingCard className="floating-card hidden lg:block absolute -right-40 top-40 -translate-x-1/2 z-30" delay={0.5}>
-          <div className="bg-white dark:bg-card rounded-3xl border border-border px-5 py-4 w-[220px] shadow-[0_2px_10px_rgba(0,0,0,0.2)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.2)]">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-xs font-mono text-muted-foreground">docnine/scan</span>
-            </div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center"><Zap className="w-4 h-4 text-primary" /></div>
-              <div>
-                <p className="text-sm font-bold text-foreground leading-tight">Repo Scanned</p>
-                <p className="text-xs text-muted-foreground leading-tight">12 endpoints found</p>
-              </div>
-            </div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-base font-extrabold text-foreground">98%</span>
-              <span className="text-[10px] text-muted-foreground">coverage</span>
-            </div>
-            <div className="mt-3 h-1.5 w-full rounded-full bg-primary/20">
-              <div className="h-full w-[98%] rounded-full bg-primary" />
-            </div>
-          </div>
-        </FloatingCard>
-
-        {/* ── Hero Content ────────────────────────────────── */}
-        <div className="flex flex-col items-center justify-center text-center pt-20 pb-12 relative z-10">
-          {/* Headline */}
-          <h1 className="hero-headline text-[40px] leading-[1.05] sm:text-[56px] md:text-[72px] font-extrabold tracking-[-0.03em] mb-6 max-w-4xl">
-            <span className="text-foreground">Generate Your </span>
+          {/* Headline — white over the dark image */}
+          <h1 className="hero-headline text-[38px] leading-[1.05] sm:text-[54px] md:text-[70px] font-extrabold tracking-[-0.03em] mb-6 max-w-4xl text-background">
+            Generate Your{" "}
             <br className="hidden sm:block" />
-            <span className="text-foreground">Smart </span>
-            <span className="bg-gradient-to-r from-muted-foreground to-foreground bg-clip-text text-transparent">Documentation</span>
+            Smart{" "}
+            <span className="bg-gradient-to-r from-primary/60 to-primary bg-clip-text text-transparent">
+              Documentation
+            </span>
             <br className="hidden sm:block" />
-            <span className="bg-gradient-to-r from-muted-foreground to-foreground bg-clip-text text-transparent">Partners </span>
-            <span className="text-foreground">From Today</span>
+            <span className="bg-gradient-to-r from-primary/60 to-primary bg-clip-text text-transparent">
+              Partners{" "}
+            </span>
+            From Today
           </h1>
 
           {/* Subheadline */}
-          <p className="hero-sub max-w-2xl text-lg md:text-xl text-muted-foreground leading-relaxed mb-10">
-            Empower your dev team with AI-driven tools to scan, generate, and maintain top-tier documentation effortlessly.
+          <p className="hero-sub max-w-2xl text-base md:text-lg text-white/65 leading-relaxed mb-10">
+            Empower your dev team with AI-driven tools to scan, generate, and maintain
+            top-tier documentation effortlessly.
           </p>
 
-          {/* CTA Buttons */}
           <div className="hero-cta flex flex-col sm:flex-row items-center gap-4">
             <Button
               asChild
-              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-13 text-base font-semibold transition-all"
+              className="bg-primary text-white hover:bg-primary/90 rounded-full px-8 h-12 text-base font-semibold shadow-[0_0_32px_rgba(13,148,136,0.45)] transition-all"
             >
               <Link to="/signup">
                 Get Started <ArrowRight className="ml-2 h-4 w-4" />
@@ -160,7 +91,7 @@ export function HeroSection() {
             <Button
               asChild
               variant="outline"
-              className="bg-white dark:bg-card border-border text-foreground hover:bg-muted rounded-full px-8 h-13 text-base font-semibold"
+              className="border-white/20 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm rounded-full px-8 h-12 text-base font-semibold transition-all"
             >
               <a href="https://github.com/Docsnine" target="_blank" rel="noreferrer">
                 <Play className="mr-2 h-4 w-4 fill-current" /> Watch Demo

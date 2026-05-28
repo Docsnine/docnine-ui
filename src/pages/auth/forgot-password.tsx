@@ -6,103 +6,111 @@ import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, MailCheck } from "lucide-react"
 import { authApi } from "@/lib/api"
-import BackgroundGrid from "@/components/ui/background-grid"
 import Loader1 from "@/components/ui/loader1"
 import { ApiException } from "@/types/ApiTypes"
+import { AuthShell } from "@/components/common/auth-shell"
 
 const forgotPasswordSchema = z.object({
-    email: z.string().email("Invalid email address"),
+  email: z.string().email("Invalid email address"),
 })
 
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>
 
 export function ForgotPasswordPage() {
-    const [isLoading, setIsLoading] = useState(false)
-    const [isSuccess, setIsSuccess] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<ForgotPasswordFormValues>({
-        resolver: zodResolver(forgotPasswordSchema),
-    })
+  const { register, handleSubmit, formState: { errors } } = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
+  })
 
-    const onSubmit = async (data: ForgotPasswordFormValues) => {
-        setIsLoading(true)
-        setError(null)
-        try {
-            // The backend always returns 200 to prevent email enumeration.
-            await authApi.forgotPassword(data.email)
-            setIsSuccess(true)
-        } catch (err) {
-            // The API shouldn't 4xx here, but handle defensively.
-            if (err instanceof ApiException) {
-                setError(err.message)
-            } else {
-                setError("A network error occurred. Please try again.")
-            }
-        } finally {
-            setIsLoading(false)
-        }
+  const onSubmit = async (data: ForgotPasswordFormValues) => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      await authApi.forgotPassword(data.email)
+      setIsSuccess(true)
+    } catch (err) {
+      if (err instanceof ApiException) {
+        setError(err.message)
+      } else {
+        setError("A network error occurred. Please try again.")
+      }
+    } finally {
+      setIsLoading(false)
     }
+  }
 
-    return (
-        <div>
-            <BackgroundGrid />
-
-            {/* Top Left Glow */}
-            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
-
-            {/* Center Cyan Glow */}
-            <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/20 blur-[100px] pointer-events-none z-0" />
-
-            <section className="flex flex-col items-center justify-center p-4 z-10 my-20">
-                <Card className="w-full max-w-md bg-background/80 backdrop-blur-md">
-                    <CardHeader className="space-y-1 text-center">
-                        <CardTitle className="text-2xl font-bold">Forgot password</CardTitle>
-                        <CardDescription>Enter your email address to reset your password</CardDescription>
-                    </CardHeader>
-                    {isSuccess ? (
-                        <CardContent className="space-y-4 text-center">
-                            <div className="rounded-md bg-green-500/10 p-4 text-sm text-green-700 dark:text-green-400 border border-green-500/20">
-                                If an account exists with that email, we have sent a password reset link.
-                            </div>
-                            <Button variant="outline" className="w-full mt-4" asChild>
-                                <Link to="/login">
-                                    <ArrowLeft className="mr-2 h-4 w-4" /> Back to login
-                                </Link>
-                            </Button>
-                        </CardContent>
-                    ) : (
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <CardContent className="space-y-4">
-                                {error && <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">{error}</div>}
-                                <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="example@example.com" {...register("email")} />
-                                    {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
-                                </div>
-                            </CardContent>
-                            <CardFooter className="flex flex-col space-y-4">
-                                <Button type="submit" className="w-full" disabled={isLoading}>
-                                    {isLoading && <Loader1 className="mr-2 h-4 w-4 " />}
-                                    Send Reset Link
-                                </Button>
-                                <div className="text-center text-sm text-muted-foreground">
-                                    <Link to="/login" className="text-primary hover:underline flex items-center justify-center">
-                                        <ArrowLeft className="mr-2 h-4 w-4" /> Back to login
-                                    </Link>
-                                </div>
-                            </CardFooter>
-                        </form>
-                    )}
-                </Card>
-            </section>
+  return (
+    <AuthShell>
+      {isSuccess ? (
+        <div className="space-y-6">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
+            <MailCheck className="h-5 w-5 text-primary" />
+          </div>
+          <div className="space-y-1.5">
+            <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Check your inbox</h1>
+            <p className="text-[14px] text-muted-foreground leading-relaxed">
+              If an account exists with that email, we've sent a password reset link. It may take a minute to arrive.
+            </p>
+          </div>
+          <Button variant="outline" className="w-full h-11 rounded-xl text-[14px]" asChild>
+            <Link to="/login">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to sign in
+            </Link>
+          </Button>
         </div>
-    )
+      ) : (
+        <div className="space-y-7">
+          <div className="space-y-1.5">
+            <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Forgot password?</h1>
+            <p className="text-[14px] text-muted-foreground">
+              Enter your email and we'll send you a reset link.
+            </p>
+          </div>
+
+          {error && (
+            <div className="rounded-xl bg-destructive/10 border border-destructive/20 px-4 py-3 text-[13px] text-destructive">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-[13px] font-medium">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@company.com"
+                className="h-11 rounded-xl border-border/70 bg-muted/30 text-[14px] focus-visible:ring-1 focus-visible:ring-primary"
+                {...register("email")}
+              />
+              {errors.email && <p className="text-[12px] text-destructive">{errors.email.message}</p>}
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full h-11 rounded-xl text-[14px] font-medium"
+              disabled={isLoading}
+            >
+              {isLoading && <Loader1 className="mr-2 h-4 w-4" />}
+              Send reset link
+            </Button>
+          </form>
+
+          <Link
+            to="/login"
+            className="flex items-center justify-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back to sign in
+          </Link>
+        </div>
+      )}
+    </AuthShell>
+  )
 }

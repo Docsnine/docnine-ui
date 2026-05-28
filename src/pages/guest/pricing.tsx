@@ -141,9 +141,6 @@ export function PricingPage() {
                 <BackgroundGrid />
             </div>
 
-            {/* Top Left Glow */}
-            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
-
             {/* Hero */}
             <section className="mx-auto relative z-10 max-w-5xl px-6 pt-16 pb-12 text-center">
                 <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
@@ -186,7 +183,7 @@ export function PricingPage() {
             </section>
 
             {/* Plan cards */}
-            <section className="mx-auto max-w-6xl px-6 pb-16 relative z-10">
+            <section className="mx-auto max-w-6xl px-2 pb-16 relative z-10">
                 {error && (
                     <p className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400 text-center">
                         {error}

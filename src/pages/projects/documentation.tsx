@@ -25,7 +25,6 @@ import {
   File,
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
-import Markdown from "react-markdown"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { AIChatPanel } from "@/components/projects/ai-chat"
@@ -769,9 +768,14 @@ export function DocumentationViewerPage() {
   if (!project) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
-        <h2 className="text-2xl font-bold">Project not found</h2>
-        <Button asChild className="mt-6"><Link to="/dashboard">Back to Dashboard</Link></Button>
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 mb-5">
+          <AlertTriangle className="h-8 w-8 text-destructive" />
+        </div>
+        <h2 className="text-xl font-semibold">Project not found</h2>
+        <p className="text-[14px] text-muted-foreground mt-1.5">This project doesn't exist or has been deleted.</p>
+        <Button asChild className="mt-6 h-10 rounded-lg px-5">
+          <Link to="/projects">Back to Projects</Link>
+        </Button>
       </div>
     )
   }
@@ -812,60 +816,85 @@ export function DocumentationViewerPage() {
   // ── Main render ───────────────────────────────────────────────────────────
   return (
     <div>
-      {/* Top bar */}
-      <div className="relative z-20 md:flex items-center justify-between border-b border-border/90 bg-background/50 backdrop-blur-sm container mx-auto max-w-7xl pb-6">
-        <div className="flex items-center gap-6 flex-1">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Documentation</h1>
-            <p className="text-sm text-muted-foreground">{project.meta?.name}</p>
+      {/* ── Top bar ─────────────────────────────────────────────────────── */}
+      <div className="relative z-20 border-b border-border/70 bg-background/60 backdrop-blur-sm pb-4 max-w-7xl mx-auto">
+
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground mb-3">
+          <Link
+            to={`/projects/${id}`}
+            className="hover:text-foreground flex items-center gap-1 transition-colors shrink-0"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Overview
+          </Link>
+          <span className="opacity-40">/</span>
+          <span className="text-foreground font-medium truncate max-w-[200px]">
+            {project.meta?.name}
+          </span>
+          <span className="opacity-40">/</span>
+          <span className="text-muted-foreground">Documentation</span>
+        </div>
+
+        {/* Header row */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          {/* Title + search */}
+          <div className="flex items-center gap-4 min-w-0 flex-1">
+            <h1 className="text-[22px] font-semibold tracking-tight shrink-0">Docs</h1>
+
+            {/* Global search */}
+            <div className="relative w-full max-w-[260px]">
+              <Input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search documentation…"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onFocus={() => searchQuery && setShowSearchResults(true)}
+                className="h-8 text-[13px] rounded-lg pr-3"
+              />
+              {showSearchResults && Object.keys(searchResults).length > 0 && (
+                <div className="absolute top-full mt-1 left-0 right-0 z-50 rounded-lg border border-border bg-background shadow-lg max-h-64 overflow-y-auto">
+                  {Object.entries(searchResults).map(([tabKey, { label, matches, highlights, firstMatchLine }]) => (
+                    <button
+                      key={tabKey}
+                      onClick={() => handleSearchResultClick(tabKey as DocTab, firstMatchLine)}
+                      className="w-full text-left px-3 py-2 hover:bg-muted transition-colors border-b border-border/40 last:border-b-0 flex flex-col gap-0.5"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[13px] font-medium truncate">{label}</span>
+                        <span className="text-[11px] tabular-nums bg-primary/10 text-primary px-1.5 py-0.5 rounded shrink-0">
+                          {matches}
+                        </span>
+                      </div>
+                      {highlights.length > 0 && (
+                        <p className="text-[12px] text-muted-foreground line-clamp-1">{highlights[0]}</p>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {searchQuery && !showSearchResults && (
+                <div className="absolute top-full mt-1 left-0 right-0 z-50 rounded-lg border border-border bg-background shadow-lg px-3 py-2.5 text-[13px] text-center text-muted-foreground">
+                  No matches found
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Global Search */}
-          <div className="relative flex-1 max-w-xs">
-            <Input
-              ref={searchInputRef}
-              type="text"
-              placeholder="Search docs..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              onFocus={() => searchQuery && setShowSearchResults(true)}
-              className="h-10 text-sm rounded-2xl"
-            />
-            {showSearchResults && Object.keys(searchResults).length > 0 && (
-              <div className="absolute top-full mt-1 left-0 right-0 z-50 rounded-md border border-border bg-background shadow-lg max-h-64 overflow-y-auto">
-                {Object.entries(searchResults).map(([tabKey, { label, matches, highlights, firstMatchLine }]) => (
-                  <button
-                    key={tabKey}
-                    onClick={() => handleSearchResultClick(tabKey as DocTab, firstMatchLine)}
-                    className="w-full text-left px-3 py-2 hover:bg-muted transition-colors text-sm border-b border-border/50 last:border-b-0 flex flex-col gap-1"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium truncate">{label}</span>
-                      <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">
-                        {matches}
-                      </span>
-                    </div>
-                    {highlights.length > 0 && (
-                      <div className="text-xs text-muted-foreground line-clamp-1">{highlights[0]}</div>
-                    )}
-                  </button>
-                ))}
-              </div>
+          {/* Action buttons + export feedback */}
+          <div className="flex items-center gap-2 flex-wrap shrink-0">
+            {/* Export / action feedback */}
+            {exportMessage && (
+              <span className={cn(
+                "inline-flex items-center gap-1 text-[12px] px-2.5 py-1 rounded-md border",
+                exportMessage.startsWith("✓") || exportMessage.startsWith("✅")
+                  ? "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20"
+                  : "bg-destructive/10 text-destructive border-destructive/20"
+              )}>
+                {exportMessage}
+              </span>
             )}
-            {searchQuery && !showSearchResults && (
-              <div className="absolute top-full mt-1 left-0 right-0 z-50 rounded-md border border-border bg-background shadow-lg p-3 text-center text-sm text-muted-foreground">
-                No matches found
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Export / action feedback message */}
-          {exportMessage && (
-            <span className={`text-xs px-2 py-1 rounded ${exportMessage.startsWith("✅") ? "bg-green-50 text-green-700 border border-green-200" : "bg-destructive/10 text-destructive"}`}>
-              {exportMessage}
-            </span>
-          )}
 
           {/* ── Primary: Edit / Cancel / Save ── */}
           {activeTab !== "security" && activeTab !== "other_docs" && (
@@ -997,7 +1026,7 @@ export function DocumentationViewerPage() {
             </Button>
 
             {moreDropdownOpen && (
-              <div className="absolute right-0 top-9 z-50 flex flex-col w-62 rounded-lg border border-border bg-background shadow-lg text-sm overflow-hidden">
+              <div className="absolute right-0 top-9 z-50 flex flex-col w-60 rounded-lg border border-border bg-background shadow-lg text-sm overflow-hidden">
                 {/* History */}
                 <button
                   className={cn(
@@ -1045,6 +1074,7 @@ export function DocumentationViewerPage() {
               </div>
             )}
           </div>
+          </div>
         </div>
       </div>
 
@@ -1053,43 +1083,54 @@ export function DocumentationViewerPage() {
         <div className="flex flex-1 overflow-hidden border border-border rounded-2xl bg-card mt-6">
           {/* Sidebar */}
           {isSidebarOpen && (
-            <div className="w-56 border-r border-border bg-muted/20 flex flex-col shrink-0">
-              <div className="p-4 border-b border-border font-semibold flex items-center justify-between text-sm">
-                Contents
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setIsSidebarOpen(false)}>
-                  <Menu className="h-4 w-4" />
+            <div className="w-56 border-r border-border/70 bg-muted/10 flex flex-col shrink-0">
+              <div className="px-4 py-3 border-b border-border/50 flex items-center justify-between">
+                <span className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Contents
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-muted-foreground"
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  <Menu className="h-3.5 w-3.5" />
                 </Button>
               </div>
-              <nav className="flex-1 overflow-y-auto p-2 space-y-1">
+              <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
                 {availableTabs.map((tab) => {
                   const Icon = tab.icon
-                  const isCustomTab = tab.key.startsWith("custom_");
-                  const sectionName = isCustomTab ? tab.key : (TAB_TO_SECTION[tab.key as NativeTab] ?? null);
-                  const vCount = sectionName && !isCustomTab ? (versionCounts[sectionName] ?? 0) : 0;
+                  const isCustomTab = tab.key.startsWith("custom_")
+                  const sectionName = isCustomTab ? tab.key : (TAB_TO_SECTION[tab.key as NativeTab] ?? null)
+                  const vCount = sectionName && !isCustomTab ? (versionCounts[sectionName] ?? 0) : 0
                   const isStale = sectionName
                     ? editedSections.some((e) => e.section === sectionName && e.stale)
-                    : false;
+                    : false
+                  const isActive = activeTab === tab.key
                   return (
                     <button
                       key={tab.key}
                       onClick={() => { setActiveTab(tab.key); setIsEditMode(false) }}
                       className={cn(
-                        "w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors",
-                        activeTab === tab.key
+                        "w-full flex items-center gap-2 px-2.5 py-1.5 text-[13px] rounded-md transition-colors",
+                        isActive
                           ? tab.key === "security"
                             ? "bg-destructive/10 text-destructive font-medium"
                             : "bg-primary/10 text-primary font-medium"
                           : "text-muted-foreground hover:bg-muted hover:text-foreground"
                       )}
                     >
-                      <Icon className="h-4 w-4 shrink-0" />
+                      <Icon className="h-3.5 w-3.5 shrink-0" />
                       <span className="flex-1 text-left truncate">{tab.label}</span>
                       {!isCustomTab && sectionName && (() => {
                         const de = getDocEntry(id ?? "", sectionName)
                         return de && de.status !== "draft" ? <DocStatusDot status={de.status} /> : null
                       })()}
                       {isStale && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" title="Stale — AI has newer content" />
+                        <span
+                          className="h-1.5 w-1.5 rounded-full bg-primary shrink-0"
+                          title="AI has newer content"
+                        />
                       )}
                       {!isCustomTab && vCount > 1 && (
                         <span className="text-[10px] font-mono px-1 py-0.5 rounded bg-muted-foreground/15 text-muted-foreground shrink-0">
@@ -1100,10 +1141,11 @@ export function DocumentationViewerPage() {
                   )
                 })}
                 {availableTabs.length === 0 && (
-                  <p className="text-xs text-muted-foreground px-3 pt-2">No documentation available yet.</p>
+                  <p className="text-[12px] text-muted-foreground px-3 pt-2">
+                    No documentation available yet.
+                  </p>
                 )}
               </nav>
-
             </div>
           )}
 
@@ -1154,7 +1196,7 @@ export function DocumentationViewerPage() {
                       : "border-transparent text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  Api Spec
+                  API Spec
                 </button>
               </div>
             )}
@@ -1182,10 +1224,13 @@ export function DocumentationViewerPage() {
                     isSyncing={syncingSpec}
                   />
                 ) : (
-                  <div className="flex flex-col items-center justify-center flex-1 gap-3 text-muted-foreground">
-                    <Info className="h-8 w-8" />
-                    <p className="text-sm">No API spec imported yet.</p>
-                    <Button size="sm" variant="outline" onClick={() => requirePlan("API Spec Importer", "pro", "Import and manage OpenAPI specifications for your project.", () => setApiSpecImportOpen(true))}>
+                  <div className="flex flex-col items-center justify-center flex-1 gap-3 text-muted-foreground text-center">
+                    <Info className="h-8 w-8 opacity-50" />
+                    <div>
+                      <p className="text-[14px] font-medium text-foreground">No API spec imported</p>
+                      <p className="text-[13px] mt-1">Import an OpenAPI / Swagger spec to explore it here.</p>
+                    </div>
+                    <Button size="sm" variant="outline" className="mt-1" onClick={() => requirePlan("API Spec Importer", "pro", "Import and manage OpenAPI specifications for your project.", () => setApiSpecImportOpen(true))}>
                       {!meetsMinPlan(subscription, "pro") && <Lock className="h-3.5 w-3.5 mr-1 opacity-50" />}
                       Import Spec
                     </Button>
@@ -1215,18 +1260,20 @@ export function DocumentationViewerPage() {
                         <DocRenderer content={getEffectiveOutputTabContent(effectiveOutput, activeTab)} />
                       </div>
                     ) : project && mapApiStatus(project.status) === "completed" && !activeTab.startsWith("custom_") ? (
-                      <div className="flex flex-col items-center justify-center py-24 text-center text-muted-foreground">
-                        <Info className="h-10 w-10 mb-3" />
-                        <p>No content generated for this section.</p>
+                      <div className="flex flex-col items-center justify-center py-20 text-center text-muted-foreground">
+                        <Info className="h-8 w-8 mb-3 opacity-50" />
+                        <p className="text-[14px] font-medium">No content for this section</p>
+                        <p className="text-[13px] mt-1">This section wasn't generated in the last analysis run.</p>
                       </div>
                     ) : activeTab.startsWith("custom_") ? (
-                      <div className="flex flex-col items-center justify-center py-24 text-center text-muted-foreground">
-                        <Info className="h-10 w-10 mb-3" />
-                        <p>No content in this tab yet. Click Edit to add content.</p>
+                      <div className="flex flex-col items-center justify-center py-20 text-center text-muted-foreground">
+                        <Info className="h-8 w-8 mb-3 opacity-50" />
+                        <p className="text-[14px] font-medium">Empty tab</p>
+                        <p className="text-[13px] mt-1">Click <strong>Edit</strong> in the toolbar to add content.</p>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-center h-full text-muted-foreground">
-                        <Loader1 className="h-5 w-5  mr-2" /> Waiting for content…
+                      <div className="flex items-center justify-center h-full gap-2 text-[13px] text-muted-foreground">
+                        <Loader1 className="h-4 w-4 shrink-0" /> Waiting for content…
                       </div>
                     )
                   )}
@@ -1234,15 +1281,14 @@ export function DocumentationViewerPage() {
                   {/* Security tab */}
                   {activeTab === "security" && (
                     editedContent.security ? (
-                      <div className="space-y-6">
-                        <div className="prose prose-slate dark:prose-invert max-w-none">
-                          <DocRenderer content={editedContent.security} />
-                        </div>
+                      <div className="prose prose-slate dark:prose-invert max-w-none">
+                        <DocRenderer content={editedContent.security} />
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center justify-center py-24 text-center text-muted-foreground">
-                        <ShieldAlert className="h-10 w-10 mb-3" />
-                        <p>No security report available.</p>
+                      <div className="flex flex-col items-center justify-center py-20 text-center text-muted-foreground">
+                        <ShieldAlert className="h-8 w-8 mb-3 opacity-50" />
+                        <p className="text-[14px] font-medium">No security report</p>
+                        <p className="text-[13px] mt-1">No security findings were generated for this project.</p>
                       </div>
                     )
                   )}

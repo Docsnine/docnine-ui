@@ -8,7 +8,6 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { useNavigate } from "react-router-dom"
-import { useAuthStore } from "@/store/auth"
 import { useSubscriptionStore } from "@/store/subscription"
 import { SessionExpiredDialogProps } from "@/types/StateTypes"
 
@@ -17,41 +16,46 @@ export function SessionExpiredDialog({
     onOpenChange,
 }: SessionExpiredDialogProps) {
     const navigate = useNavigate()
-    const { clearAuth } = useAuthStore()
     const { reset: resetSubscription } = useSubscriptionStore()
 
     const handleLoginAgain = () => {
-        clearAuth()
+        // Auth state is already cleared by apiFetch before this dialog is shown.
+        // Only reset additional stores and redirect.
         resetSubscription()
         onOpenChange(false)
         navigate("/login", { replace: true })
     }
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px]">
+        // Prevent closing via Escape or backdrop click — the user is already
+        // logged out at this point and must re-authenticate to continue.
+        <Dialog
+            open={open}
+            onOpenChange={(next) => {
+                // Only allow programmatic close (e.g. after clicking "Log In Again").
+                // Block the user from dismissing the dialog without redirecting.
+                if (!next) return
+                onOpenChange(next)
+            }}
+        >
+            <DialogContent
+                className="sm:max-w-[400px]"
+                onInteractOutside={(e) => e.preventDefault()}
+                onEscapeKeyDown={(e) => e.preventDefault()}
+            >
                 <DialogHeader>
-                    <div className="flex items-center gap-2">
-                        <AlertCircle className="h-5 w-5 text-amber-600" />
+                    <div className="flex items-center gap-2 mb-1">
+                        <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />
                         <DialogTitle>Session Expired</DialogTitle>
                     </div>
                     <DialogDescription>
-                        Your session has expired. Please log in again to continue.
+                        Your session has expired or was signed out from another device.
+                        Please log in again to continue where you left off.
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="mt-6 flex gap-3 justify-end">
-                    <Button
-                        variant="outline"
-                        onClick={() => onOpenChange(false)}
-                        disabled={!open}
-                    >
-                        Close
-                    </Button>
-                    <Button
-                        onClick={handleLoginAgain}
-                        className="bg-primary"
-                    >
+                <div className="mt-4 flex justify-end">
+                    <Button onClick={handleLoginAgain} className="w-full">
                         Log In Again
                     </Button>
                 </div>

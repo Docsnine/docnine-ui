@@ -13,6 +13,7 @@ import {
   FilesIcon,
   Bell,
   ChevronRight,
+  HomeIcon,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useAuthStore } from "@/store/auth"
@@ -51,8 +52,9 @@ function useBreadcrumbs() {
 // ── Nav config ────────────────────────────────────────────────────────────────
 
 const PRIMARY_NAV = [
+  { name: "Home", href: "/home", icon: HomeIcon },
   { name: "Projects", href: "/projects", icon: FolderCodeIcon },
-  { name: "Documentations", href: "/documentations", icon: FilesIcon },
+  { name: "Doc Sites", href: "/documentations", icon: FilesIcon },
   { name: "Logs", href: "/logs", icon: TerminalIcon },
 ]
 
@@ -122,8 +124,6 @@ function SidebarContent({
         <ApplicationLogo link="/projects" className="!h-7" />
       </div>
 
-      <div className="border-t border-sidebar-border" />
-
       <div className="px-4 pb-3 border-b border-sidebar-border shrink-0">
         {user && (
           <div className="mt-3 flex items-center gap-2 min-w-0">
@@ -138,7 +138,6 @@ function SidebarContent({
         )}
       </div>
 
-      {/* Zone 2 — Primary navigation */}
       <nav className="px-3 pt-4 pb-2 shrink-0">
         <p className="px-2 mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-sidebar-muted/70 select-none">
           Workspace
@@ -157,10 +156,8 @@ function SidebarContent({
         </div>
       </nav>
 
-      {/* Zone 3 — Flexible space */}
       <div className="flex-1" />
 
-      {/* Zone 4 — Utility / footer */}
       <div className="px-3 pt-2 pb-3 border-t border-sidebar-border shrink-0">
         <p className="px-2 mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-sidebar-muted/70 select-none">
           Account
@@ -328,7 +325,7 @@ export function DashboardLayout() {
 
         {/* ── Main workspace ─────────────────────────────────────── */}
 
-        <div className="flex flex-1 flex-col md:ml-[260px] overflow-hidden bg-workspace rounded-3xl m-2">
+        <div className="flex flex-1 flex-col md:ml-[260px] overflow-hidden bg-workspace rounded-3xl m-2 border border-workspace-border">
 
           {/* Top bar */}
           <header className="flex h-12 shrink-0 items-center justify-between border-b border-workspace-border px-4 sm:px-6">

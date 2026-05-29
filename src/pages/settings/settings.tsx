@@ -518,6 +518,7 @@ function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "erro
                 ? { type: "error", message: "Failed to connect Google Drive. Please try again." }
                 : null,
     )
+    const { confirm: confirmDialog, state: confirmState, handleConfirm, handleCancel } = useConfirm()
 
     const loadStatus = useCallback(async () => {
         setIsLoading(true)
@@ -546,7 +547,11 @@ function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "erro
     }
 
     const handleDisconnect = async () => {
-        if (!confirm("Disconnect Google Drive? You will no longer be able to export docs to Google Docs.")) return
+        const ok = await confirmDialog(
+            "Disconnect Google Drive?",
+            "You will no longer be able to export documentation to Google Docs.",
+        )
+        if (!ok) return
         setActionLoading("disconnect")
         setFeedback(null)
         try {
@@ -561,32 +566,31 @@ function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "erro
     }
 
     return (
+        <>
         <Card className="shadow-none">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    {/* Google Docs icon */}
-                    <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0">
+                <CardTitle className="text-[15px] font-semibold flex items-center gap-2">
+                    <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="#4285F4" opacity=".3" />
                         <path d="M14 2v6h6" fill="none" stroke="#4285F4" strokeWidth="1.5" />
                         <path d="M16 13H8M16 17H8M10 9H8" fill="none" stroke="#4285F4" strokeWidth="1.5" strokeLinecap="round" />
                     </svg>
                     Google Docs Export
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-[13px]">
                     Connect your Google account to export documentation directly to Google Docs.
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 {feedback && (
-                    <div
-                        className={`flex items-center gap-2 rounded-lg border px-4 py-3 text-sm ${feedback.type === "success"
+                    <div className={`flex items-start gap-2 rounded-lg border px-4 py-3 text-[13px] ${
+                        feedback.type === "success"
                             ? "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400"
                             : "border-destructive/30 bg-destructive/10 text-destructive"
-                            }`}
-                    >
+                    }`}>
                         {feedback.type === "success"
-                            ? <CheckCircle2 className="h-4 w-4 shrink-0" />
-                            : <AlertTriangle className="h-4 w-4 shrink-0" />
+                            ? <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" />
+                            : <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
                         }
                         {feedback.message}
                     </div>
@@ -594,26 +598,26 @@ function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "erro
 
                 {isLoading ? (
                     <div className="flex items-center gap-3">
-                        <Skeleton className="h-5 w-5 rounded-full" />
+                        <Skeleton className="h-4 w-4 rounded" />
                         <Skeleton className="h-4 w-48" />
                     </div>
                 ) : status?.connected ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         <div className="flex items-center gap-3 rounded-lg border border-green-500/20 bg-green-500/5 px-4 py-3">
-                            <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
+                            <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
                             <div>
-                                <p className="font-medium text-sm">
+                                <p className="text-[13px] font-medium">
                                     Connected as <span className="text-primary">{status.email ?? status.name}</span>
                                 </p>
                                 {status.connectedAt && (
-                                    <p className="text-xs text-muted-foreground mt-0.5">
+                                    <p className="text-[12px] text-muted-foreground mt-0.5">
                                         Since {format(new Date(status.connectedAt), "d MMM yyyy")}
                                     </p>
                                 )}
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm" onClick={loadStatus} className="gap-2">
+                            <Button variant="outline" size="sm" onClick={loadStatus} className="gap-1.5">
                                 <RefreshCw className="h-3.5 w-3.5" />
                                 Refresh
                             </Button>
@@ -622,10 +626,10 @@ function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "erro
                                 size="sm"
                                 onClick={handleDisconnect}
                                 disabled={actionLoading === "disconnect"}
-                                className="gap-2"
+                                className="gap-1.5"
                             >
                                 {actionLoading === "disconnect"
-                                    ? <Loader1 className="h-3.5 w-3.5 " />
+                                    ? <Loader1 className="h-3.5 w-3.5" />
                                     : <Unlink className="h-3.5 w-3.5" />
                                 }
                                 Disconnect
@@ -633,16 +637,16 @@ function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "erro
                         </div>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
-                            <FileText className="h-5 w-5 text-muted-foreground shrink-0" />
-                            <p className="text-sm text-muted-foreground">No Google account connected.</p>
+                            <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+                            <p className="text-[13px] text-muted-foreground">No Google account connected.</p>
                         </div>
-                        <Button onClick={handleConnect} disabled={actionLoading === "connect"} className="gap-2">
+                        <Button size="sm" onClick={handleConnect} disabled={actionLoading === "connect"} className="gap-2">
                             {actionLoading === "connect"
-                                ? <Loader1 className="h-4 w-4 " />
+                                ? <Loader1 className="h-3.5 w-3.5" />
                                 : (
-                                    <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0">
+                                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0">
                                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                                         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                                         <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
@@ -656,6 +660,16 @@ function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "erro
                 )}
             </CardContent>
         </Card>
+
+        <ConfirmDialog
+            open={confirmState.open}
+            title={confirmState.title}
+            description={confirmState.description}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+            variant="destructive"
+        />
+        </>
     )
 }
 
@@ -665,6 +679,7 @@ function NotionCard() {
     const [isLoading, setIsLoading] = useState(true)
     const [actionLoading, setActionLoading] = useState<"connect" | "disconnect" | null>(null)
     const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
+    const { confirm: confirmDialog, state: confirmState, handleConfirm, handleCancel } = useConfirm()
 
     // Form state
     const [apiKey, setApiKey] = useState("")
@@ -689,7 +704,7 @@ function NotionCard() {
     const handleConnect = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!apiKey.trim() || !parentPageId.trim()) {
-            setFeedback({ type: "error", message: "API key and page ID are required." })
+            setFeedback({ type: "error", message: "Integration token and page ID are required." })
             return
         }
         setActionLoading("connect")
@@ -713,7 +728,11 @@ function NotionCard() {
     }
 
     const handleDisconnect = async () => {
-        if (!confirm("Disconnect Notion? You will no longer be able to push docs to your Notion workspace.")) return
+        const ok = await confirmDialog(
+            "Disconnect Notion?",
+            "You will no longer be able to push documentation to your Notion workspace.",
+        )
+        if (!ok) return
         setActionLoading("disconnect")
         setFeedback(null)
         try {
@@ -728,11 +747,11 @@ function NotionCard() {
     }
 
     return (
+        <>
         <Card className="shadow-none">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    {/* Notion-style icon */}
-                    <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" fill="none">
+                <CardTitle className="text-[15px] font-semibold flex items-center gap-2">
+                    <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none">
                         <rect width="24" height="24" rx="4" fill="#191919" />
                         <path d="M6 6.5C6 6.22 6.22 6 6.5 6H14l3.5 3.5V17.5c0 .28-.22.5-.5.5h-10c-.28 0-.5-.22-.5-.5V6.5z" fill="white" fillOpacity=".15" stroke="white" strokeWidth="1.2" />
                         <path d="M14 6v3.5H17.5" stroke="white" strokeWidth="1.2" strokeLinejoin="round" />
@@ -740,54 +759,53 @@ function NotionCard() {
                     </svg>
                     Notion Export
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-[13px]">
                     Connect your Notion workspace to push documentation directly to a Notion page.
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 {feedback && (
-                    <div
-                        className={`flex items-center gap-2 rounded-lg border px-4 py-3 text-sm ${feedback.type === "success"
+                    <div className={`flex items-start gap-2 rounded-lg border px-4 py-3 text-[13px] ${
+                        feedback.type === "success"
                             ? "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400"
                             : "border-destructive/30 bg-destructive/10 text-destructive"
-                            }`}
-                    >
+                    }`}>
                         {feedback.type === "success"
-                            ? <CheckCircle2 className="h-4 w-4 shrink-0" />
-                            : <AlertTriangle className="h-4 w-4 shrink-0" />
+                            ? <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" />
+                            : <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
                         }
                         {feedback.message}
                     </div>
                 )}
 
                 {isLoading ? (
-                    <div className="space-y-2">
-                        <Skeleton className="h-5 w-5 rounded-full" />
+                    <div className="flex items-center gap-3">
+                        <Skeleton className="h-4 w-4 rounded" />
                         <Skeleton className="h-4 w-48" />
                     </div>
                 ) : status?.connected ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         <div className="flex items-center gap-3 rounded-lg border border-green-500/20 bg-green-500/5 px-4 py-3">
-                            <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
+                            <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
                             <div className="min-w-0 flex-1">
-                                <p className="font-medium text-sm">
+                                <p className="text-[13px] font-medium">
                                     {status.workspaceName
                                         ? <span>Connected to <span className="text-primary">{status.workspaceName}</span></span>
                                         : "Notion connected"
                                     }
                                 </p>
-                                <p className="text-xs text-muted-foreground mt-0.5 font-mono truncate">
-                                    Page ID: {status.parentPageId}
+                                <p className="text-[12px] text-muted-foreground mt-0.5 font-mono truncate">
+                                    Page: {status.parentPageId}
                                 </p>
                                 {status.connectedAt && (
-                                    <p className="text-xs text-muted-foreground mt-0.5">
+                                    <p className="text-[12px] text-muted-foreground mt-0.5">
                                         Since {format(new Date(status.connectedAt), "d MMM yyyy")}
                                     </p>
                                 )}
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm" onClick={loadStatus} className="gap-2">
+                            <Button variant="outline" size="sm" onClick={loadStatus} className="gap-1.5">
                                 <RefreshCw className="h-3.5 w-3.5" />
                                 Refresh
                             </Button>
@@ -796,10 +814,10 @@ function NotionCard() {
                                 size="sm"
                                 onClick={handleDisconnect}
                                 disabled={actionLoading === "disconnect"}
-                                className="gap-2"
+                                className="gap-1.5"
                             >
                                 {actionLoading === "disconnect"
-                                    ? <Loader1 className="h-3.5 w-3.5 " />
+                                    ? <Loader1 className="h-3.5 w-3.5" />
                                     : <Unlink className="h-3.5 w-3.5" />
                                 }
                                 Disconnect
@@ -807,9 +825,9 @@ function NotionCard() {
                         </div>
                     </div>
                 ) : (
-                    <form onSubmit={handleConnect} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="notion-api-key">Integration Token</Label>
+                    <form onSubmit={handleConnect} className="space-y-3">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="notion-api-key" className="text-[13px]">Integration Token</Label>
                             <div className="relative">
                                 <Input
                                     id="notion-api-key"
@@ -817,7 +835,7 @@ function NotionCard() {
                                     placeholder="secret_xxxxxxxxxxxxxxxxxx"
                                     value={apiKey}
                                     onChange={(e) => setApiKey(e.target.value)}
-                                    className="pr-10 font-mono text-sm"
+                                    className="pr-10 font-mono text-[13px]"
                                     required
                                     autoComplete="off"
                                 />
@@ -827,30 +845,33 @@ function NotionCard() {
                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                     tabIndex={-1}
                                 >
-                                    {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    {showKey ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                                 </button>
                             </div>
+                            <p className="text-[12px] text-muted-foreground">
+                                From Notion → Settings → Integrations → Create integration.
+                            </p>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="notion-page-id">Parent Page ID</Label>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="notion-page-id" className="text-[13px]">Parent Page ID</Label>
                             <Input
                                 id="notion-page-id"
                                 type="text"
                                 placeholder="xxxxxxxxxxxxxxxxxxxxxxxxx"
                                 value={parentPageId}
                                 onChange={(e) => setParentPageId(e.target.value)}
-                                className="font-mono text-sm"
+                                className="font-mono text-[13px]"
                                 required
                             />
-                            <p className="text-xs text-muted-foreground">
-                                The 32-character ID from your Notion page URL.
+                            <p className="text-[12px] text-muted-foreground">
+                                The 32-character ID from your Notion page URL (after the last <code className="bg-muted px-1 rounded text-[11px]">-</code>).
                             </p>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="notion-workspace-name">
-                                Workspace / Page name <span className="text-muted-foreground font-normal">(optional)</span>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="notion-workspace-name" className="text-[13px]">
+                                Workspace name <span className="text-muted-foreground font-normal">(optional)</span>
                             </Label>
                             <Input
                                 id="notion-workspace-name"
@@ -858,14 +879,14 @@ function NotionCard() {
                                 placeholder="My Docs"
                                 value={workspaceName}
                                 onChange={(e) => setWorkspaceName(e.target.value)}
-                                className="text-sm"
+                                className="text-[13px]"
                             />
                         </div>
 
-                        <Button type="submit" disabled={actionLoading === "connect"} className="gap-2">
+                        <Button type="submit" size="sm" disabled={actionLoading === "connect"} className="gap-1.5">
                             {actionLoading === "connect"
-                                ? <Loader1 className="h-4 w-4 " />
-                                : <KeyRound className="h-4 w-4" />
+                                ? <Loader1 className="h-3.5 w-3.5" />
+                                : <KeyRound className="h-3.5 w-3.5" />
                             }
                             Connect Notion
                         </Button>
@@ -873,6 +894,16 @@ function NotionCard() {
                 )}
             </CardContent>
         </Card>
+
+        <ConfirmDialog
+            open={confirmState.open}
+            title={confirmState.title}
+            description={confirmState.description}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+            variant="destructive"
+        />
+        </>
     )
 }
 

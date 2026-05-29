@@ -279,9 +279,9 @@ export function SlackIntegrationSettings({ projectId }) {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center gap-2 rounded-lg border border-border bg-muted/30 p-6 text-sm text-muted-foreground">
-                <Loader className="h-4 w-4 animate-spin" />
-                Loading Slack configuration...
+            <div className="flex items-center justify-center gap-2 rounded-lg border border-border bg-muted/30 p-5 text-[13px] text-muted-foreground">
+                <Loader className="h-3.5 w-3.5 animate-spin" />
+                Loading Slack configuration…
             </div>
         );
     }
@@ -293,29 +293,29 @@ export function SlackIntegrationSettings({ projectId }) {
         config?.healthStatus === "healthy" ? "success" : config?.healthStatus ? "warning" : "secondary";
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                        <Slack className="h-5 w-5 text-primary" />
+                <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+                        <Slack className="h-4 w-4 text-primary" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-semibold">Slack Integration</h3>
+                        <h3 className="text-[14px] font-semibold tracking-tight">Slack</h3>
                     </div>
                 </div>
                 {isConfigured && <Badge variant="success">Connected</Badge>}
             </div>
 
             {error && (
-                <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                    <AlertCircle className="h-4 w-4 shrink-0" />
+                <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-[13px] text-destructive">
+                    <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                     <span>{error}</span>
                 </div>
             )}
 
             {success && (
-                <div className="flex items-start gap-2 rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
-                    <CheckCircle className="h-4 w-4 shrink-0" />
+                <div className="flex items-start gap-2 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-[13px] text-green-700 dark:text-green-400">
+                    <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
                     <span>{success}</span>
                 </div>
             )}
@@ -382,9 +382,9 @@ export function SlackIntegrationSettings({ projectId }) {
                         /* ── Credentials form (initial or edit mode) ── */
                         <div className="space-y-4">
                             <div className="text-center mb-2">
-                                <Slack className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                                <h4 className="text-sm font-semibold">Configure Custom Slack App</h4>
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <Slack className="h-8 w-8 text-muted-foreground mx-auto mb-2 opacity-60" />
+                                <h4 className="text-[13px] font-semibold">Configure Custom Slack App</h4>
+                                <p className="text-[12px] text-muted-foreground mt-1">
                                     Enter your Slack app credentials from{" "}
                                     <a
                                         href="https://api.slack.com/apps"
@@ -467,10 +467,10 @@ export function SlackIntegrationSettings({ projectId }) {
             ) : (
                 /* ── Connected state ── */
                 <div className="space-y-6">
-                    <div className="rounded-xl border border-border bg-muted/30 p-4">
+                        <div className="rounded-xl border border-border bg-muted/30 p-4">
                         <div className="flex flex-wrap items-start justify-between gap-3">
                             <div className="flex items-start gap-3">
-                                <CheckCircle className="h-5 w-5 text-primary shrink-0" />
+                                <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                                 <div>
                                     <p className="text-sm font-medium">
                                         Connected to {config?.workspace ?? "your workspace"}
@@ -489,10 +489,10 @@ export function SlackIntegrationSettings({ projectId }) {
                         </div>
                     </div>
 
-                    <div className="rounded-xl border border-border bg-card p-5">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Settings className="h-4 w-4 text-muted-foreground" />
-                            <h4 className="text-sm font-semibold tracking-tight">Alert Channel</h4>
+                    <div className="rounded-xl border border-border bg-card p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Settings className="h-3.5 w-3.5 text-muted-foreground" />
+                            <h4 className="text-[13px] font-semibold tracking-tight">Alert Channel</h4>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="slack-alert-channel">Send security alerts to</Label>
@@ -510,8 +510,8 @@ export function SlackIntegrationSettings({ projectId }) {
                         </div>
                     </div>
 
-                    <div className="rounded-xl border border-border bg-card p-5">
-                        <h4 className="text-sm font-semibold tracking-tight mb-4">Alert Preferences</h4>
+                    <div className="rounded-xl border border-border bg-card p-4">
+                        <h4 className="text-[13px] font-semibold tracking-tight mb-3">Alert Preferences</h4>
                         <div className="space-y-3">
                             {ALERT_PREFERENCES.map((pref) => (
                                 <label
@@ -530,8 +530,8 @@ export function SlackIntegrationSettings({ projectId }) {
                                         className="mt-1"
                                     />
                                     <div>
-                                        <p className="text-sm font-medium">{pref.label}</p>
-                                        <p className="text-xs text-muted-foreground">{pref.description}</p>
+                                        <p className="text-[13px] font-medium">{pref.label}</p>
+                                        <p className="text-[12px] text-muted-foreground">{pref.description}</p>
                                     </div>
                                 </label>
                             ))}
@@ -539,7 +539,7 @@ export function SlackIntegrationSettings({ projectId }) {
                     </div>
 
                     {config?.lastAlert && (
-                        <div className="rounded-lg border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+                        <div className="rounded-lg border border-border bg-muted/30 px-4 py-3 text-[12px] text-muted-foreground">
                             Last alert sent:{" "}
                             <span className="font-medium text-foreground">
                                 {new Date(config.lastAlert).toLocaleString()}
@@ -547,9 +547,9 @@ export function SlackIntegrationSettings({ projectId }) {
                         </div>
                     )}
 
-                    <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-4 text-sm">
-                        <h4 className="font-semibold mb-3">What's Next?</h4>
-                        <ul className="space-y-2 text-muted-foreground text-xs">
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-4">
+                        <h4 className="text-[13px] font-semibold mb-2">What's Next?</h4>
+                        <ul className="space-y-2 text-muted-foreground text-[12px]">
                             <li className="flex gap-2">
                                 <span className="text-primary">•</span>
                                 <span>Use <code className="bg-primary/10 px-1 rounded text-foreground">/docnine ask</code> slash command in Slack to query your documentation</span>
@@ -566,7 +566,7 @@ export function SlackIntegrationSettings({ projectId }) {
                     </div>
 
                     <div className="flex items-center justify-between border-t border-border pt-4">
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-[12px] text-muted-foreground">
                             Disconnecting will stop Slack alerts and slash commands for this project.
                         </p>
                         <Button

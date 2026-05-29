@@ -42,6 +42,7 @@ const BitbucketOAuthCompletePage = lazy(() => import("@/components/projects/bitb
 const AzureOAuthCompletePage = lazy(() => import("@/components/projects/azure-oauth-complete").then(m => ({ default: m.AzureOAuthCompletePage })))
 
 const DashboardLayout = lazy(() => import("@/layout/dashboard").then(m => ({ default: m.DashboardLayout })))
+const DashboardHomePage = lazy(() => import("@/pages/dashboard/home").then(m => ({ default: m.HomePage })))
 const DashboardPage = lazy(() => import("@/pages/dashboard/dashboard").then(m => ({ default: m.DashboardPage })))
 const ProjectOverviewPage = lazy(() => import("@/pages/projects/overview").then(m => ({ default: m.ProjectOverviewPage })))
 const LiveAnalysisPage = lazy(() => import("@/pages/projects/live-analysis").then(m => ({ default: m.LiveAnalysisPage })))
@@ -87,20 +88,20 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Landing page only — redirects authenticated users to /projects.
+ * Landing page only — redirects authenticated users to /home.
  * Login and signup are intentionally NOT wrapped here so users can
  * switch accounts or sign in to a second account while logged in.
  */
 function LandingOnlyRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
-  return isAuthenticated ? <Navigate to="/projects" replace /> : <>{children}</>
+  return isAuthenticated ? <Navigate to="/home" replace /> : <>{children}</>
 }
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user)
   return user?.role === "super-admin"
     ? <>{children}</>
-    : <Navigate to="/projects" replace />
+    : <Navigate to="/home" replace />
 }
 
 // ─── SEO ──────────────────────────────────────────────────────────
@@ -235,7 +236,8 @@ function AppRoutes() {
 
           {/* ── Protected workspace ───────────────────────────────── */}
           <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
-            <Route path="dashboard" element={<Navigate to="/projects" replace />} />
+            <Route path="home" element={<DashboardHomePage />} />
+            <Route path="dashboard" element={<Navigate to="/home" replace />} />
             <Route path="projects" element={<DashboardPage />} />
             <Route path="projects/:id" element={<ProjectOverviewPage />} />
             <Route path="projects/:id/live" element={<LiveAnalysisPage />} />

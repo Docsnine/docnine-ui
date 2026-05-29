@@ -204,6 +204,8 @@ export interface ApiProjectStats {
   models: number;
   relationships: number;
   components: number;
+  lastSyncedAt?: string | null;
+  lastSyncDuration?: number | null; // milliseconds
 }
 
 export interface ApiProjectSecurity {
@@ -292,6 +294,10 @@ export interface Project {
   schemaDocs?: string;
   internalDocs?: string;
   securityReport?: string;
+  // Incremental sync state
+  lastSyncedCommit?: string | null;
+  lastSyncedAt?: string | null;
+  provider?: string;
 }
 
 export interface ProjectState {

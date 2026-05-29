@@ -10,7 +10,7 @@
  * This page:
  *  1. Reads the query params.
  *  2. On success: calls authApi.me() to fetch the full user object,
- *     stores tokens in the Zustand store, then redirects to /projects.
+ *     stores tokens in the Zustand store, then redirects to /home.
  *  3. On error: shows a user-friendly message with a link back to /login.
  */
 import { useEffect, useState } from "react"
@@ -58,7 +58,7 @@ export function AuthCallbackPage() {
     // Fetch the full user profile from /auth/me.
     authApi.me().then(({ user }) => {
       setTokens(user, accessToken)
-      navigate("/projects", { replace: true })
+      navigate("/home", { replace: true })
     }).catch(() => {
       setErrorMessage("Failed to load your account. Please try signing in again.")
     })

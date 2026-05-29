@@ -15,7 +15,7 @@
 
 import { useEffect, useRef } from "react";
 import { useAuthStore } from "@/store/auth";
-import { authApi } from "@/lib/api";
+import { authApi, setAccessToken } from "@/lib/api";
 
 const REFRESH_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -28,14 +28,18 @@ export function useTokenRefresh() {
     try {
       const data = await authApi.refresh();
       if (data?.accessToken) {
-        // Token refreshed silently
+        // Persist the new token and update the store so the user's profile
+        // stays current (server may return an updated user object too).
+        setAccessToken(data.accessToken);
+        if (data.user) {
+          useAuthStore.getState().setTokens(data.user, data.accessToken);
+        }
         console.debug("[useTokenRefresh] Token refreshed successfully");
       }
-    } catch (err) {
-      // Refresh failed — apiFetch will handle logout on next API call
-      console.debug(
-        "[useTokenRefresh] Token refresh failed (will retry on next API call)",
-      );
+    } catch {
+      // Refresh token is expired or invalid. The next API call will detect the
+      // 401, fail the silent refresh, and trigger the SessionExpiredDialog.
+      console.debug("[useTokenRefresh] Token refresh failed — session will expire on next request");
     }
   };
 

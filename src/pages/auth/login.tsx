@@ -41,7 +41,7 @@ const GoogleIcon = () => (
 export function LoginPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const redirectTo = searchParams.get("redirect") || "/projects"
+  const redirectTo = searchParams.get("redirect") || "/home"
   const setTokens = useAuthStore((state) => state.setTokens)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)

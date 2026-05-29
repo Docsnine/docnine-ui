@@ -382,6 +382,17 @@ export function ProjectOverviewPage() {
                                 <Clock className="h-3.5 w-3.5 shrink-0" />
                                 Updated {formatDistanceToNow(new Date(project.updatedAt), { addSuffix: true })}
                             </span>
+                            {project.lastSyncedCommit && (
+                                <span className="flex items-center gap-1.5" title={`Last synced commit: ${project.lastSyncedCommit}`}>
+                                    <GitBranch className="h-3.5 w-3.5 shrink-0" />
+                                    <code className="font-mono text-[12px]">{project.lastSyncedCommit.slice(0, 8)}</code>
+                                    {project.lastSyncedAt && (
+                                        <span className="text-muted-foreground/70">
+                                            · {formatDistanceToNow(new Date(project.lastSyncedAt), { addSuffix: true })}
+                                        </span>
+                                    )}
+                                </span>
+                            )}
                         </div>
                     </div>
 

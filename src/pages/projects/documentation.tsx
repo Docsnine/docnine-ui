@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useParams, Link } from "react-router-dom"
 import { useProjectStore, mapApiStatus } from "@/store/projects"
 import { prepareExportData, getExportSummary, getFormattedTabContent } from "@/lib/export-utils"
@@ -560,6 +560,29 @@ export function DocumentationViewerPage() {
     finally { setAcceptingAI(false); }
   }
 
+  /**
+   * Discard the user's manual edit and revert the section back to the latest
+   * AI-generated content. Exposed to the VersionHistoryPanel via `onRevertToAI`.
+   */
+  const handleRevertToAI = useCallback(async () => {
+    const isCustom = activeTab.startsWith("custom_");
+    const sectionName = isCustom ? activeTab : (TAB_TO_SECTION[activeTab as NativeTab] ?? null);
+    if (!id || !sectionName) return;
+    try {
+      const result = await projectsApi.revertEdit(id, sectionName);
+      setProject(result.project);
+      setEffectiveOutput(result.effectiveOutput);
+      setEditedSections((result.editedSections as ApiProjectEditedSection[]) ?? []);
+      const tabDef = allTabs.find((t: TabDef) => t.key === activeTab);
+      if (tabDef?.field) {
+        setEditedContent((prev) => ({
+          ...prev,
+          [activeTab]: (result.effectiveOutput as any)?.[tabDef.field!] ?? "",
+        }));
+      }
+    } catch { /* surface via VersionHistoryPanel's own error state */ }
+  }, [activeTab, id, allTabs]);
+
   // ── Exports ────────────────────────────────────────────────────────────────
 
   const triggerDownload = (blob: Blob, filename: string) => {
@@ -595,13 +618,11 @@ export function DocumentationViewerPage() {
         headerFooter: true,
       })
 
-      // Save as HTML file (users can print to PDF from browser)
+      // Download as print-ready HTML — users open the file and use browser Print → Save as PDF
       const blob = new Blob([pdfHtml], { type: "text/html;charset=utf-8" })
       triggerDownload(blob, `${project?.meta?.name ?? id}-documentation.html`)
 
-      // Show message with count of all sections being exported
-      const message = `✓ PDF exported`
-      setExportMessage(message)
+      setExportMessage("✓ Downloaded")
     } catch (err: any) {
       setExportMessage("PDF export failed: " + (err?.message ?? "unknown error"))
     } finally {
@@ -734,17 +755,16 @@ export function DocumentationViewerPage() {
       setExportMessage(message)
     } catch (err: any) {
       if (err?.code === "GOOGLE_NOT_CONNECTED") {
-        // Offer to connect — fetch the OAuth URL and redirect
-        setExportMessage("Connect Google Drive first. Redirecting to authorise...")
-
+        // Open Google OAuth in a new tab so the user stays on this page
         try {
           const { url } = await projectsApi.getGoogleDocsConnectUrl(id)
-          setTimeout(() => { window.location.href = url }, 1500)
+          window.open(url, "_blank", "noopener,noreferrer")
+          setExportMessage("✗ Google Drive not connected — authorise in the new tab, then export again")
         } catch {
-          setExportMessage("\u274C Connect Google Drive in Settings \u2192 Export Connections.")
+          setExportMessage("✗ Connect Google Drive in Settings → Export Connections, then try again")
         }
       } else {
-        setExportMessage("Google Docs export failed: " + (err?.message ?? "unknown error"))
+        setExportMessage("✗ Google Docs export failed: " + (err?.message ?? "unknown error"))
       }
     } finally {
       setActionLoading(null)
@@ -1055,20 +1075,24 @@ export function DocumentationViewerPage() {
                 <div className="mx-3 my-1 border-t border-border" />
                 <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Export</div>
 
-                <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => { setMoreDropdownOpen(false); requirePlan("PDF Export", "starter", "Export your documentation as a PDF file.", handleExportPdf) }}>
-                  <FileDown className="h-4 w-4 text-muted-foreground shrink-0" /> PDF
+                <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => { setMoreDropdownOpen(false); requirePlan("PDF Export", "starter", "Export your documentation as a print-ready HTML file (open in browser → Print → Save as PDF).", handleExportPdf) }}>
+                  <FileDown className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="flex-1 text-left">Export as PDF</span>
                   {!meetsMinPlan(subscription, "starter") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
                 </button>
                 <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => { setMoreDropdownOpen(false); requirePlan("GitHub Actions Export", "team", "Export your documentation as a GitHub Actions YAML workflow.", handleExportYaml) }}>
-                  <GitBranch className="h-4 w-4 text-muted-foreground shrink-0" /> GitHub Actions (YAML)
+                  <GitBranch className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="flex-1 text-left">GitHub Actions (YAML)</span>
                   {!meetsMinPlan(subscription, "team") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
                 </button>
                 <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => { setMoreDropdownOpen(false); requirePlan("Notion Export", "team", "Push your documentation directly to Notion.", handleExportNotion) }}>
-                  <BookMarked className="h-4 w-4 text-muted-foreground shrink-0" /> Push to Notion
+                  <BookMarked className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="flex-1 text-left">Push to Notion</span>
                   {!meetsMinPlan(subscription, "team") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
                 </button>
                 <button className="flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors" onClick={() => { setMoreDropdownOpen(false); requirePlan("Google Docs Export", "pro", "Export your documentation to Google Docs.", handleExportGoogleDocs) }}>
-                  <File className="h-4 w-4 text-muted-foreground shrink-0" /> Google Docs
+                  <File className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="flex-1 text-left">Google Docs</span>
                   {!meetsMinPlan(subscription, "pro") && <Lock className="h-3 w-3 ml-auto opacity-40" />}
                 </button>
               </div>
@@ -1132,9 +1156,9 @@ export function DocumentationViewerPage() {
                           title="AI has newer content"
                         />
                       )}
-                      {!isCustomTab && vCount > 1 && (
+                      {!isCustomTab && vCount >= 1 && (
                         <span className="text-[10px] font-mono px-1 py-0.5 rounded bg-muted-foreground/15 text-muted-foreground shrink-0">
-                          {vCount > 20 ? "20+" : vCount}
+                          {vCount}
                         </span>
                       )}
                     </button>
@@ -1309,8 +1333,10 @@ export function DocumentationViewerPage() {
                 projectId={project._id}
                 section={activeSectionName}
                 sectionLabel={activeTabDef?.label ?? activeTab}
+                isUserEdited={!!editedSections.find((e) => e.section === activeSectionName)}
                 onClose={() => setIsHistoryOpen(false)}
                 onRestored={handleVersionRestored}
+                onRevertToAI={handleRevertToAI}
               />
             </div>
           )}

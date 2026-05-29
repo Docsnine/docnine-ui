@@ -52,6 +52,9 @@ export function fromApiProject(
     schemaDocs: p.output?.schemaDocs,
     internalDocs: p.output?.internalDocs,
     securityReport: p.output?.securityReport,
+    lastSyncedCommit: p.lastDocumentedCommit ?? null,
+    lastSyncedAt: p.stats?.lastSyncedAt ?? null,
+    provider: (p as any).provider ?? "github",
   };
 }
 

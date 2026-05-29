@@ -102,16 +102,16 @@ export function ProjectGeneralSettings({ project, onProjectUpdate }) {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             {error && (
-                <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-[13px] text-destructive">
                     <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                     <span>{error}</span>
                 </div>
             )}
 
             {success && (
-                <div className="flex items-start gap-2 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-700 dark:text-green-400">
+                <div className="flex items-start gap-2 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-[13px] text-green-700 dark:text-green-400">
                     <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
                     <span>{success}</span>
                 </div>
@@ -119,14 +119,14 @@ export function ProjectGeneralSettings({ project, onProjectUpdate }) {
 
             <Card className="shadow-none">
                 <CardHeader>
-                    <CardTitle>Project Information</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-[15px] font-semibold">Project Information</CardTitle>
+                    <CardDescription className="text-[13px]">
                         Update your project name and description.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="project-name">Project Name</Label>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="project-name" className="text-[13px]">Project Name</Label>
                         <Input
                             id="project-name"
                             value={projectName}
@@ -136,29 +136,30 @@ export function ProjectGeneralSettings({ project, onProjectUpdate }) {
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="project-description">Description</Label>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="project-description" className="text-[13px]">Description</Label>
                         <Textarea
                             id="project-description"
                             value={projectDescription}
                             onChange={(e) => handleDescriptionChange(e.target.value)}
                             placeholder="Add a description of your project (optional)"
                             disabled={loading}
-                            rows={4}
+                            rows={3}
                         />
                     </div>
 
-                    <div className="flex items-center gap-3 pt-4">
+                    <div className="flex items-center gap-3 pt-2">
                         <Button
+                            size="sm"
                             onClick={handleSaveChanges}
                             disabled={loading || !isDirty}
-                            className="gap-2"
+                            className="gap-1.5"
                         >
-                            {loading && <Loader className="h-4 w-4 animate-spin" />}
+                            {loading && <Loader className="h-3.5 w-3.5 animate-spin" />}
                             Save Changes
                         </Button>
                         {isDirty && (
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-[12px] text-muted-foreground">
                                 You have unsaved changes
                             </span>
                         )}
@@ -168,27 +169,27 @@ export function ProjectGeneralSettings({ project, onProjectUpdate }) {
 
             <Card className="shadow-none">
                 <CardHeader>
-                    <CardTitle>Project Details</CardTitle>
+                    <CardTitle className="text-[15px] font-semibold">Project Details</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                    <div className="grid grid-cols-2 gap-4">
+                <CardContent>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                         <div>
-                            <Label className="text-xs text-muted-foreground">Project ID</Label>
-                            <p className="text-sm font-mono mt-1">{project?.id}</p>
+                            <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Project ID</p>
+                            <p className="text-[12px] font-mono text-foreground break-all">{project?.id}</p>
                         </div>
                         <div>
-                            <Label className="text-xs text-muted-foreground">Status</Label>
-                            <p className="text-sm capitalize mt-1">{project?.status ?? "Unknown"}</p>
+                            <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Status</p>
+                            <p className="text-[13px] capitalize">{project?.status ?? "Unknown"}</p>
                         </div>
                         <div>
-                            <Label className="text-xs text-muted-foreground">Created</Label>
-                            <p className="text-sm mt-1">
+                            <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Created</p>
+                            <p className="text-[13px]">
                                 {project?.createdAt ? new Date(project.createdAt).toLocaleDateString() : "Unknown"}
                             </p>
                         </div>
                         <div>
-                            <Label className="text-xs text-muted-foreground">Your Role</Label>
-                            <p className="text-sm capitalize mt-1">{project?.shareRole ?? "Owner"}</p>
+                            <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Your Role</p>
+                            <p className="text-[13px] capitalize">{project?.shareRole ?? "Owner"}</p>
                         </div>
                     </div>
                 </CardContent>

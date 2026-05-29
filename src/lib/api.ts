@@ -716,6 +716,17 @@ export const projectsApi = {
       },
     ),
 
+  /**
+   * Trigger an incremental sync (or full re-run when force=true).
+   * Returns the updated project and an SSE stream URL for live progress.
+   * Mirrors the retry flow — reuse the same SSE component.
+   */
+  sync: (id: string, force = false) =>
+    apiFetch<{ project: ApiProject; streamUrl: string }>(
+      `/projects/${id}/sync${force ? "?force=true" : ""}`,
+      { method: "POST" },
+    ),
+
   /** Download an export as a Blob. Caller triggers the browser download. */
   exportBlob: async (id: string, type: "pdf" | "yaml", data?: any) => {
     const token = _accessToken;
@@ -797,6 +808,17 @@ export const projectsApi = {
       editedSections: ApiProjectEditedSection[];
     }>(`/projects/${id}/docs/${section}/accept-ai`, { method: "POST" }),
 
+  /**
+   * Revert a section back to the pure AI-generated output, discarding the
+   * user's manual edit. Equivalent to "Discard my changes".
+   */
+  revertEdit: (id: string, section: string) =>
+    apiFetch<{
+      project: ApiProject;
+      effectiveOutput: ApiProjectOutput;
+      editedSections: ApiProjectEditedSection[];
+    }>(`/projects/${id}/docs/${section}/edit`, { method: "DELETE" }),
+
   /** Get MCP server configuration for this project. */
   getMCPInfo: (id: string) =>
     apiFetch<{
@@ -809,19 +831,29 @@ export const projectsApi = {
 
 // ── Version history ───────────────────────────────────────────────────────
 export const versionsApi = {
-  list: (projectId: string, section: string) =>
+  /**
+   * List snapshots for a section, newest first.
+   * Supports pagination — pass `page` (1-based) and `limit` (default 20).
+   */
+  list: (projectId: string, section: string, page = 1, limit = 20) =>
     apiFetch<{
       versions: DocVersion[];
       total: number;
       page: number;
       limit: number;
-    }>(`/projects/${projectId}/docs/${section}/versions`),
+      totalPages: number;
+    }>(`/projects/${projectId}/docs/${section}/versions?page=${page}&limit=${limit}`),
 
+  /** Fetch a single snapshot including its full `content` field. */
   get: (projectId: string, section: string, versionId: string) =>
     apiFetch<{ version: DocVersion & { content: string } }>(
       `/projects/${projectId}/docs/${section}/versions/${versionId}`,
     ),
 
+  /**
+   * Restore a past snapshot as the new effective content.
+   * Snapshots the current state first, then applies the historical content.
+   */
   restore: (projectId: string, section: string, versionId: string) =>
     apiFetch<{
       project: ApiProject;

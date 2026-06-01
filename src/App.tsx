@@ -171,6 +171,7 @@ function AppRoutes() {
 
   useEffect(() => {
     const oauthPaths = [
+      "/auth/callback",
       "/auth/github", "/auth/gitlab", "/auth/bitbucket", "/auth/azure",
       "/github/oauth/complete", "/gitlab/oauth/complete", "/bitbucket/oauth/complete", "/azure/oauth/complete"
     ]

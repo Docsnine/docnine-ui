@@ -199,10 +199,13 @@ export async function apiFetch<T = unknown>(
       message: "An unexpected error occurred.",
     };
 
-    // Handle session expiration (401 error after refresh attempt failed)
-    // Only show the modal if the user was actually authenticated before
-    // (a 401 on first load for new users is expected, not an error)
-    if (res.status === 401) {
+    // Handle session expiration (401 error after refresh attempt failed).
+    // Only show the modal when:
+    //  - the user was authenticated before (not on first load for new users), AND
+    //  - the request required auth (skipAuth=true means it's an anonymous or
+    //    auth-management call like /auth/refresh itself — those must not trigger
+    //    the modal or we'd get a false "session expired" right after login)
+    if (res.status === 401 && !skipAuth) {
       const authState = useAuthStore.getState();
       const sessionState = useSessionStore.getState();
       

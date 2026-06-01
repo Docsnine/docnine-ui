@@ -61,7 +61,7 @@ export function Footer() {
                 </div>
 
                 <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-                    <p>© {new Date().getFullYear()} Docnine. All Rights Reserved.</p>
+                    <p>© {new Date().getFullYear()} Docnine, Seablings Technology. All rights reserved.</p>
                     <div className="flex items-center gap-6">
                         <Link to="/terms" className="hover:text-foreground transition-colors">Terms of Use</Link>
                         <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>

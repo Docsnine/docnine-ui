@@ -39,42 +39,41 @@ export function HeroSection() {
   }, [])
 
   return (
-    <section ref={heroRef} className="relative z-10 overflow-hidden pt-12 pb-8 px-4">
+    <section
+      ref={heroRef}
+      className="relative z-10 overflow-hidden px-4 flex flex-col"
+      style={{ minHeight: 'calc(100vh - 60px)' }}
+    >
       <div aria-hidden="true" className="absolute inset-0 z-0">
         <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url("${HERO_IMAGE}")`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url("${HERO_IMAGE}")` }}
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_45%,transparent_0%,rgba(0,0,0,0.45)_100%)]" />
       </div>
 
       <NoiseOverlay opacity={1} blendMode="overlay" />
       <NoiseOverlay opacity={1} blendMode="soft-light" className="[background-size:150px_150px]" />
 
-      <div className="container mx-auto max-w-6xl relative z-10 min-h-[500px] sm:min-h-[540px] md:min-h-[580px]">
-        <div className="flex flex-col items-center justify-center text-center pt-20 pb-12">
+      <div className="container mx-auto max-w-6xl relative z-10 flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col items-center justify-center text-center py-16">
 
-          {/* Headline — white over the dark image */}
-          <h1 className="hero-headline text-[38px] leading-[1.05] sm:text-[54px] md:text-[70px] font-extrabold tracking-[-0.03em] mb-6 max-w-4xl text-background">
+          <h1 className="hero-headline text-[38px] leading-[1.05] sm:text-[54px] md:text-[70px] font-extrabold tracking-[-0.03em] mb-6 max-w-4xl text-white [text-shadow:0_2px_24px_rgba(0,0,0,0.45)]">
             Generate Your{" "}
             <br className="hidden sm:block" />
             Smart{" "}
-            <span className="bg-gradient-to-r from-primary/60 to-primary bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-teal-200 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
               Documentation
             </span>
             <br className="hidden sm:block" />
-            <span className="bg-gradient-to-r from-primary/60 to-primary bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-teal-200 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
               Partners{" "}
             </span>
             From Today
           </h1>
 
-          {/* Subheadline */}
-          <p className="hero-sub max-w-2xl text-base md:text-lg text-white/65 leading-relaxed mb-10">
+          <p className="hero-sub max-w-2xl text-base md:text-lg text-white/85 leading-relaxed mb-10 [text-shadow:0_1px_12px_rgba(0,0,0,0.35)]">
             Empower your dev team with AI-driven tools to scan, generate, and maintain
             top-tier documentation effortlessly.
           </p>

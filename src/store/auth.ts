@@ -11,6 +11,12 @@ import { create } from "zustand";
 import { authApi, setAccessToken } from "@/lib/api";
 import { AuthState } from "@/types/StateTypes";
 
+// Deduplicate concurrent initAuth calls (e.g. React StrictMode double-mount).
+// Without this, two simultaneous POST /auth/refresh requests with the same
+// cookie both pass the hash check, each rotate to a different new token,
+// and the second DB write makes the first cookie stale — breaking the session.
+let _initAuthPromise: Promise<void> | null = null;
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
@@ -30,22 +36,30 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   /**
    * On app startup:
-   *  1. Try GET /auth/me with the token we already have in memory (no-op on
-   *     first load since token is null).
-   *  2. Fall back to POST /auth/refresh which sends the httpOnly cookie.
-   *  3. Mark initialized = true regardless of outcome so the app renders.
+   *  1. Try POST /auth/refresh which sends the httpOnly cookie.
+   *  2. Mark initialized = true regardless of outcome so the app renders.
+   *
+   * Concurrent calls (React StrictMode, multiple components) share the same
+   * in-flight request via _initAuthPromise so only one token rotation occurs.
    */
   initAuth: async () => {
-    try {
-      const data = await authApi.refresh();
-      setAccessToken(data.accessToken);
-      set({ user: data.user, isAuthenticated: true });
-    } catch {
-      // Refresh token absent or expired — treat as logged-out.
-      setAccessToken(null);
-      set({ user: null, isAuthenticated: false });
-    } finally {
-      set({ initialized: true });
-    }
+    if (_initAuthPromise) return _initAuthPromise;
+
+    _initAuthPromise = (async () => {
+      try {
+        const data = await authApi.refresh();
+        setAccessToken(data.accessToken);
+        set({ user: data.user, isAuthenticated: true });
+      } catch {
+        // Refresh token absent or expired — treat as logged-out.
+        setAccessToken(null);
+        set({ user: null, isAuthenticated: false });
+      } finally {
+        set({ initialized: true });
+        _initAuthPromise = null;
+      }
+    })();
+
+    return _initAuthPromise;
   },
 }));

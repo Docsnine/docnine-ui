@@ -55,7 +55,7 @@ export function AuthShell({ children, className }: AuthShellProps) {
 
         {/* Bottom: copyright */}
         <p className="relative z-10 text-[12px] text-primary-foreground select-none">
-          © {new Date().getFullYear()} Docnine. All rights reserved.
+          © {new Date().getFullYear()} Docnine, Seablings Technology. All rights reserved.
         </p>
       </div>
 

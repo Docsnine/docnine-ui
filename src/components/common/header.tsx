@@ -14,29 +14,6 @@ export function TopHeader({ className }: { className?: string }) {
 
     return (
         <header className={`relative z-50 w-full border-b border-border bg-background/80 backdrop-blur-md ${className}`}>
-            {/* Top strip */}
-            <div className="border-b border-border bg-muted/30">
-                <div className="container mx-auto max-w-6xl h-10 flex items-center justify-between text-xs sm:text-sm">
-                    <div className="flex items-center gap-4 text-muted-foreground">
-                        <a href="mailto:docnineai@gmail.com" target='__blank' className="flex items-center gap-1.5">
-                            <Mail className="h-3.5 w-3.5" />
-                            docnineai@gmail.com
-                        </a>
-                        <a href="https://x.com/Docnineai" target="_blank" rel="noreferrer" className="hidden sm:flex items-center gap-1.5">
-                            <Twitter className="h-3.5 w-3.5" />
-                            @docnineai
-                        </a>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <span className="hidden md:inline-flex items-center gap-1.5 text-primary font-medium">
-                            <Sparkles className="h-3.5 w-3.5" />
-                            Documentation that Works as Hard as You Do.
-                        </span>
-                        <ThemeToggle />
-                    </div>
-                </div>
-            </div>
-
             {/* Main nav row */}
             <div className="container mx-auto max-w-6xl h-16 flex items-center justify-between">
                 {/* Logo */}
@@ -52,6 +29,7 @@ export function TopHeader({ className }: { className?: string }) {
 
                 {/* Desktop CTA */}
                 <div className="hidden md:flex items-center gap-4">
+                    <ThemeToggle />
                     <Link to="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                         Sign In
                     </Link>

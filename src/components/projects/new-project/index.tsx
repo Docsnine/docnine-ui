@@ -251,7 +251,7 @@ export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
         try {
             const result = await ProjectCreationService.fromScratch(values)
             handleModalClose(false)
-            navigate(`/projects/${result.projectId}/live`)
+            navigate(`/projects/${result.projectId}`)
         } catch (err: any) {
             console.error("[NewProject] From-scratch creation failed:", err.message)
             setApiError(err.message)

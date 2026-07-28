@@ -32,7 +32,7 @@ import {
     UtensilsCrossed,
     Cloud,
     User,
-} from "lucide-react"
+} from "@/components/icons"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { BillingTab } from "@/pages/settings/billing"
@@ -43,7 +43,7 @@ import { APITokensCard } from "@/components/settings/APITokensCard"
 import { GoogleDocsStatusData, NotionStatusData } from "@/types/OauthIntergrationTypes"
 import { GitHubStatus } from "@/types/GithubTypes"
 
-// ── Tab nav ───────────────────────────────────────────────────────────────────
+
 const TABS = [
     { id: "general", label: "General", icon: User },
     { id: "integrations", label: "Integrations", icon: Puzzle },
@@ -53,7 +53,7 @@ const TABS = [
 
 type TabId = typeof TABS[number]["id"];
 
-// ── GitHub Integration card ──────────────────────────────────────────────────
+
 function GitHubCard() {
     const [status, setStatus] = useState<GitHubStatus | null>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -249,7 +249,7 @@ function GitHubCard() {
     )
 }
 
-// ── Webhook Integration card ─────────────────────────────────────────────────
+
 function WebhookCard() {
     const [webhookSettings, setWebhookSettings] = useState<{
         webhookUrl: string
@@ -265,7 +265,7 @@ function WebhookCard() {
     const [showSecret, setShowSecret] = useState(false)
     const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
-    // Load webhook settings on mount
+    
     useEffect(() => {
         loadWebhookSettings()
     }, [])
@@ -368,7 +368,7 @@ function WebhookCard() {
             </CardHeader>
 
             <CardContent className="space-y-5">
-                {/* Feedback message */}
+                {}
                 {feedback && (
                     <div
                         className={`rounded-lg border px-4 py-3 text-sm ${feedback.type === "success"
@@ -387,7 +387,7 @@ function WebhookCard() {
                     </div>
                 ) : webhookSettings ? (
                     <>
-                        {/* Status */}
+                        {}
                         {webhookSettings.lastWebhookAt && (
                             <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3">
                                 <div>
@@ -410,7 +410,7 @@ function WebhookCard() {
                             </div>
                         )}
 
-                        {/* Webhook URL */}
+                        {}
                         <div className="space-y-2">
                             <p className="text-sm font-medium">Webhook endpoint URL</p>
                             <div className="flex items-center gap-2">
@@ -419,12 +419,9 @@ function WebhookCard() {
                                 </code>
                                 <CopyButton text={webhookSettings.webhookUrl} />
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                Use this URL as your account-level webhook endpoint for push events (content-type: application/json).
-                            </p>
                         </div>
 
-                        {/* Webhook Secret */}
+                        {}
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
                                 <p className="text-sm font-medium">Webhook Secret</p>
@@ -468,12 +465,9 @@ function WebhookCard() {
                                     Rotate
                                 </Button>
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                <strong>Keep this secret.</strong> Store it once as <code className="text-[10px] bg-muted px-1 py-0.5 rounded">DOCNINE_WEBHOOK_SECRET</code> in each repository. The same secret works across all your Docnine projects.
-                            </p>
                         </div>
 
-                        {/* GitHub Actions YAML */}
+                        {}
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
                                 <p className="text-sm font-medium">GitHub Actions workflow</p>
@@ -484,10 +478,6 @@ function WebhookCard() {
                                     {yaml}
                                 </pre>
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                Copy this into <code className="text-[10px] bg-muted px-1 py-0.5 rounded">.github/workflows/document.yml</code> in your repository.
-                                The workflow will trigger on every push to main/master and send a signed webhook to Docnine.
-                            </p>
                         </div>
 
                         <a
@@ -506,7 +496,7 @@ function WebhookCard() {
     )
 }
 
-// ── Google Docs Integration card ─────────────────────────────────────────────────
+
 function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "error" }) {
     const [status, setStatus] = useState<GoogleDocsStatusData | null>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -673,7 +663,7 @@ function GoogleDocsCard({ initialStatus }: { initialStatus?: "connected" | "erro
     )
 }
 
-// ── Notion Integration card ──────────────────────────────────────────────────
+
 function NotionCard() {
     const [status, setStatus] = useState<NotionStatusData | null>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -681,7 +671,7 @@ function NotionCard() {
     const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
     const { confirm: confirmDialog, state: confirmState, handleConfirm, handleCancel } = useConfirm()
 
-    // Form state
+    
     const [apiKey, setApiKey] = useState("")
     const [parentPageId, setParentPageId] = useState("")
     const [workspaceName, setWorkspaceName] = useState("")
@@ -848,9 +838,6 @@ function NotionCard() {
                                     {showKey ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                                 </button>
                             </div>
-                            <p className="text-[12px] text-muted-foreground">
-                                From Notion → Settings → Integrations → Create integration.
-                            </p>
                         </div>
 
                         <div className="space-y-1.5">
@@ -864,9 +851,6 @@ function NotionCard() {
                                 className="font-mono text-[13px]"
                                 required
                             />
-                            <p className="text-[12px] text-muted-foreground">
-                                The 32-character ID from your Notion page URL (after the last <code className="bg-muted px-1 rounded text-[11px]">-</code>).
-                            </p>
                         </div>
 
                         <div className="space-y-1.5">
@@ -907,7 +891,7 @@ function NotionCard() {
     )
 }
 
-// ── GitLab Integration card ──────────────────────────────────────────────────
+
 function GitLabCard() {
     const [status, setStatus] = useState<any>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -1082,7 +1066,7 @@ function GitLabCard() {
     )
 }
 
-// ── Bitbucket Integration card ───────────────────────────────────────────────
+
 function BitbucketCard() {
     const [status, setStatus] = useState<any>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -1257,7 +1241,7 @@ function BitbucketCard() {
     )
 }
 
-// ── Azure DevOps Integration card ─────────────────────────────────────────────
+
 function AzureDevOpsCard() {
     const [status, setStatus] = useState<any>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -1429,7 +1413,7 @@ function AzureDevOpsCard() {
     )
 }
 
-// ── Main page ────────────────────────────────────────────────────────────────
+
 export function SettingsPage() {
     const [searchParams, setSearchParams] = useSearchParams()
     const googleDocsStatus = searchParams.get("googleDocs") as "connected" | "error" | null
@@ -1439,7 +1423,7 @@ export function SettingsPage() {
         setSearchParams((prev) => {
             const next = new URLSearchParams(prev)
             next.set("tab", tab)
-            // Clear googleDocs status when switching away
+            
             if (tab !== "integrations") next.delete("googleDocs")
             return next
         }, { replace: true })
@@ -1458,7 +1442,7 @@ export function SettingsPage() {
     return (
         <div className="flex justify-center py-7 px-4">
             <div className={cn("w-full space-y-6", "max-w-3xl")}>
-                {/* Page header */}
+                {}
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-3">
                         <Settings className="h-6 w-6 sm:h-7 sm:w-7" />
@@ -1469,7 +1453,7 @@ export function SettingsPage() {
                     </p>
                 </div>
 
-                {/* Tab nav */}
+                {}
                 <div className="flex gap-1 border-b border-border pb-0 overflow-x-auto">
                     {TABS.map(({ id, label, icon: Icon }) => (
                         <button
@@ -1489,7 +1473,7 @@ export function SettingsPage() {
                     ))}
                 </div>
 
-                {/* Tab content */}
+                {}
                 {activeTab === "general" ? (
                     <GeneralSettingsCard />
                 ) : activeTab === "api-tokens" ? (

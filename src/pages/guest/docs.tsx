@@ -1,18 +1,4 @@
-/**
- * Platform Documentation Page — /docs
- *
- * Covers:
- *  - Getting started
- *  - Connecting a GitHub repo
- *  - YAML / OpenAPI integration
- *  - GitHub webhook (auto-sync on push)
- *  - AI chat & editing docs
- *  - Publishing a portal
- *  - Exporting docs
- *  - Docnine CLI
- *  - Plans & billing
- *  - Support
- */
+
 
 import { useState, useEffect, useRef } from "react"
 import { Link } from "react-router-dom"
@@ -21,11 +7,11 @@ import {
     Download, CreditCard, LifeBuoy, ChevronRight, ExternalLink,
     Terminal, Copy, Check, Search, X, Menu, ArrowUp,
     Zap, Lock, Key, AlertTriangle, Info, CheckCircle2
-} from "lucide-react"
+} from "@/components/icons"
 import BackgroundGrid from "@/components/ui/background-grid"
 import { cn } from "@/lib/utils"
 
-// ── Types ─────────────────────────────────────────────────────────────────
+
 
 interface DocSection {
     id: string
@@ -34,7 +20,7 @@ interface DocSection {
     subsections?: { id: string; label: string }[]
 }
 
-// ── Sidebar sections ──────────────────────────────────────────────────────
+
 
 const SECTIONS: DocSection[] = [
     {
@@ -151,7 +137,7 @@ const SECTIONS: DocSection[] = [
     },
 ]
 
-// ── Code block ────────────────────────────────────────────────────────────
+
 function CodeBlock({ code, language = "yaml" }: { code: string; language?: string }) {
     const [copied, setCopied] = useState(false)
     return (
@@ -172,7 +158,7 @@ function CodeBlock({ code, language = "yaml" }: { code: string; language?: strin
     )
 }
 
-// ── Callout ───────────────────────────────────────────────────────────────
+
 function Callout({ type = "info", children }: { type?: "info" | "warning" | "tip"; children: React.ReactNode }) {
     const styles = {
         info: { bg: "bg-blue-500/10 border-blue-500/30", icon: <Info className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" /> },
@@ -188,7 +174,7 @@ function Callout({ type = "info", children }: { type?: "info" | "warning" | "tip
     )
 }
 
-// ── Step ──────────────────────────────────────────────────────────────────
+
 function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
     return (
         <div className="flex gap-4 py-5 px-5 border-b border-border/50 last:border-0">
@@ -203,7 +189,7 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
     )
 }
 
-// ── Section heading ───────────────────────────────────────────────────────
+
 function H2({ id, children }: { id: string; children: React.ReactNode }) {
     return (
         <h2 id={id} className="text-2xl font-bold text-foreground mt-12 mb-4 scroll-mt-24 flex items-center gap-2 group">
@@ -226,7 +212,7 @@ function H3({ id, children }: { id: string; children: React.ReactNode }) {
     )
 }
 
-// ── Main component ────────────────────────────────────────────────────────
+
 export function PlatformDocsPage() {
     const [activeSection, setActiveSection] = useState("what-is-docnine")
     const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -234,7 +220,7 @@ export function PlatformDocsPage() {
     const [showBackToTop, setShowBackToTop] = useState(false)
     const mainRef = useRef<HTMLDivElement>(null)
 
-    // Active section tracking via IntersectionObserver
+    
     useEffect(() => {
         const allIds = SECTIONS.flatMap((s) => [s.id, ...(s.subsections?.map((sub) => sub.id) ?? [])])
         const observers: IntersectionObserver[] = []
@@ -252,7 +238,7 @@ export function PlatformDocsPage() {
         return () => observers.forEach((o) => o.disconnect())
     }, [])
 
-    // Back-to-top
+    
     useEffect(() => {
         const handler = () => setShowBackToTop(window.scrollY > 400)
         window.addEventListener("scroll", handler)
@@ -265,7 +251,7 @@ export function PlatformDocsPage() {
         setSidebarOpen(false)
     }
 
-    // Filter sections for search
+    
     const filteredSections = searchQuery.trim()
         ? SECTIONS.map((s) => ({
             ...s,
@@ -280,14 +266,14 @@ export function PlatformDocsPage() {
 
     return (
         <div>
-            {/* Grid clipped to top half */}
+            {}
             <div className="absolute inset-x-0 top-0 h-1/12 overflow-hidden pointer-events-none">
                 <BackgroundGrid />
             </div>
 
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-foreground/5 blur-[120px] pointer-events-none z-0" />
 
-            {/* Mobile sidebar toggle */}
+            {}
             <div className="sticky top-0 z-30 lg:hidden flex items-center gap-3 px-4 py-3 border-b border-border bg-background/90 backdrop-blur-md">
                 <button
                     onClick={() => setSidebarOpen((v) => !v)}
@@ -303,7 +289,7 @@ export function PlatformDocsPage() {
             </div>
 
             <div className="relative z-10 flex max-w-7xl mx-auto">
-                {/* ── Sidebar ── */}
+                {}
                 <aside
                     className={cn(
                         "fixed lg:sticky top-[var(--header-h,5rem)] z-40 h-[calc(100vh-4rem)] w-72 shrink-0",
@@ -313,7 +299,7 @@ export function PlatformDocsPage() {
                     )}
                     style={{ top: "0px" }}
                 >
-                    {/* Search */}
+                    {}
                     <div className="p-4 border-b border-border">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
@@ -332,7 +318,7 @@ export function PlatformDocsPage() {
                         </div>
                     </div>
 
-                    {/* Nav */}
+                    {}
                     <nav className="p-4 space-y-5">
                         {filteredSections.map((section) => (
                             <div key={section.id}>
@@ -372,27 +358,27 @@ export function PlatformDocsPage() {
                     </nav>
                 </aside>
 
-                {/* Mobile overlay */}
+                {}
                 {sidebarOpen && (
                     <div className="fixed inset-0 z-30 bg-background/50 lg:hidden" onClick={() => setSidebarOpen(false)} />
                 )}
 
-                {/* ── Main content ── */}
+                {}
                 <main ref={mainRef} className="flex-1 min-w-0 px-6 lg:px-12 py-12 max-w-3xl mx-auto lg:mx-0 h-[calc(100vh-4rem)] overflow-y-auto">
-                    {/* Page intro */}
+                    {}
                     <div className="mb-12">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-muted/50 text-xs text-muted-foreground mb-4">
                             <BookOpen className="h-3.5 w-3.5" /> Your Project's Single Source of Truth.
                         </div>
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Docnine Docs</h1>
                         <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                            Everything you need to set up, configure, and get the most out of Docnine — from connecting your first repo to publishing a fully branded documentation portal.
+                            Everything you need to set up, configure, and get the most out of Docnine : from connecting your first repo to publishing a fully branded documentation portal.
                         </p>
                     </div>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* GETTING STARTED */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="getting-started">
                         <H2 id="getting-started">
                             <BookOpen className="h-6 w-6 text-primary" /> Getting Started
@@ -400,7 +386,7 @@ export function PlatformDocsPage() {
 
                         <H3 id="what-is-docnine">What is Docnine?</H3>
                         <p className="text-muted-foreground leading-relaxed mb-4">
-                            Docnine is an AI-powered documentation platform. It uses a multi-agent pipeline to scan GitHub repositories and generate structured documentation — automatically. It covers your README, internal developer guides, API reference, database schema, and security audit in one unified place.
+                            Docnine is an AI-powered documentation platform. It uses a multi-agent pipeline to scan GitHub repositories and generate structured documentation : automatically. It covers your README, internal developer guides, API reference, database schema, and security audit in one unified place.
                         </p>
                         <p className="text-muted-foreground leading-relaxed">
                             Once generated, you can edit any section, chat directly with your codebase, publish a public documentation portal, and export to PDF, YAML, Notion, or Google Docs.
@@ -415,7 +401,7 @@ export function PlatformDocsPage() {
                                 Check your inbox for a verification link and click it to activate your account.
                             </Step>
                             <Step n={3} title="Access your dashboard">
-                                You'll land on the Projects dashboard — this is where all your projects live.
+                                You'll land on the Projects dashboard : this is where all your projects live.
                             </Step>
                         </div>
 
@@ -440,9 +426,9 @@ export function PlatformDocsPage() {
                         </Callout>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* GITHUB INTEGRATION */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="github-integration">
                         <H2 id="github-integration">
                             <Github className="h-6 w-6 text-primary" /> GitHub Integration
@@ -474,13 +460,13 @@ export function PlatformDocsPage() {
 
                         <H3 id="repo-picker">Using the repo picker</H3>
                         <p className="text-muted-foreground leading-relaxed">
-                            Once your GitHub account is connected, clicking <strong>"Browse repos"</strong> in the new project form opens a repo picker that lists all repositories you have access to — search, filter by org, and click to select.
+                            Once your GitHub account is connected, clicking <strong>"Browse repos"</strong> in the new project form opens a repo picker that lists all repositories you have access to : search, filter by org, and click to select.
                         </p>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* YAML / OPENAPI */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="yaml-openapi">
                         <H2 id="yaml-openapi">
                             <FileCode2 className="h-6 w-6 text-primary" /> YAML / OpenAPI Integration
@@ -544,13 +530,13 @@ components:
                                 <code className="block text-sm font-mono bg-muted px-3 py-2 rounded mt-2">https://api.myapp.com/openapi.yaml</code>
                             </Step>
                             <Step n={3} title="Save">
-                                Docnine fetches and stores a snapshot. You can re-sync at any time (or set up auto-sync via webhook — see below).
+                                Docnine fetches and stores a snapshot. You can re-sync at any time (or set up auto-sync via webhook : see below).
                             </Step>
                         </div>
 
                         <H3 id="import-raw">Paste raw spec</H3>
                         <p className="text-muted-foreground leading-relaxed">
-                            You can also paste the raw YAML or JSON content directly into the text editor in the import modal — no file or URL needed. This is useful for quick testing or when the spec lives in your clipboard.
+                            You can also paste the raw YAML or JSON content directly into the text editor in the import modal : no file or URL needed. This is useful for quick testing or when the spec lives in your clipboard.
                         </p>
 
                         <H3 id="sync-spec">Auto-sync on update</H3>
@@ -562,9 +548,9 @@ components:
                         </Callout>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* WEBHOOKS */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="webhooks">
                         <H2 id="webhooks">
                             <Webhook className="h-6 w-6 text-primary" /> GitHub Webhooks
@@ -575,14 +561,14 @@ components:
                             GitHub webhooks allow Docnine to automatically re-generate your documentation every time you push code to your repository. Once set up, your docs stay in sync with your codebase without any manual intervention.
                         </p>
                         <p className="text-muted-foreground leading-relaxed">
-                            When a <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">push</code> event fires, Docnine runs an incremental sync — only re-generating sections affected by the changed files.
+                            When a <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">push</code> event fires, Docnine runs an incremental sync : only re-generating sections affected by the changed files.
                         </p>
 
                         <H3 id="webhook-setup">Setup guide</H3>
 
-                        <h4 className="text-lg font-semibold mt-6 mb-3">Option A — Use a real GitHub webhook (recommended)</h4>
+                        <h4 className="text-lg font-semibold mt-6 mb-3">Option A : Use a real GitHub webhook (recommended)</h4>
                         <p className="text-muted-foreground leading-relaxed mb-4">
-                            Set up an actual webhook in your repo settings pointing to <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">https://api.docnineai.com/webhook/github</code>. GitHub will POST the full push payload with a valid signature computed using your <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">WEBHOOK_SECRET</code>. Your existing handleWebhook code already handles this correctly — no workflow file needed.
+                            Set up an actual webhook in your repo settings pointing to <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">https://api.docnineai.com/webhook/github</code>. GitHub will POST the full push payload with a valid signature computed using your <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">WEBHOOK_SECRET</code>. Your existing handleWebhook code already handles this correctly : no workflow file needed.
                         </p>
 
                         <div className="rounded-xl border border-border overflow-hidden">
@@ -605,7 +591,7 @@ components:
                                 In your Vercel dashboard → <strong>Project Settings → Environment Variables</strong>, confirm <code className="font-mono bg-muted px-1 rounded text-xs">WEBHOOK_SECRET</code> is set to the exact same string you entered in GitHub.
                             </Step>
                             <Step n={4} title="Delete the GitHub Actions workflow file (if present)">
-                                Remove <code className="font-mono bg-muted px-1 rounded text-xs">.github/workflows/document.yml</code> from your repo — it's now redundant and will cause confusion.
+                                Remove <code className="font-mono bg-muted px-1 rounded text-xs">.github/workflows/document.yml</code> from your repo : it's now redundant and will cause confusion.
                             </Step>
                             <Step n={5} title="Test the connection">
                                 After saving, GitHub will send a ping event. You'll see a green checkmark at <code className="font-mono bg-muted px-1 rounded text-xs">https://github.com/your-username/your-repo/settings/hooks</code> if the connection is working. On your next push to main, the full documentation sync will trigger automatically.
@@ -613,10 +599,10 @@ components:
                         </div>
 
                         <Callout type="info">
-                            This is the <strong>recommended approach</strong> because GitHub handles the signature and payload delivery — your server receives verified, complete push event data.
+                            This is the <strong>recommended approach</strong> because GitHub handles the signature and payload delivery : your server receives verified, complete push event data.
                         </Callout>
 
-                        <h4 className="text-lg font-semibold mt-8 mb-3">Option B — Use GitHub Actions workflow</h4>
+                        <h4 className="text-lg font-semibold mt-8 mb-3">Option B : Use GitHub Actions workflow</h4>
                         <p className="text-muted-foreground leading-relaxed mb-4">
                             If you prefer, you can use a GitHub Actions workflow file that triggers on every push and calls the Docnine API. This approach works but requires maintaining a workflow file and doesn't provide signature verification.
                         </p>
@@ -657,9 +643,9 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`} />
                         </Callout>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* AI & DOCUMENTATION */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="ai-docs">
                         <H2 id="ai-docs">
                             <Sparkles className="h-6 w-6 text-primary" /> AI & Documentation
@@ -715,9 +701,9 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`} />
                         </p>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* PORTALS */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="portals">
                         <H2 id="portals">
                             <Globe className="h-6 w-6 text-primary" /> Public Portals
@@ -725,7 +711,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`} />
 
                         <H3 id="portal-overview">What is a portal?</H3>
                         <p className="text-muted-foreground leading-relaxed">
-                            A <strong>portal</strong> is a publicly accessible documentation website generated from your project. It gets its own URL (<code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">docnine.app/docs/your-portal</code>) and can be shared with customers, contributors, or anyone else — no Docnine account needed.
+                            A <strong>portal</strong> is a publicly accessible documentation website generated from your project. It gets its own URL (<code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">docnine.app/docs/your-portal</code>) and can be shared with customers, contributors, or anyone else : no Docnine account needed.
                         </p>
                         <Callout type="info">
                             Portals require at minimum a <strong>Starter</strong> plan. Free plan users cannot publish portals.
@@ -747,7 +733,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`} />
                             <li>Set a primary colour, background colour, and accent colour</li>
                             <li>Add a header tagline and footer text/links</li>
                             <li>Configure SEO title and meta description</li>
-                            <li>Set a custom domain (Pro & Team — DNS managed externally)</li>
+                            <li>Set a custom domain (Pro & Team : DNS managed externally)</li>
                         </ul>
 
                         <H3 id="portal-password">Password protection</H3>
@@ -756,9 +742,9 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`} />
                         </p>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* EXPORTS */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="exports">
                         <H2 id="exports">
                             <Download className="h-6 w-6 text-primary" /> Exporting Docs
@@ -786,7 +772,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`} />
                             Export buttons appear in the project overview page toolbar. If your plan doesn't include a specific format, clicking it will show an upgrade prompt.
                         </Callout>
 
-                        <H3 id="export-notion">Notion export — setup</H3>
+                        <H3 id="export-notion">Notion export : setup</H3>
                         <div className="rounded-xl border border-border overflow-hidden">
                             <Step n={1} title="Create a Notion integration">Go to <a href="https://notion.so/my-integrations" target="_blank" rel="noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">notion.so/my-integrations <ExternalLink className="h-3 w-3" /></a> and create a new integration. Copy the <strong>Internal Integration Token</strong>.</Step>
                             <Step n={2} title="Share a page with the integration">In Notion, open the page you want docs exported to → <strong>Share</strong> → invite your integration.</Step>
@@ -798,9 +784,9 @@ NOTION_PARENT_PAGE_ID=your_page_id_here`} />
                         </div>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* DOCNINE CLI */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="cli">
                         <H2 id="cli">
                             <Terminal className="h-6 w-6 text-primary" /> Docnine CLI
@@ -808,7 +794,7 @@ NOTION_PARENT_PAGE_ID=your_page_id_here`} />
 
                         <H3 id="cli-overview">Overview</H3>
                         <p className="text-muted-foreground leading-relaxed mb-4">
-                            The <strong>Docnine CLI</strong> brings all of Docnine's documentation generation, security auditing, and AI features straight to your terminal. You can scan local repositories, generate documentation, ask questions about your codebase, and integrate everything into CI/CD pipelines — without leaving the command line.
+                            The <strong>Docnine CLI</strong> brings all of Docnine's documentation generation, security auditing, and AI features straight to your terminal. You can scan local repositories, generate documentation, ask questions about your codebase, and integrate everything into CI/CD pipelines : without leaving the command line.
                         </p>
                         <div className="rounded-xl border border-border divide-y divide-border overflow-hidden my-4">
                             {[
@@ -898,7 +884,7 @@ docnine generate
 # Specify a project ID explicitly
 docnine generate --project <project-id>
 
-# Watch mode — re-generate when files change
+# Watch mode : re-generate when files change
 docnine generate --watch`} />
                         <p className="text-muted-foreground leading-relaxed">
                             The CLI shows a real-time progress spinner for each pipeline stage (scanning, schema analysis, API extraction, security audit, doc writing). Once complete, your documentation is available in the Docnine dashboard.
@@ -911,7 +897,7 @@ docnine generate --watch`} />
                         <CodeBlock language="bash" code={`# Ask a one-off question
 docnine ask "How does authentication work in this project?"
 
-# Interactive REPL mode — keep asking questions
+# Interactive REPL mode : keep asking questions
 docnine ask --interactive
 
 # Specify a project explicitly
@@ -1048,9 +1034,9 @@ jobs:
                         </div>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* PLANS */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="plans">
                         <H2 id="plans">
                             <CreditCard className="h-6 w-6 text-primary" /> Plans & Billing
@@ -1082,7 +1068,7 @@ jobs:
 
                         <H3 id="upgrade">Upgrading your plan</H3>
                         <p className="text-muted-foreground leading-relaxed mb-4">
-                            Go to <Link to="/settings" className="text-primary hover:underline">Settings → Billing</Link> or visit the <Link to="/pricing" className="text-primary hover:underline">Pricing page</Link> and click <strong>Start free trial</strong> on any paid plan. All paid plans include a <strong>7-day free trial</strong> — no credit card required to start.
+                            Go to <Link to="/settings" className="text-primary hover:underline">Settings → Billing</Link> or visit the <Link to="/pricing" className="text-primary hover:underline">Pricing page</Link> and click <strong>Start free trial</strong> on any paid plan. All paid plans include a <strong>7-day free trial</strong> : no credit card required to start.
                         </p>
 
                         <H3 id="limits">Limits & quotas</H3>
@@ -1114,9 +1100,9 @@ jobs:
                         </div>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* SUPPORT */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="support">
                         <H2 id="support">
                             <LifeBuoy className="h-6 w-6 text-primary" /> Support
@@ -1199,7 +1185,7 @@ jobs:
                 </main>
             </div>
 
-            {/* Back to top */}
+            {}
             {showBackToTop && (
                 <button
                     onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

@@ -1,4 +1,4 @@
-import { Plus, Search } from "lucide-react"
+import { Plus, Search } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import { EmptyStateProps } from "@/types/StateTypes"

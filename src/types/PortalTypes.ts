@@ -2,6 +2,17 @@ import { ApiProjectMeta, CustomTab } from "./ProjectTypes";
 
 export type PortalSectionVisibility = "public" | "internal" | "coming_soon";
 export type PortalAccessMode = "public" | "password";
+export type PortalTemplateId =
+  | "classic"
+  | "teal-studio"
+  | "midnight"
+  | "minimal"
+  | "company-showcase"
+  | "developer-terminal"
+  | "enterprise-handbook"
+  | "startup-guide"
+  | "product-manual"
+  | "agency-portfolio";
 
 export type PortalSectionKey =
   | "readme"
@@ -37,6 +48,7 @@ export interface ApiPortal {
   slug: string;
   isPublished: boolean;
   accessMode: PortalAccessMode;
+  templateId?: PortalTemplateId;
   branding: PortalBranding;
   sections: PortalSectionConfig[];
   seoTitle?: string;

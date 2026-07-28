@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useGeneralSettings } from "@/hooks"
-import { User } from "lucide-react"
+import { User } from "@/components/icons"
 
 export function GeneralSettingsCard() {
     const { user, isLoading } = useGeneralSettings()

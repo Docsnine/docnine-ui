@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { sharingApi } from "@/lib/api"
 import { useAuthStore } from "@/store/auth"
-import { CheckCircle2, AlertTriangle } from "lucide-react"
+import { CheckCircle2, AlertTriangle } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import Loader1 from "@/components/ui/loader1"
 
@@ -23,7 +23,7 @@ export function AcceptInvitePage() {
     }
 
     if (!isAuthenticated) {
-      // Redirect to login and come back after
+      
       navigate(`/login?redirect=/share/accept/${token}`, { replace: true })
       return
     }

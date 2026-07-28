@@ -23,7 +23,7 @@ import {
   AlertTriangle,
   ShieldAlert,
   File,
-} from "lucide-react"
+} from "@/components/icons"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
@@ -59,7 +59,7 @@ import { NATIVE_TABS, TAB_TO_SECTION } from "@/configs/DocumentationConfig"
 import { useConfirm } from "@/hooks"
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog"
 
-// ── Main component ────────────────────────────────────────────────────────────
+
 export function DocumentationViewerPage() {
   const { id } = useParams<{ id: string }>()
   const { getProjectData } = useProjectStore()
@@ -92,15 +92,15 @@ export function DocumentationViewerPage() {
   const [acceptingAI, setAcceptingAI] = useState(false)
   const [createTabModalOpen, setCreateTabModalOpen] = useState(false)
 
-  // Global search
+  
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<Record<string, { label: string; matches: number; highlights: string[]; firstMatchLine: number }>>({})
   const [showSearchResults, setShowSearchResults] = useState(false)
-  const [highlightedText, setHighlightedText] = useState<string>("") // Track text to highlight
+  const [highlightedText, setHighlightedText] = useState<string>("") 
   const searchInputRef = useRef<HTMLInputElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
 
-  // Status-change modal
+  
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false)
   const statusDropdownRef = useRef<HTMLDivElement>(null)
 
@@ -115,25 +115,25 @@ export function DocumentationViewerPage() {
   const [projectMembers, setProjectMembers] = useState<ApiShare[]>([])
   const [loadingMembers, setLoadingMembers] = useState(false)
 
-  // Portal
+  
   const [portal, setPortal] = useState<ApiPortal | null>(null)
   const [portalModalOpen, setPortalModalOpen] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
 
-  // Subscription gates
+  
   const { subscription } = useSubscriptionStore()
   const [upgradeOpen, setUpgradeOpen] = useState(false)
   const [upgradeFeature, setUpgradeFeature] = useState<{ name: string; plan: string; description?: string }>({ name: "", plan: "starter" })
   const { confirm, state: confirmState, handleConfirm, handleCancel } = useConfirm()
 
-  // API Spec (FT4)
+  
   const [apiSpec, setApiSpec] = useState<ApiSpec | null>(null)
   const [apiSpecLoading, setApiSpecLoading] = useState(false)
   const [apiSpecImportOpen, setApiSpecImportOpen] = useState(false)
   const [apiSubTab, setApiSubTab] = useState<"document" | "spec">("document")
   const [syncingSpec, setSyncingSpec] = useState(false);
 
-  // Editable content per tab (initialized from project data)
+  
   const [editedContent, setEditedContent] = useState<Record<string, string>>({
     readme: "",
     api: "",
@@ -143,7 +143,7 @@ export function DocumentationViewerPage() {
     other_docs: "",
   })
 
-  // Dynamic tabs list (native + custom)
+  
   const [allTabs, setAllTabs] = useState<TabDef[]>(NATIVE_TABS)
 
   useEffect(() => {
@@ -177,7 +177,7 @@ export function DocumentationViewerPage() {
     cb()
   }
 
-  // Load project on mount + fetch version counts
+  
   useEffect(() => {
     if (!id) return;
     setIsLoading(true);
@@ -189,19 +189,19 @@ export function DocumentationViewerPage() {
         const owner = data.shareRole === 'owner'
         setIsOwner(owner)
 
-        // Build dynamic tab list (native + custom)
+        
         const customTabs = data.project.customTabs ?? [];
         const tabs = buildTabList(customTabs);
         setAllTabs(tabs);
 
-        // Fetch portal settings for owners
+        
         if (owner) {
           portalApi.get(data.project._id)
             .then((r) => setPortal(r.portal))
             .catch(() => { })
         }
 
-        // Initialize edited content for native tabs
+        
         const newEditedContent: Record<string, string> = {
           readme: data.effectiveOutput?.readme ?? "",
           api: data.effectiveOutput?.apiReference ?? "",
@@ -211,7 +211,7 @@ export function DocumentationViewerPage() {
           other_docs: data.effectiveOutput?.otherDocs ?? "",
         };
 
-        // Initialize edited content for custom tabs
+        
         customTabs.forEach((ct: { _id: any; content: string }) => {
           const tabKey = `custom_${ct._id}`;
           newEditedContent[tabKey] = ct.content ?? "";
@@ -219,7 +219,7 @@ export function DocumentationViewerPage() {
 
         setEditedContent(newEditedContent);
 
-        // Pre-fetch version counts for all versioned sections
+        
         const sections = ["readme", "internalDocs", "apiReference", "schemaDocs", "securityReport"];
         const counts: Record<string, number> = {};
         await Promise.allSettled(
@@ -227,26 +227,26 @@ export function DocumentationViewerPage() {
             try {
               const r = await versionsApi.list(data.project._id, s);
               if (r.total > 0) counts[s] = r.total;
-            } catch { /* ignore */ }
+            } catch {  }
           }),
         );
 
-        // Fetch version counts for custom tabs
+        
         customTabs.forEach((ct: { _id: any }) => {
           const sectionName = `custom_${ct._id}`;
         });
 
         setVersionCounts(counts);
 
-        // Load API spec (FT4)
+        
         apiSpecApi.get(data.project._id)
           .then((r) => setApiSpec(r.spec))
-          .catch(() => { }) // not fatal if spec not found
+          .catch(() => { }) 
       })
       .finally(() => setIsLoading(false));
   }, [id, getProjectData])
 
-  // Fetch change summary for stale section when it becomes active
+  
   useEffect(() => {
     const isCustomTab = activeTab.startsWith("custom_");
     const sectionName = isCustomTab ? activeTab : TAB_TO_SECTION[activeTab as NativeTab];
@@ -265,7 +265,7 @@ export function DocumentationViewerPage() {
       .catch(() => setStaleSummary(null));
   }, [activeTab, editedSections, id])
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
+  
 
   const getCurrentContent = () => editedContent[activeTab] ?? ""
 
@@ -291,24 +291,24 @@ export function DocumentationViewerPage() {
     setActionLoading("save");
 
     try {
-      // Handle custom tabs
+      
       if (activeTabDef.isCustom && activeTabDef.customTab) {
         const tabId = activeTabDef.customTab._id;
         const data = await customTabsApi.update(id, tabId, { content });
         setProject(data.project);
-        // Reload tabs since content may have changed
+        
         if (data.project.customTabs) {
           setAllTabs(buildTabList(data.project.customTabs));
         }
       } else if (activeTabDef.field) {
-        // Handle native tabs
+        
         const sectionName = activeTabDef.field;
         const data = await projectsApi.saveEdit(id, sectionName, content);
         setProject(data.project);
         setEffectiveOutput(data.effectiveOutput as any);
         setEditedSections((data.editedSections as ApiProjectEditedSection[]) ?? []);
 
-        // Update version count for this section
+        
         const vSection = TAB_TO_SECTION[activeTab as NativeTab];
         if (vSection) {
           versionsApi.list(id, vSection).then((r) => {
@@ -343,7 +343,7 @@ export function DocumentationViewerPage() {
         other_docs: effective.otherDocs ?? "",
       };
 
-      // Restore custom tab content from project
+      
       if (project.customTabs) {
         project.customTabs.forEach((ct: { _id: any; content: string }) => {
           const key = `custom_${ct._id}`;
@@ -356,7 +356,7 @@ export function DocumentationViewerPage() {
     setIsEditMode(false);
   };
 
-  // Handle creating a new custom tab
+  
   const handleCreateTab = async (data: { name: string; description: string }) => {
     if (!id) return;
 
@@ -394,7 +394,7 @@ export function DocumentationViewerPage() {
     }
   };
 
-  // Global search function
+  
   const performSearch = (query: string) => {
     if (!query.trim()) {
       setSearchResults({});
@@ -406,22 +406,22 @@ export function DocumentationViewerPage() {
     const searchTerm = query.toLowerCase();
     const results: Record<string, { label: string; matches: number; highlights: string[]; firstMatchLine: number }> = {};
 
-    // Search through all tabs
+    
     allTabs.forEach((tab) => {
       const tabContent = editedContent[tab.key] ?? "";
       const tabLabel = tab.label;
 
-      // Search in tab name
+      
       const nameMatches = tabLabel.toLowerCase().includes(searchTerm) ? 1 : 0;
 
-      // Search in content (find matching lines/highlights)
+      
       const highlights: string[] = [];
       let firstMatchLine = -1;
       if (tabContent) {
         const lines = tabContent.split("\n");
         lines.forEach((line, lineIndex) => {
           if (line.toLowerCase().includes(searchTerm)) {
-            if (firstMatchLine === -1) firstMatchLine = lineIndex; // Track first match line
+            if (firstMatchLine === -1) firstMatchLine = lineIndex; 
             const preview = line.length > 100 ? line.substring(0, 100) + "..." : line;
             highlights.push(preview);
           }
@@ -435,7 +435,7 @@ export function DocumentationViewerPage() {
         results[tab.key] = {
           label: tabLabel,
           matches: totalMatches,
-          highlights: highlights.slice(0, 2), // Show first 2 highlights
+          highlights: highlights.slice(0, 2), 
           firstMatchLine: firstMatchLine >= 0 ? firstMatchLine : 0,
         };
       }
@@ -443,33 +443,33 @@ export function DocumentationViewerPage() {
 
     setSearchResults(results);
     setShowSearchResults(Object.keys(results).length > 0);
-    setHighlightedText(query); // Store search term for highlighting
+    setHighlightedText(query); 
   };
 
-  // Handle search input change
+  
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
     performSearch(value);
   };
 
-  // Handle search result click
+  
   const handleSearchResultClick = (tabKey: DocTab, firstMatchLine: number = 0) => {
     setActiveTab(tabKey);
     setIsEditMode(false);
 
-    // Scroll to the first match after a short delay (to allow tab switch to complete)
+    
     setTimeout(() => {
       scrollToSearchResult(firstMatchLine);
     }, 100);
   };
 
-  // Helper function to scroll to search result
+  
   const scrollToSearchResult = (lineNumber: number) => {
     const content = document.querySelector("[data-content-viewer]");
     if (!content) return;
 
-    // Try to find the text in the content
+    
     const searchTerm = searchQuery.toLowerCase();
     if (!searchTerm) return;
 
@@ -486,14 +486,14 @@ export function DocumentationViewerPage() {
         const index = node.textContent.toLowerCase().indexOf(searchTerm);
         range.setStart(node, index);
         range.setEnd(node, index + searchTerm.length);
-        range.getBoundingClientRect(); // Get position
+        range.getBoundingClientRect(); 
 
-        // Scroll into view
+        
         const element = node.parentElement;
         if (element) {
           element.scrollIntoView({ behavior: "smooth", block: "center" });
 
-          // Add temporary highlight effect
+          
           const originalBg = element.style.backgroundColor;
           element.style.backgroundColor = "rgba(255, 193, 7, 0.3)";
           setTimeout(() => {
@@ -506,7 +506,7 @@ export function DocumentationViewerPage() {
     }
   };
 
-  // ── Version history callbacks ────────────────────────────────────────────
+  
 
   const handleVersionRestored = (newEffectiveOutput: any, newEditedSections: any[]) => {
     setEffectiveOutput(newEffectiveOutput);
@@ -521,7 +521,7 @@ export function DocumentationViewerPage() {
       }
       setEditedContent((prev) => ({ ...prev, [activeTab]: content }));
     }
-    // Refresh the version count for the restored section
+    
     const isCustom = activeTab.startsWith("custom_");
     const sectionName = isCustom ? activeTab : (TAB_TO_SECTION[activeTab as NativeTab] ?? null);
     if (id && sectionName) {
@@ -556,14 +556,11 @@ export function DocumentationViewerPage() {
       }
       setShowStaleDiff(false);
       setDismissedStaleTabs((prev) => new Set([...prev, activeTab as string]));
-    } catch { /* ignore */ }
+    } catch {  }
     finally { setAcceptingAI(false); }
   }
 
-  /**
-   * Discard the user's manual edit and revert the section back to the latest
-   * AI-generated content. Exposed to the VersionHistoryPanel via `onRevertToAI`.
-   */
+  
   const handleRevertToAI = useCallback(async () => {
     const isCustom = activeTab.startsWith("custom_");
     const sectionName = isCustom ? activeTab : (TAB_TO_SECTION[activeTab as NativeTab] ?? null);
@@ -580,10 +577,10 @@ export function DocumentationViewerPage() {
           [activeTab]: (result.effectiveOutput as any)?.[tabDef.field!] ?? "",
         }));
       }
-    } catch { /* surface via VersionHistoryPanel's own error state */ }
+    } catch {  }
   }, [activeTab, id, allTabs]);
 
-  // ── Exports ────────────────────────────────────────────────────────────────
+  
 
   const triggerDownload = (blob: Blob, filename: string) => {
     const url = URL.createObjectURL(blob)
@@ -599,7 +596,7 @@ export function DocumentationViewerPage() {
     setActionLoading("pdf")
     setExportMessage(null)
     try {
-      // Prepare comprehensive export data with all tabs
+      
       const exportData = prepareExportData(
         project.meta?.name ?? id,
         (project.meta?.description || "") as string,
@@ -610,7 +607,7 @@ export function DocumentationViewerPage() {
       const summary = getExportSummary(exportData)
       console.debug("📊 PDF Export:", summary)
 
-      // Generate formatted PDF HTML with all sections
+      
       const pdfHtml = generatePDFHTML(exportData, {
         includeTableOfContents: true,
         includeTimestamp: true,
@@ -618,7 +615,7 @@ export function DocumentationViewerPage() {
         headerFooter: true,
       })
 
-      // Download as print-ready HTML — users open the file and use browser Print → Save as PDF
+      
       const blob = new Blob([pdfHtml], { type: "text/html;charset=utf-8" })
       triggerDownload(blob, `${project?.meta?.name ?? id}-documentation.html`)
 
@@ -635,7 +632,7 @@ export function DocumentationViewerPage() {
     setActionLoading("yaml")
     setExportMessage(null)
     try {
-      // Prepare comprehensive export data with all tabs (with cleaned content)
+      
       const exportData = prepareExportData(
         project.meta?.name ?? id,
         (project.meta?.description || "") as string,
@@ -643,7 +640,7 @@ export function DocumentationViewerPage() {
         allTabs
       )
 
-      // Format content to remove markdown for cleaner export
+      
       const formattedTabs = getFormattedTabContent(exportData.tabs, "formatted")
       const cleanExportData = {
         ...exportData,
@@ -651,13 +648,13 @@ export function DocumentationViewerPage() {
       }
 
       const summary = getExportSummary(cleanExportData)
-      console.debug("📊 YAML Export:", summary)
+      console.debug("YAML Export:", summary)
 
-      // Export with cleaned data (backend will use it if provided)
+      
       const blob = await projectsApi.exportBlob(id, "yaml", cleanExportData)
       triggerDownload(blob, `${project?.meta?.name ?? id}-workflow.yml`)
 
-      // Show message with count of all sections exported
+      
       const nativeCount = cleanExportData.tabs.filter((t) => !t.isCustom).length
       const customCount = cleanExportData.tabs.filter((t) => t.isCustom).length
       const message = customCount > 0
@@ -676,7 +673,7 @@ export function DocumentationViewerPage() {
     setActionLoading("notion")
     setExportMessage(null)
     try {
-      // Prepare comprehensive export data with all tabs
+      
       const exportData = prepareExportData(
         project.meta?.name ?? id,
         (project.meta?.description || "") as string,
@@ -684,7 +681,7 @@ export function DocumentationViewerPage() {
         allTabs
       )
 
-      // Format content to remove markdown for cleaner Notion export
+      
       const formattedTabs = getFormattedTabContent(exportData.tabs, "plain")
       const cleanExportData = {
         ...exportData,
@@ -692,15 +689,15 @@ export function DocumentationViewerPage() {
       }
 
       const summary = getExportSummary(cleanExportData)
-      console.debug("📊 Notion Export:", summary)
+      console.debug("Notion Export:", summary)
 
-      // Log clean data for backend integration
-      console.log("📋 Notion export prepared with", cleanExportData.tabs.length, "sections")
+      
+      console.log("Notion export prepared with", cleanExportData.tabs.length, "sections")
 
-      // Export to Notion with cleaned data (backend will use it if provided)
+      
       const result = await projectsApi.exportNotion(id, cleanExportData)
 
-      // Show message with count of all sections exported
+      
       const nativeCount = cleanExportData.tabs.filter((t) => !t.isCustom).length
       const customCount = cleanExportData.tabs.filter((t) => t.isCustom).length
       const message = customCount > 0
@@ -719,7 +716,7 @@ export function DocumentationViewerPage() {
     setActionLoading("googleDocs")
     setExportMessage(null)
     try {
-      // Prepare comprehensive export data with all tabs (with cleaned content)
+      
       const exportData = prepareExportData(
         project.meta?.name ?? id,
         (project.meta?.description || "") as string,
@@ -727,7 +724,7 @@ export function DocumentationViewerPage() {
         allTabs
       )
 
-      // Format content to remove markdown for cleaner Google Docs export
+      
       const formattedTabs = getFormattedTabContent(exportData.tabs, "plain")
       const cleanExportData = {
         ...exportData,
@@ -735,18 +732,11 @@ export function DocumentationViewerPage() {
       }
 
       const summary = getExportSummary(cleanExportData)
-      console.debug("Google Docs Export:", summary)
-
-      // Log clean data for backend integration
-      console.log("Google Docs export prepared with", cleanExportData.tabs.length, "sections")
-
-      // Export to Google Docs with comprehensive data
-      // Pass cleaned data to backend so it exports without markdown
       const result = await projectsApi.exportGoogleDocs(id, cleanExportData)
-      // Open the created doc in a new tab
+      
       window.open(result.documentUrl, "_blank", "noopener,noreferrer")
 
-      // Show message with count of all sections exported
+      
       const nativeCount = cleanExportData.tabs.filter((t) => !t.isCustom).length
       const customCount = cleanExportData.tabs.filter((t) => t.isCustom).length
       const message = customCount > 0
@@ -755,11 +745,11 @@ export function DocumentationViewerPage() {
       setExportMessage(message)
     } catch (err: any) {
       if (err?.code === "GOOGLE_NOT_CONNECTED") {
-        // Open Google OAuth in a new tab so the user stays on this page
+        
         try {
           const { url } = await projectsApi.getGoogleDocsConnectUrl(id)
           window.open(url, "_blank", "noopener,noreferrer")
-          setExportMessage("✗ Google Drive not connected — authorise in the new tab, then export again")
+          setExportMessage("✗ Google Drive not connected : authorise in the new tab, then export again")
         } catch {
           setExportMessage("✗ Connect Google Drive in Settings → Export Connections, then try again")
         }
@@ -771,7 +761,7 @@ export function DocumentationViewerPage() {
     }
   }
 
-  // ── Render loaders / errors ───────────────────────────────────────────────
+  
 
   if (isLoading) {
     return (
@@ -800,12 +790,12 @@ export function DocumentationViewerPage() {
     )
   }
 
-  // Show all tabs if pipeline is done, else only those with content
+  
   const availableTabs = project && mapApiStatus(project.status) === "completed"
     ? allTabs
     : allTabs.filter((t) => !!editedContent[t.key as string]);
 
-  // Stale section derived state
+  
   const isCustomTab = activeTab.startsWith("custom_");
   const activeSectionName = isCustomTab ? activeTab : (TAB_TO_SECTION[activeTab as NativeTab] ?? null);
   const activeTabDef = allTabs.find((t: TabDef) => t.key === activeTab);
@@ -820,12 +810,12 @@ export function DocumentationViewerPage() {
     const tabDef = allTabs.find((t: TabDef) => t.key === tab);
     if (!tabDef) return "";
 
-    // For custom tabs, get from the customTab.content directly
+    
     if (tabDef.isCustom && tabDef.customTab) {
       return tabDef.customTab.content ?? "";
     }
 
-    // For native tabs, use field mapping
+    
     if (tabDef.field) {
       return effectiveOutput[tabDef.field] ?? "";
     }
@@ -833,41 +823,23 @@ export function DocumentationViewerPage() {
     return "";
   }
 
-  // ── Main render ───────────────────────────────────────────────────────────
+  
   return (
     <div>
-      {/* ── Top bar ─────────────────────────────────────────────────────── */}
-      <div className="relative z-20 border-b border-border/70 bg-background/60 backdrop-blur-sm pb-4 max-w-7xl mx-auto">
-
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground mb-3">
-          <Link
-            to={`/projects/${id}`}
-            className="hover:text-foreground flex items-center gap-1 transition-colors shrink-0"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Overview
-          </Link>
-          <span className="opacity-40">/</span>
-          <span className="text-foreground font-medium truncate max-w-[200px]">
-            {project.meta?.name}
-          </span>
-          <span className="opacity-40">/</span>
-          <span className="text-muted-foreground">Documentation</span>
-        </div>
-
-        {/* Header row */}
+      {}
+      <div className="relative z-20 bg-background/60 backdrop-blur-sm mx-auto">
+        {}
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          {/* Title + search */}
+          {}
           <div className="flex items-center gap-4 min-w-0 flex-1">
             <h1 className="text-[22px] font-semibold tracking-tight shrink-0">Docs</h1>
 
-            {/* Global search */}
+            {}
             <div className="relative w-full max-w-[260px]">
               <Input
                 ref={searchInputRef}
                 type="text"
-                placeholder="Search documentation…"
+                placeholder="Search in documentation..."
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onFocus={() => searchQuery && setShowSearchResults(true)}
@@ -902,9 +874,9 @@ export function DocumentationViewerPage() {
             </div>
           </div>
 
-          {/* Action buttons + export feedback */}
+          {}
           <div className="flex items-center gap-2 flex-wrap shrink-0">
-            {/* Export / action feedback */}
+            {}
             {exportMessage && (
               <span className={cn(
                 "inline-flex items-center gap-1 text-[12px] px-2.5 py-1 rounded-md border",
@@ -916,7 +888,7 @@ export function DocumentationViewerPage() {
               </span>
             )}
 
-          {/* ── Primary: Edit / Cancel / Save ── */}
+          {}
           {activeTab !== "security" && activeTab !== "other_docs" && (
             isEditMode ? (
               <>
@@ -939,7 +911,7 @@ export function DocumentationViewerPage() {
             )
           )}
 
-          {/* ── Primary: Create Custom Tab ── */}
+          {}
           {isOwner && (
             <Button variant="outline" size="sm" onClick={() => setCreateTabModalOpen(true)}>
               <Plus className="h-4 w-4" />
@@ -947,7 +919,7 @@ export function DocumentationViewerPage() {
             </Button>
           )}
 
-          {/* ── Primary: Ask AI ── */}
+          {}
           <Button
             variant={isChatOpen ? "default" : "outline"}
             size="sm"
@@ -961,7 +933,7 @@ export function DocumentationViewerPage() {
             <span className="hidden sm:inline ml-1.5">Ask AI</span>
           </Button>
 
-          {/* ── Primary: Status selector ── */}
+          {}
           {activeSectionName && id && (() => {
             const currentStatus = getDocEntry(id, activeSectionName)?.status ?? "draft"
             const cfg = DOC_STATUS_CONFIG[currentStatus]
@@ -990,7 +962,7 @@ export function DocumentationViewerPage() {
                           onClick={() => {
                             setStatusDropdownOpen(false)
 
-                            // load members once per project
+                            
                             if (projectMembers.length === 0 && !loadingMembers) {
                               setLoadingMembers(true)
                               sharingApi.listAccess(id)
@@ -1017,7 +989,7 @@ export function DocumentationViewerPage() {
             )
           })()}
 
-          {/* ── Primary: Portal Publish button (owners only) ── */}
+          {}
           {isOwner && id && (
             <Button
               variant={portal?.isPublished ? "default" : "outline"}
@@ -1031,7 +1003,7 @@ export function DocumentationViewerPage() {
             </Button>
           )}
 
-          {/* ── More dropdown (History + exports) ── */}
+          {}
           <div className="relative" ref={moreDropdownRef}>
             <Button
               variant="outline"
@@ -1047,7 +1019,7 @@ export function DocumentationViewerPage() {
 
             {moreDropdownOpen && (
               <div className="absolute right-0 top-9 z-50 flex flex-col w-60 rounded-lg border border-border bg-background shadow-lg text-sm overflow-hidden">
-                {/* History */}
+                {}
                 <button
                   className={cn(
                     "flex w-full items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors",
@@ -1102,10 +1074,10 @@ export function DocumentationViewerPage() {
         </div>
       </div>
 
-      <div className="flex flex-col h-[calc(100vh-8rem)] max-w-7xl mx-auto z-10">
-        {/* Main layout: sidebar + content + chat */}
+      <div className="flex flex-col h-[calc(100vh-8rem)] mx-auto z-10">
+        {}
         <div className="flex flex-1 overflow-hidden border border-border rounded-2xl bg-card mt-6">
-          {/* Sidebar */}
+          {}
           {isSidebarOpen && (
             <div className="w-56 border-r border-border/70 bg-muted/10 flex flex-col shrink-0">
               <div className="px-4 py-3 border-b border-border/50 flex items-center justify-between">
@@ -1173,7 +1145,7 @@ export function DocumentationViewerPage() {
             </div>
           )}
 
-          {/* Content area */}
+          {}
           <div className="flex-1 flex flex-col overflow-hidden relative">
             {!isSidebarOpen && (
               <Button
@@ -1186,7 +1158,7 @@ export function DocumentationViewerPage() {
               </Button>
             )}
 
-            {/* Stale section banner */}
+            {}
             {showStaleBanner && (
               <StaleSectionBanner
                 changeSummary={staleSummary}
@@ -1197,7 +1169,7 @@ export function DocumentationViewerPage() {
               />
             )}
 
-            {/* ── API sub-tabs: Document / Api Spec ── */}
+            {}
             {activeTab === "api" && (
               <div className="flex border-b border-border px-4 shrink-0 mt-3">
                 <button
@@ -1225,7 +1197,7 @@ export function DocumentationViewerPage() {
               </div>
             )}
 
-            {/* ── API Spec viewer (shown when Api Spec sub-tab is active) ── */}
+            {}
             {activeTab === "api" && apiSubTab === "spec" && (
               <div className="flex-1 overflow-hidden flex flex-col">
                 {apiSpec ? (
@@ -1238,7 +1210,7 @@ export function DocumentationViewerPage() {
                       if (!id) return
                       setSyncingSpec(true)
                       try { const r = await apiSpecApi.sync(id); setApiSpec(r.spec) }
-                      catch { /* ignore */ } finally { setSyncingSpec(false) }
+                      catch {  } finally { setSyncingSpec(false) }
                     } : undefined}
                     onDelete={isOwner ? async () => {
                       if (!id) return
@@ -1263,11 +1235,11 @@ export function DocumentationViewerPage() {
               </div>
             )}
 
-            {/* Normal content (all tabs; hidden when API Spec sub-tab is open) */}
+            {}
             {!(activeTab === "api" && apiSubTab === "spec") && (
               <div className={cn("flex-1 overflow-y-auto", !isEditMode && "p-6 md:p-10")} data-content-viewer>
                 <div className={cn("mx-auto", "h-full flex flex-col")}>
-                  {/* Markdown tabs (readme, api, schema, internal, custom) */}
+                  {}
                   {(["readme", "api", "schema", "internal"].includes(activeTab) || activeTab.startsWith("custom_")) && (
                     isEditMode ? (
                       <div className="flex flex-col h-full border-0">
@@ -1302,7 +1274,7 @@ export function DocumentationViewerPage() {
                     )
                   )}
 
-                  {/* Security tab */}
+                  {}
                   {activeTab === "security" && (
                     editedContent.security ? (
                       <div className="prose prose-slate dark:prose-invert max-w-none">
@@ -1317,16 +1289,16 @@ export function DocumentationViewerPage() {
                     )
                   )}
 
-                  {/* Other Docs tab — file attachments panel */}
+                  {}
                   {activeTab === "other_docs" && project && (
                     <OtherDocsPanel projectId={project._id} />
                   )}
                 </div>
               </div>
-            )} {/* end: !(api && apiSubTab === spec) */}
+            )} {}
           </div>
 
-          {/* Version history panel */}
+          {}
           {isHistoryOpen && project && activeSectionName && (
             <div className="w-80 shrink-0 flex flex-col overflow-hidden">
               <VersionHistoryPanel
@@ -1341,7 +1313,7 @@ export function DocumentationViewerPage() {
             </div>
           )}
 
-          {/* AI Chat panel */}
+          {}
           {isChatOpen && project && (
             <div className="w-80 border-l border-border bg-card flex flex-col shrink-0">
               <AIChatPanel
@@ -1354,7 +1326,7 @@ export function DocumentationViewerPage() {
           )}
         </div>
 
-        {/* Stale diff modal (full-screen overlay) */}
+        {}
         {showStaleDiff && activeTabDef && (
           <StaleDiffModal
             sectionLabel={activeTabDef.label}
@@ -1366,7 +1338,7 @@ export function DocumentationViewerPage() {
           />
         )}
 
-        {/* Portal settings modal */}
+        {}
         {isOwner && id && (
           <PortalSettingsModal
             isOpen={portalModalOpen}
@@ -1378,7 +1350,7 @@ export function DocumentationViewerPage() {
           />
         )}
 
-        {/* Status-change modal */}
+        {}
         {id && (
           <ApiSpecImportModal
             projectId={id}
@@ -1422,7 +1394,7 @@ export function DocumentationViewerPage() {
         isLoading={actionLoading === "create-tab"}
       />
 
-      {/* Confirmation Dialog */}
+      {}
       <ConfirmDialog
         isOpen={confirmState.isOpen}
         title={confirmState.title}

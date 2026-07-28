@@ -28,7 +28,7 @@ import {
     RefreshCw,
     ArrowRight,
     FilesIcon,
-} from "lucide-react"
+} from "@/components/icons"
 import TopBar from "@/components/projects/top-bar"
 import { DocStatusBadge } from "@/components/projects/doc-status"
 import { useDocTrackerStore } from "@/store/doc-tracker"
@@ -37,7 +37,7 @@ import { DocStatus } from "@/types/DocStatusTypes"
 import { DOC_STATUS_ORDER } from "@/configs/DocStatusConfig"
 import { ApiProject } from "@/types/ProjectTypes"
 
-// ── Security grade colour ────────────────────────────────────────────────────
+
 function gradeColour(grade?: string) {
     switch (grade) {
         case "A": return "text-green-600 dark:text-green-400"
@@ -49,7 +49,7 @@ function gradeColour(grade?: string) {
     }
 }
 
-// ── Which doc sections are present ──────────────────────────────────────────
+
 const DOC_SECTIONS = [
     { key: "readme", label: "README", icon: BookOpen },
     { key: "apiReference", label: "API Ref", icon: FileCode2 },
@@ -58,7 +58,7 @@ const DOC_SECTIONS = [
     { key: "securityReport", label: "Security", icon: ShieldAlert },
 ] as const
 
-// ── Project card ─────────────────────────────────────────────────────────────
+
 function DocProjectCard({ project }: { project: ApiProject }) {
     const name = project.meta?.name || project.repoName
     const description = project.meta?.description
@@ -69,11 +69,11 @@ function DocProjectCard({ project }: { project: ApiProject }) {
     const security = project.security
     const updatedAgo = formatDistanceToNow(new Date(project.updatedAt), { addSuffix: true })
 
-    // Doc status tracking
+    
     const { getEntry, isOverdue } = useDocTrackerStore()
     const SECTION_KEYS = DOC_SECTIONS.map((s) => s.key)
 
-    // Dominant status: pick the most "attention-needed" non-draft status
+    
     const STATUS_PRIORITY: DocStatus[] = [
         "changes_requested", "in_review", "outdated", "published", "approved", "archived",
     ]
@@ -102,12 +102,12 @@ function DocProjectCard({ project }: { project: ApiProject }) {
                         </span>
                     )}
                 </div>
-                {/* Dominant doc status badge */}
+                {}
                 {dominantStatus && (
                     <DocStatusBadge status={dominantStatus} compact />
                 )}
 
-                {/* Language + stars */}
+                {}
                 <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                     {language && (
                         <span className="flex items-center gap-1">
@@ -129,7 +129,7 @@ function DocProjectCard({ project }: { project: ApiProject }) {
             </CardHeader>
 
             <CardContent className="flex-1 space-y-4 pb-3">
-                {/* Stats row */}
+                {}
                 {stats && (
                     <div className="grid grid-cols-3 gap-2 text-center">
                         {[
@@ -147,7 +147,7 @@ function DocProjectCard({ project }: { project: ApiProject }) {
                     </div>
                 )}
 
-                {/* Security counts */}
+                {}
                 {security?.counts && Object.values(security.counts).some(Boolean) && (
                     <div className="flex items-center gap-2 text-xs">
                         <ShieldAlert className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
@@ -169,7 +169,7 @@ function DocProjectCard({ project }: { project: ApiProject }) {
                     </div>
                 )}
 
-                {/* Tech stack */}
+                {}
                 {techStack.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                         {techStack.map((t) => (
@@ -203,7 +203,7 @@ function DocProjectCard({ project }: { project: ApiProject }) {
     )
 }
 
-// ── Empty state ─────────────────────────────────────────────────────────────
+
 function EmptyState() {
     return (
         <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -224,7 +224,7 @@ function EmptyState() {
     )
 }
 
-// ── Main page ────────────────────────────────────────────────────────────────
+
 export function DocumentationsPage() {
     const [completedProjects, setCompletedProjects] = useState<ApiProject[]>([])
     const [inProgressProjects, setInProgressProjects] = useState<ApiProject[]>([])
@@ -240,13 +240,13 @@ export function DocumentationsPage() {
         setIsLoading(true)
         setError(null)
         try {
-            // Fetch done projects (docs available) and running/queued separately
+            
             const [doneRes, activeRes] = await Promise.all([
                 projectsApi.list({ status: "done", limit: 100, sort: "-updatedAt" }),
                 projectsApi.list({ limit: 100, sort: "-updatedAt" }),
             ])
             setCompletedProjects(doneRes.projects as unknown as ApiProject[])
-            // Running/queued/error that aren't done
+            
             const nonDone = (activeRes.projects as unknown as ApiProject[]).filter(
                 (p) => p.status !== "done"
             )
@@ -262,7 +262,7 @@ export function DocumentationsPage() {
         loadProjects()
     }, [loadProjects])
 
-    // Client-side search filter
+    
     const filteredCompleted = completedProjects.filter((p) => {
         if (!search) return true
         const q = search.toLowerCase()
@@ -277,7 +277,7 @@ export function DocumentationsPage() {
         return SECTION_KEYS.some((k) => getEntry(p._id, k)?.status === statusFilter)
     })
 
-    // ── Pagination ──────────────────────────────────────────────────────
+    
     const {
         currentPage,
         totalPages,
@@ -293,14 +293,14 @@ export function DocumentationsPage() {
         resetOnChange: true,
     })
 
-    // ── Aggregate stats ──────────────────────────────────────────
+    
     const totalFiles = completedProjects.reduce((s, p) => s + (p.stats?.filesAnalysed ?? 0), 0)
     const totalEndpoints = completedProjects.reduce((s, p) => s + (p.stats?.endpoints ?? 0), 0)
     const totalModels = completedProjects.reduce((s, p) => s + (p.stats?.models ?? 0), 0)
 
     return (
         <div>
-            {/* Header */}
+            {}
             <TopBar title="Documentation" description="All documented projects across your account.">
                 <Button variant="outline" size="sm" onClick={loadProjects} className="gap-2 shrink-0 rounded-2xl">
                     <RefreshCw className="h-4 w-4" />
@@ -308,9 +308,9 @@ export function DocumentationsPage() {
                 </Button>
             </TopBar>
 
-            {/* content */}
+            {}
             <div className="space-y-6">
-                {/* Stats bar */}
+                {}
                 {!isLoading && completedProjects.length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {[
@@ -333,7 +333,7 @@ export function DocumentationsPage() {
                 )}
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    {/* Search */}
+                    {}
                     {!isLoading && completedProjects.length > 0 && (
                         <div className="relative w-full sm:max-w-sm">
                             <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
@@ -346,7 +346,7 @@ export function DocumentationsPage() {
                         </div>
                     )}
 
-                    {/* Status filter pills */}
+                    {}
                     {!isLoading && completedProjects.length > 0 && (
                         <div className="flex flex-wrap gap-2 items-center">
                             <button
@@ -382,7 +382,7 @@ export function DocumentationsPage() {
                     )}
                 </div>
 
-                {/* Error */}
+                {}
                 {error && (
                     <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                         <AlertTriangle className="h-4 w-4 shrink-0" />
@@ -390,7 +390,7 @@ export function DocumentationsPage() {
                     </div>
                 )}
 
-                {/* Loading skeleton */}
+                {}
                 {isLoading && (
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         {Array.from({ length: 6 }).map((_, i) => (
@@ -408,10 +408,10 @@ export function DocumentationsPage() {
                     </div>
                 )}
 
-                {/* Empty state */}
+                {}
                 {!isLoading && !error && completedProjects.length === 0 && <EmptyState />}
 
-                {/* Completed projects grid with pagination */}
+                {}
                 {!isLoading && filteredCompleted.length > 0 && (
                     <section>
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -420,7 +420,7 @@ export function DocumentationsPage() {
                             ))}
                         </div>
 
-                        {/* Pagination component */}
+                        {}
                         <Pagination
                             currentPage={currentPage}
                             totalPages={totalPages}
@@ -438,7 +438,7 @@ export function DocumentationsPage() {
                     </section>
                 )}
 
-                {/* In-progress / error projects */}
+                {}
                 {!isLoading && inProgressProjects.length > 0 && (
                     <section>
                         <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">

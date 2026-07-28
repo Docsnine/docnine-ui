@@ -18,7 +18,7 @@ import Loader1 from "../ui/loader1"
  *   2. Try postMessage as a fast path if opener happens to be reachable.
  *   3. Call window.close().
  *   4. If we are still open after 400 ms (close() is a no-op on non-popup
- *      tabs — e.g. when the popup was blocked and the main tab navigated
+ *      tabs : e.g. when the popup was blocked and the main tab navigated
  *      through GitHub instead), hard-navigate to /projects so the user ends
  *      up on the dashboard with the github= params.
  *
@@ -41,7 +41,7 @@ export function GithubOAuthCompletePage() {
                 "__docnine_github_oauth_result",
                 JSON.stringify({ status, user, msg, ts: Date.now() }),
             )
-        } catch { /* private-browsing storage quota — best-effort */ }
+        } catch { /* private-browsing storage quota : best-effort */ }
 
         // 2. postMessage as a fast path when opener is still reachable.
         if (window.opener && !window.opener.closed) {

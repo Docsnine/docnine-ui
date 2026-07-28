@@ -58,7 +58,7 @@ export function StatusChangeModal({
                         />
                     </div>
 
-                    {/* Tag member — only for changes_requested */}
+                    {/* Tag member : only for changes_requested */}
                     {isChangesRequested && (
                         <div className="space-y-1.5">
                             <label className="text-sm font-medium">

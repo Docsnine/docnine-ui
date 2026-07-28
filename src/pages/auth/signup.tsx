@@ -82,20 +82,20 @@ export function SignupPage() {
     <AuthShell>
       <div className="space-y-6">
 
-        {/* Heading */}
+        {}
         <div className="space-y-1.5">
-          <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Create your account</h1>
-          <p className="text-[14px] text-muted-foreground">Turn your projects into living documentation.</p>
+          <h1 className="font-display text-[24px] font-semibold tracking-[0.02em] leading-snug text-foreground">Create your account</h1>
+          <p className="text-[14px] text-muted-foreground">Connect a project and generate your first docs in minutes.</p>
         </div>
 
-        {/* Error */}
+        {}
         {error && (
           <div className="rounded-xl bg-destructive/10 border border-destructive/20 px-4 py-3 text-[13px] text-destructive">
             {error}
           </div>
         )}
 
-        {/* OAuth */}
+        {}
         <div className="space-y-2.5">
           <button
             type="button"
@@ -115,14 +115,14 @@ export function SignupPage() {
           </button>
         </div>
 
-        {/* Divider */}
+        {}
         <div className="flex items-center gap-3">
           <div className="h-px flex-1 bg-border" />
           <span className="text-[12px] text-muted-foreground uppercase tracking-wider">or</span>
           <div className="h-px flex-1 bg-border" />
         </div>
 
-        {/* Form */}
+        {}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="name" className="text-[13px] font-medium">Full name</Label>
@@ -159,7 +159,7 @@ export function SignupPage() {
             {errors.password && <p className="text-[12px] text-destructive">{errors.password.message}</p>}
           </div>
 
-          {/* Terms */}
+          {}
           <div className="flex items-start gap-2.5 pt-1">
             <input
               type="checkbox"
@@ -194,7 +194,7 @@ export function SignupPage() {
           </Button>
         </form>
 
-        {/* Footer */}
+        {}
         <p className="text-center text-[13px] text-muted-foreground">
           Already have an account?{" "}
           <Link to="/login" className="text-foreground font-medium hover:text-primary transition-colors">

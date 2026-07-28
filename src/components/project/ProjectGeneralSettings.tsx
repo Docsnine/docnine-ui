@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Loader, AlertCircle, CheckCircle } from "lucide-react";
+import { Loader, AlertCircle, CheckCircle } from "@/components/icons";
 import { API_BASE, getAccessToken } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

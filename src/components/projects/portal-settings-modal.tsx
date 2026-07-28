@@ -3,7 +3,7 @@ import {
     Globe, Lock, Eye, EyeOff, Copy, Check, ExternalLink,
     Settings, ChevronDown, Palette, FileText, Link as LinkIcon,
     AlertTriangle, Globe2, Shield
-} from "lucide-react"
+} from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,7 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { cn } from "@/lib/utils"
 import Loader1 from "../ui/loader1"
 import { PORTAL_SECTION_KEYS, PORTAL_SECTION_LABELS, TAB_IDS, TAB_LABELS, TabId, VISIBILITY_OPTIONS } from "@/configs/PortalConfig"
-import { ApiPortal, PortalAccessMode, PortalBranding, PortalSectionConfig, PortalSectionKey, PortalSectionVisibility, PortalSettingsModalProps } from "@/types/PortalTypes"
+import { DEFAULT_PORTAL_TEMPLATE_ID, PORTAL_AUDIENCE_LABELS, PORTAL_TEMPLATES, getPortalTemplate } from "@/configs/PortalTemplates"
+import { ApiPortal, PortalAccessMode, PortalBranding, PortalSectionConfig, PortalSectionKey, PortalSectionVisibility, PortalSettingsModalProps, PortalTemplateId } from "@/types/PortalTypes"
 import { portalApi } from "@/lib/api"
 
 const FRONTEND_ORIGIN = import.meta.env.VITE_APP_URL || window.location.origin
@@ -44,7 +45,7 @@ export function PortalSettingsModal({
     const [error, setError] = useState<string | null>(null)
     const [saveSuccess, setSaveSuccess] = useState(false)
 
-    // Draft state — uncommitted edits
+    // Draft state : uncommitted edits
     const [draftSections, setDraftSections] = useState<PortalSectionConfig[]>([])
     const [draftBranding, setDraftBranding] = useState<PortalBranding>({})
     const [draftSeo, setDraftSeo] = useState<{ seoTitle: string; seoDescription: string }>({
@@ -53,6 +54,7 @@ export function PortalSettingsModal({
     })
     const [draftDomain, setDraftDomain] = useState("")
     const [draftAccessMode, setDraftAccessMode] = useState<PortalAccessMode>("public")
+    const [draftTemplateId, setDraftTemplateId] = useState<PortalTemplateId>(DEFAULT_PORTAL_TEMPLATE_ID)
     const [draftPassword, setDraftPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [passwordChanged, setPasswordChanged] = useState(false)
@@ -72,6 +74,7 @@ export function PortalSettingsModal({
                 setDraftSeo({ seoTitle: p.seoTitle ?? "", seoDescription: p.seoDescription ?? "" })
                 setDraftDomain(p.customDomain ?? "")
                 setDraftAccessMode(p.accessMode ?? "public")
+                setDraftTemplateId(p.templateId ?? DEFAULT_PORTAL_TEMPLATE_ID)
             }
         } catch {
             setError("Could not load portal settings.")
@@ -83,7 +86,6 @@ export function PortalSettingsModal({
     useEffect(() => {
         if (!isOpen) return
         if (initialPortal !== undefined) {
-            // Prefer the caller-provided data to avoid redundant API call
             setPortal(initialPortal)
             if (initialPortal) {
                 setDraftSections(initialPortal.sections ?? [])
@@ -91,6 +93,7 @@ export function PortalSettingsModal({
                 setDraftSeo({ seoTitle: initialPortal.seoTitle ?? "", seoDescription: initialPortal.seoDescription ?? "" })
                 setDraftDomain(initialPortal.customDomain ?? "")
                 setDraftAccessMode(initialPortal.accessMode ?? "public")
+                setDraftTemplateId(initialPortal.templateId ?? DEFAULT_PORTAL_TEMPLATE_ID)
             }
         } else {
             loadPortal()
@@ -133,6 +136,7 @@ export function PortalSettingsModal({
                 seoDescription: draftSeo.seoDescription || undefined,
                 customDomain: draftDomain || undefined,
                 accessMode: draftAccessMode,
+                templateId: draftTemplateId,
             }
             if (passwordChanged) {
                 body.password = draftPassword || null
@@ -392,11 +396,130 @@ export function PortalSettingsModal({
                                 </div>
                             )}
 
+                            {activeTab === "templates" && (
+                                <div className="space-y-4">
+                                    <p className="text-xs text-muted-foreground">
+                                        Choose a structure for pages.
+                                    </p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {PORTAL_TEMPLATES.map((template) => {
+                                            const selected = draftTemplateId === template.id
+                                            const isTop = template.layout === "top-nav" || template.layout === "hero-docs"
+                                            const isHero = template.layout === "hero-docs"
+                                            const isDense = template.layout === "dense-rail"
+                                            return (
+                                                <button
+                                                    key={template.id}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setDraftTemplateId(template.id)
+                                                        setDraftBranding((b) => ({
+                                                            ...b,
+                                                            ...template.branding,
+                                                        }))
+                                                    }}
+                                                    className={cn(
+                                                        "rounded-xl border p-3 text-left transition-colors",
+                                                        selected
+                                                            ? "border-primary bg-primary/5 ring-1 ring-primary/30"
+                                                            : "border-border hover:border-primary/40",
+                                                    )}
+                                                >
+                                                    <div
+                                                        className="mb-3 overflow-hidden rounded-lg border border-border/80"
+                                                        style={{ backgroundColor: template.preview.surface }}
+                                                    >
+                                                        {isHero && (
+                                                            <div
+                                                                className="h-7 flex items-end px-2 pb-1.5"
+                                                                style={{ backgroundColor: template.preview.header }}
+                                                            >
+                                                                <div className="h-1 w-12 rounded-full bg-white/70" />
+                                                            </div>
+                                                        )}
+                                                        {!isHero && (
+                                                            <div
+                                                                className="h-5 border-b"
+                                                                style={{
+                                                                    backgroundColor: template.preview.header,
+                                                                    borderColor: `${template.preview.accent}22`,
+                                                                }}
+                                                            />
+                                                        )}
+                                                        {isTop ? (
+                                                            <div className="p-2 space-y-2">
+                                                                <div className="flex gap-1">
+                                                                    {[1, 2, 3].map((n) => (
+                                                                        <div
+                                                                            key={n}
+                                                                            className="h-1.5 flex-1 rounded-full"
+                                                                            style={{
+                                                                                backgroundColor:
+                                                                                    n === 1
+                                                                                        ? template.preview.accent
+                                                                                        : `${template.preview.accent}33`,
+                                                                            }}
+                                                                        />
+                                                                    ))}
+                                                                </div>
+                                                                <div className="space-y-1.5 px-1">
+                                                                    <div className="h-1 w-full rounded-full bg-black/10" />
+                                                                    <div className="h-1 w-4/5 rounded-full bg-black/10" />
+                                                                    <div className="h-1 w-3/5 rounded-full bg-black/10" />
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex h-16">
+                                                                <div
+                                                                    className={cn(
+                                                                        "shrink-0 border-r",
+                                                                        isDense ? "w-12" : "w-10",
+                                                                    )}
+                                                                    style={{
+                                                                        backgroundColor: template.preview.sidebar,
+                                                                        borderColor: `${template.preview.accent}18`,
+                                                                    }}
+                                                                />
+                                                                <div className="flex-1 p-2 space-y-1.5">
+                                                                    <div
+                                                                        className="h-1.5 w-10 rounded-full"
+                                                                        style={{ backgroundColor: template.preview.accent }}
+                                                                    />
+                                                                    <div className="h-1 w-full rounded-full bg-black/10" />
+                                                                    <div className="h-1 w-4/5 rounded-full bg-black/10" />
+                                                                    <div className="h-1 w-3/5 rounded-full bg-black/10" />
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className="min-w-0">
+                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                <p className="text-sm font-medium">{template.label}</p>
+                                                                <span className="rounded-full border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                                                                    {PORTAL_AUDIENCE_LABELS[template.audience]}
+                                                                </span>
+                                                            </div>
+                                                            <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed">
+                                                                {template.description}
+                                                            </p>
+                                                        </div>
+                                                        {selected && (
+                                                            <Check className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+                                                        )}
+                                                    </div>
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* ── Branding tab ── */}
                             {activeTab === "branding" && (
                                 <div className="space-y-4">
                                     <p className="text-xs text-muted-foreground">
-                                        Customize the look of your public portal. All fields are optional — a clean default theme is applied when not set.
+                                        Customize the look of your public portal.
                                     </p>
 
                                     <div className="grid grid-cols-2 gap-4">

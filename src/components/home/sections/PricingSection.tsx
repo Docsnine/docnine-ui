@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Check, ArrowRight } from "lucide-react"
+import { Check, ArrowRight } from "@/components/icons"
 import { Link } from "react-router-dom"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -9,12 +9,12 @@ import { BillingPlan } from "@/types/BillingTypes"
 
 gsap.registerPlugin(ScrollTrigger)
 
-/* Fallback plans shown when the API is unreachable — must match server/config/plans.js */
+/* Fallback plans shown when the API is unreachable : must match server/config/plans.js */
 const FALLBACK_PLANS: BillingPlan[] = [
     {
         id: "free",
         name: "Free",
-        tagline: "Solo devs exploring the platform.",
+        tagline: "For solo developers trying Docnine.",
         prices: { monthly: 0, annual: 0, annualTotal: null, savingsPercent: 0 },
         limits: { projects: 2, seats: 1, extraSeatPriceMonthly: null, attachmentsPerProject: 3, maxFileSizeMb: 5, aiChatsPerMonth: 0, portals: 0, versionHistoryDays: 0, exportFormats: [] },
         features: { shareViewOnly: false, shareEdit: false, maxShares: 0, archiveRestore: false, customDomain: false, docApproval: false, progressTracker: false, openApiImporter: false, apiWebhookAccess: false, githubSync: false },
@@ -22,8 +22,8 @@ const FALLBACK_PLANS: BillingPlan[] = [
     {
         id: "starter",
         name: "Starter",
-        tagline: "Freelancers & solo developers who need unlimited projects and exports.",
-        prices: { monthly: 10.89, annual: 8.82, annualTotal: 105.84, savingsPercent: 19 },
+        tagline: "For freelancers and solo developers who need unlimited projects and exports.",
+        prices: { monthly: 6, annual: 4.86, annualTotal: 58.32, savingsPercent: 19 },
         limits: { projects: null, seats: 1, extraSeatPriceMonthly: null, attachmentsPerProject: null, maxFileSizeMb: 20, aiChatsPerMonth: 0, portals: 1, versionHistoryDays: 30, exportFormats: ["pdf"] },
         features: { shareViewOnly: true, shareEdit: false, maxShares: 5, archiveRestore: true, customDomain: false, docApproval: false, progressTracker: true, openApiImporter: false, apiWebhookAccess: false, githubSync: false },
     },
@@ -93,11 +93,11 @@ export function PricingSection() {
             <div className="container mx-auto max-w-5xl text-center">
                 {/* Section Tag */}
                 <div className="pricing-heading">
-                <p className="font-mono text-sm text-primary mb-4">// Our Pricing //</p>
+                <p className="font-mono text-sm text-primary mb-4">Pricing</p>
 
                 <h2 className="text-[32px] leading-[1.1] sm:text-[44px] font-extrabold tracking-[-0.02em] text-foreground mb-4">
-                    Flexible Plans That Scale<br />
-                    With <span className="text-muted-foreground">Your Documentation Goals</span>
+                    Simple plans that grow<br />
+                    with <span className="text-muted-foreground">your team</span>
                 </h2>
                 </div>
 

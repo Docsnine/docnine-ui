@@ -10,7 +10,7 @@
 
   <!-- ═══════════════════════════════════════════════════════════════
        LANDING / HOME
-       Priority 1.0 — most important page, updated frequently
+       Priority 1.0 : most important page, updated frequently
        ═══════════════════════════════════════════════════════════════ -->
 
   <url>
@@ -20,14 +20,14 @@
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://docnineai.com/web-app-manifest-512x512.png</image:loc>
-      <image:title>Docnine — AI Documentation for Engineering Teams</image:title>
+      <image:title>Docnine : AI Documentation for Engineering Teams</image:title>
       <image:caption>Ship better documentations, faster. Stop writing documentation by hand. Create and maintain developer documentation with AI. Docnine generates docs from your codebase, then keeps them up to date as your code evolves.</image:caption>
     </image:image>
   </url>
 
   <!-- ═══════════════════════════════════════════════════════════════
        CORE MARKETING PAGES
-       High priority — conversion-critical, updated occasionally
+       High priority : conversion-critical, updated occasionally
        ═══════════════════════════════════════════════════════════════ -->
 
   <url>
@@ -53,7 +53,7 @@
 
   <!-- ═══════════════════════════════════════════════════════════════
        AUTH PAGES
-       Indexed — drive signup/login discovery from search
+       Indexed : drive signup/login discovery from search
        ═══════════════════════════════════════════════════════════════ -->
 
   <url>
@@ -72,7 +72,7 @@
 
   <!-- ═══════════════════════════════════════════════════════════════
        LEGAL PAGES
-       Low priority — required for crawlers, rarely change
+       Low priority : required for crawlers, rarely change
        ═══════════════════════════════════════════════════════════════ -->
 
   <url>

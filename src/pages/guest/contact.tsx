@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import BackgroundGrid from "@/components/ui/background-grid"
-import { Github, Mail, MessageSquare, Send, Twitter } from "lucide-react"
+import { Github, Mail, MessageSquare, Send, Twitter } from "@/components/icons"
 
 export function ContactPage() {
     const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" })
@@ -17,7 +17,7 @@ export function ContactPage() {
         e.preventDefault()
         setStatus("sending")
         try {
-            // Replace with your actual contact endpoint when ready
+            
             await new Promise((resolve) => setTimeout(resolve, 1200))
             setStatus("sent")
             setForm({ name: "", email: "", subject: "", message: "" })
@@ -28,26 +28,26 @@ export function ContactPage() {
 
     return (
         <div>
-            {/* <BackgroundGrid /> */}
+            {}
 
-            {/* <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" /> */}
-            {/* <div className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[40%] h-[30%] rounded-full bg-primary/10 blur-[100px] pointer-events-none z-0" /> */}
+            {}
+            {}
 
             <section className="relative z-10 pt-20 px-4">
                 <div className="container mx-auto max-w-6xl mb-24">
-                    {/* Page heading */}
+                    {}
                     <div className="mb-16 text-center">
                         <p className="text-sm font-medium text-primary uppercase tracking-widest mb-3">Get in touch</p>
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
-                            Contact Us
+                            Contact us
                         </h1>
                         <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-                            Have a question, found a bug, or just want to say hello? We'd love to hear from you.
+                            Questions, bug reports, or just saying hello , we’d love to hear from you.
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-12">
-                        {/* Contact info */}
+                        {}
                         <div className="md:col-span-2 space-y-8">
                             <div>
                                 <h2 className="text-lg font-semibold text-foreground mb-5">Ways to reach us</h2>
@@ -98,20 +98,7 @@ export function ContactPage() {
                                             </a>
                                         </div>
                                     </li>
-                                    {/* <li className="flex items-start gap-4">
-                                        <div className="flex items-center justify-center w-10 h-10 rounded-full border border-border bg-muted/50 shrink-0">
-                                            <MessageSquare className="h-4 w-4 text-primary" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-foreground">Community</p>
-                                            <a
-                                                href="#"
-                                                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                                            >
-                                                Join our Discord
-                                            </a>
-                                        </div>
-                                    </li> */}
+                                    {}
                                 </ul>
                             </div>
 
@@ -124,7 +111,7 @@ export function ContactPage() {
                             </div>
                         </div>
 
-                        {/* Contact form */}
+                        {}
                         <div className="md:col-span-3">
                             <form
                                 onSubmit={handleSubmit}

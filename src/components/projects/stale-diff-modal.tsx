@@ -1,4 +1,4 @@
-import { X } from "lucide-react"
+import { X } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { DocRenderer } from "@/components/projects/doc-render"
 import Loader1 from "@/components/ui/loader1"
@@ -26,7 +26,7 @@ export function StaleDiffModal({
             <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-card shrink-0">
                 <div>
                     <h2 className="text-[14px] font-semibold">
-                        Compare versions — {sectionLabel}
+                        Compare versions : {sectionLabel}
                     </h2>
                     <p className="text-[12px] text-muted-foreground mt-0.5">
                         Your edit (left) vs the new AI version (right)
@@ -56,11 +56,11 @@ export function StaleDiffModal({
 
             {/* Side-by-side panes */}
             <div className="flex flex-1 overflow-hidden">
-                {/* Left — user edit */}
+                {/* Left : user edit */}
                 <div className="flex-1 flex flex-col overflow-hidden border-r border-border">
                     <div className="px-5 py-2 border-b border-border/40 bg-emerald-500/5 shrink-0">
                         <p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                            Your Edit — Active
+                            Your Edit : Active
                         </p>
                     </div>
                     <div className="flex-1 overflow-y-auto px-6 py-5">
@@ -70,7 +70,7 @@ export function StaleDiffModal({
                     </div>
                 </div>
 
-                {/* Right — AI version */}
+                {/* Right : AI version */}
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <div className="px-5 py-2 border-b border-border/40 bg-primary/5 shrink-0">
                         <p className="text-[11px] font-semibold uppercase tracking-wider text-primary">

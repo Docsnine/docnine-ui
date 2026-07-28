@@ -2,7 +2,7 @@
  * Component: ZIP File Upload Step
  */
 
-import { AlertCircle, CheckCircle2, Upload } from "lucide-react"
+import { AlertCircle, CheckCircle2, Upload } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { DialogFooter } from "@/components/ui/dialog"

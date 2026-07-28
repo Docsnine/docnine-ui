@@ -1,11 +1,15 @@
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Play } from "lucide-react"
+import { ArrowRight } from "@/components/icons"
 import { Link } from "react-router-dom"
 import { useEffect, useRef } from "react"
 import gsap from "gsap"
-import { NoiseOverlay } from "@/components/ui/noise-overlay"
+import { PremiumGreenBackdrop } from "@/components/ui/premium-green-backdrop"
+import { HeroProductMockup } from "./HeroProductMockup"
+import { API_BASE } from "@/lib/api"
 
-const HERO_IMAGE = "https://images.unsplash.com/photo-1668181736908-0d86519cc01a?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+function startGoogleOAuth() {
+  window.location.href = `${API_BASE}/auth/google/start`
+}
 
 export function HeroSection() {
   const heroRef = useRef<HTMLDivElement>(null)
@@ -13,26 +17,12 @@ export function HeroSection() {
   useEffect(() => {
     if (!heroRef.current) return
     const ctx = gsap.context(() => {
-      gsap.from(".hero-headline", {
-        y: 40,
+      gsap.from(".hero-reveal", {
+        y: 18,
         opacity: 0,
-        duration: 0.9,
-        ease: "power4.out",
-        stagger: 0.15,
-      })
-      gsap.from(".hero-sub", {
-        y: 30,
-        opacity: 0,
-        duration: 0.8,
+        duration: 0.65,
         ease: "power3.out",
-        delay: 0.4,
-      })
-      gsap.from(".hero-cta", {
-        y: 20,
-        opacity: 0,
-        duration: 0.7,
-        ease: "power3.out",
-        delay: 0.6,
+        stagger: 0.08,
       })
     }, heroRef)
     return () => ctx.revert()
@@ -41,61 +31,84 @@ export function HeroSection() {
   return (
     <section
       ref={heroRef}
-      className="relative z-10 overflow-hidden px-4 flex flex-col"
-      style={{ minHeight: 'calc(100vh - 60px)' }}
+      className="relative z-10 overflow-hidden min-h-[min(100dvh-3.5rem,920px)] sm:min-h-[min(100dvh-4rem,920px)]"
     >
-      <div aria-hidden="true" className="absolute inset-0 z-0">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url("${HERO_IMAGE}")` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_45%,transparent_0%,rgba(0,0,0,0.45)_100%)]" />
-      </div>
+      <PremiumGreenBackdrop grain="subtle" />
 
-      <NoiseOverlay opacity={1} blendMode="overlay" />
-      <NoiseOverlay opacity={1} blendMode="soft-light" className="[background-size:150px_150px]" />
+      <svg
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-[1] h-full w-full text-primary/25 dark:text-teal-300/25"
+        viewBox="0 0 1440 900"
+        preserveAspectRatio="xMidYMid slice"
+        fill="none"
+      >
+        <path d="M420 40C620 160 760 280 880 460C1000 640 1180 760 1440 900" stroke="currentColor" strokeWidth="1.5" opacity="0.9" />
+        <path d="M280 120C520 220 700 360 820 540C940 720 1160 820 1440 900" stroke="currentColor" strokeWidth="1.75" opacity="1" />
+        <path d="M520 0C700 140 820 280 920 480C1040 700 1240 800 1440 900" stroke="currentColor" strokeWidth="1.25" opacity="0.45" />
+        <path d="M180 220C460 300 660 440 780 620C880 760 1100 840 1380 900" stroke="currentColor" strokeWidth="1.5" opacity="0.55" />
+        <path d="M600 60C780 180 900 320 1000 520C1100 700 1280 820 1440 900" stroke="currentColor" strokeWidth="1.25" opacity="0.4" />
+        <path d="M80 340C360 400 580 520 720 680C840 800 1080 860 1320 900" stroke="currentColor" strokeWidth="1.25" opacity="0.35" />
+        <path d="M340 0C560 100 720 240 840 440C960 640 1180 780 1440 900" stroke="currentColor" strokeWidth="1.35" opacity="0.5" />
+      </svg>
 
-      <div className="container mx-auto max-w-6xl relative z-10 flex-1 flex flex-col">
-        <div className="flex-1 flex flex-col items-center justify-center text-center py-16">
+      <div className="relative z-10 mx-auto grid min-h-[inherit] w-full max-w-6xl grid-cols-1 px-4 sm:px-6 lg:grid-cols-2 lg:items-stretch lg:gap-8 lg:px-6 xl:gap-10">
+        <div className="relative z-20 flex flex-col justify-center py-12 sm:py-14 lg:justify-start lg:pb-16 lg:pt-20 xl:pt-24 2xl:pt-28">
+          <div className="w-full max-w-xl text-left lg:max-w-md xl:max-w-xl">
+            <div className="hero-reveal mb-4 inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/50 px-3 py-1.5 text-[11px] backdrop-blur-sm sm:mb-6 sm:text-[12px] dark:border-white/12 dark:bg-white/[0.04]">
+              <span className="text-muted-foreground">Seablings Technology</span>
+            </div>
 
-          <h1 className="hero-headline text-[38px] leading-[1.05] sm:text-[54px] md:text-[70px] font-extrabold tracking-[-0.03em] mb-6 max-w-4xl text-white [text-shadow:0_2px_24px_rgba(0,0,0,0.45)]">
-            Generate Your{" "}
-            <br className="hidden sm:block" />
-            Smart{" "}
-            <span className="bg-gradient-to-r from-teal-200 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
-              Documentation
-            </span>
-            <br className="hidden sm:block" />
-            <span className="bg-gradient-to-r from-teal-200 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
-              Partners{" "}
-            </span>
-            From Today
-          </h1>
+            <h1 className="hero-reveal text-hero mb-4 text-foreground sm:mb-5">
+              Docs that stay in sync with your Infrastructure
+            </h1>
 
-          <p className="hero-sub max-w-2xl text-base md:text-lg text-white/85 leading-relaxed mb-10 [text-shadow:0_1px_12px_rgba(0,0,0,0.35)]">
-            Empower your dev team with AI-driven tools to scan, generate, and maintain
-            top-tier documentation effortlessly.
-          </p>
+            <p className="hero-reveal mb-7 max-w-md text-[14px] leading-relaxed text-muted-foreground sm:mb-9 sm:text-[15px] md:text-base">
+              Connect a repo, generate clear documentation, and keep every page up to date as your
+              team ships , without rewriting everything by hand.
+            </p>
 
-          <div className="hero-cta flex flex-col sm:flex-row items-center gap-4">
-            <Button
-              asChild
-              className="bg-primary text-white hover:bg-primary/90 rounded-full px-8 h-12 text-base font-semibold shadow-[0_0_32px_rgba(13,148,136,0.45)] transition-all"
-            >
-              <Link to="/signup">
-                Get Started <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="border-white/20 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm rounded-full px-8 h-12 text-base font-semibold transition-all"
-            >
-              <a href="https://github.com/Docsnine" target="_blank" rel="noreferrer">
-                <Play className="mr-2 h-4 w-4 fill-current" /> Watch Demo
-              </a>
-            </Button>
+            <div className="hero-reveal flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+              <Button
+                asChild
+                className="h-11 w-full rounded-lg bg-foreground px-5 text-[14px] font-semibold text-background hover:bg-foreground/90 sm:w-auto"
+              >
+                <Link to="/signup">
+                  Get started <ArrowRight className="ml-1.5 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={startGoogleOAuth}
+                className="h-11 w-full rounded-lg border-border bg-background/40 px-5 text-[14px] font-medium text-foreground hover:bg-muted sm:w-auto dark:border-white/15 dark:bg-transparent dark:hover:bg-white/8"
+              >
+                <svg viewBox="0 0 24 24" className="mr-2 h-4 w-4 shrink-0" aria-hidden>
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                </svg>
+                Sign up with Google
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile / tablet */}
+        <div className="hero-reveal relative h-[240px] w-full overflow-hidden sm:h-[300px] md:h-[360px] lg:hidden">
+          <div className="absolute inset-0 overflow-hidden">
+            <HeroProductMockup flush />
+          </div>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[var(--hero-surface)] to-transparent"
+          />
+        </div>
+
+        {/* Desktop: clipped to the right column , bleeds right only, never into copy */}
+        <div className="hero-reveal pointer-events-none relative hidden min-h-full lg:block">
+          <div className="absolute bottom-0 left-0 top-20 overflow-hidden xl:top-24 2xl:top-28 right-[calc(-1*(1.5rem+max(0px,(100vw-72rem)/2)))]">
+            <HeroProductMockup flush />
           </div>
         </div>
       </div>

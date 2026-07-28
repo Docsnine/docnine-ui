@@ -1,4 +1,4 @@
-import { Github, MessageSquare, Twitter } from 'lucide-react'
+import { Github, MessageSquare, Twitter } from "@/components/icons"
 import { Button } from '../ui/button'
 import { Link } from 'react-router-dom'
 import { ApplicationLogo } from './application-logo';
@@ -13,7 +13,7 @@ export function Footer() {
                             <ApplicationLogo className='!h-9' />
                         </div>
                         <p className="text-muted-foreground leading-relaxed max-w-sm mb-6">
-                            Documentation that Works as Hard as You Do.
+                            Clear, up-to-date documentation for teams who ship fast.
                         </p>
 
                         {/* Email Subscribe */}
@@ -42,8 +42,8 @@ export function Footer() {
                     <div>
                         <h4 className="font-semibold text-sm text-foreground mb-6">Features</h4>
                         <ul className="space-y-3 text-muted-foreground text-sm">
-                            <li><a href="/#features" className="hover:text-foreground transition-colors">AI Doc Generation</a></li>
-                            <li><a href="/#features" className="hover:text-foreground transition-colors">Chat with Codebase</a></li>
+                            <li><a href="/#features" className="hover:text-foreground transition-colors">AI doc generation</a></li>
+                            <li><a href="/#features" className="hover:text-foreground transition-colors">Chat with your codebase</a></li>
                             <li><a href="/#features" className="hover:text-foreground transition-colors">Integrations</a></li>
                             <li><a href="/#features" className="hover:text-foreground transition-colors">Exports</a></li>
                         </ul>

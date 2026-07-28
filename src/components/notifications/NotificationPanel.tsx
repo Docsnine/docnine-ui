@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bell } from "lucide-react";
+import { Bell } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { useNotificationStore } from "@/store/useNotificationStore";
 import { NotificationItem } from "./NotificationItem";

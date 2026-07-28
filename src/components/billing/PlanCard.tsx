@@ -1,5 +1,6 @@
-import { ArrowRight, Badge, Check, Star, User, Users, Zap } from "lucide-react"
+import { ArrowRight, Check, Star, User, Users, Zap } from "@/components/icons"
 import { Button } from "../ui/button"
+import { Badge } from "../ui/badge"
 import { cn } from "@/lib/utils"
 import Loader1 from "../ui/loader1"
 import { BillingPlan } from "@/types/BillingTypes"
@@ -56,7 +57,7 @@ function PlanCard({
 
             {/* Header */}
             <div className="mb-4 flex items-center gap-2">
-                <Icon className={cn("h-5 w-5", accent)} />
+                {/* <Icon className={cn("h-5 w-5", accent)} /> */}
                 <span className="font-semibold">{plan.name}</span>
             </div>
 
@@ -71,7 +72,7 @@ function PlanCard({
                 ) : (
                     <div className="flex items-end gap-1">
                         <span className="text-3xl font-bold">${price}</span>
-                        <span className="mb-1 text-sm text-muted-foreground">${plan.id == "team" ? "/user" : ""}/mo</span>
+                        <span className="mb-1 text-sm text-muted-foreground">{plan.id == "team" ? "/user" : ""}/mo</span>
                     </div>
                 )}
                 {annual && plan.prices.annualTotal != null && plan.prices.monthly > 0 && (

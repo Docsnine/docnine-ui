@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react"
-import { AlertCircle, RefreshCw } from "lucide-react"
+import { AlertCircle, RefreshCw } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 

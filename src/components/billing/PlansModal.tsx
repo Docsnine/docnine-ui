@@ -1,6 +1,6 @@
 /**
  * ----------------------------------------------------------------------------------
- * PlansModal — inline dialog showing all pricing plans.
+ * PlansModal : inline dialog showing all pricing plans.
  * Opened from UpgradeModal "View all plans" so the user never leaves the page.
  * ----------------------------------------------------------------------------------
  */
@@ -14,7 +14,7 @@ import {
     User,
     Zap,
     X,
-} from "lucide-react"
+} from "@/components/icons"
 import {
     Dialog,
     DialogContent,
@@ -92,10 +92,7 @@ export function PlansModal({ open, onClose }: PlansModalProps) {
                         </span>
                         <Switch checked={annual} onCheckedChange={setAnnual} aria-label="Toggle annual billing" />
                         <span className={cn("text-sm font-medium transition-colors", annual ? "text-foreground" : "text-muted-foreground")}>
-                            Annual
-                            <Badge className="ml-1.5 bg-primary/10 text-green-400 border-primary/20 text-[10px] px-1.5 py-0">
-                                Save up to 20%
-                            </Badge>
+                            Annual - Save up to 20%
                         </span>
                     </div>
                 </DialogHeader>

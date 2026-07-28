@@ -3,13 +3,9 @@ import BackgroundGrid from "@/components/ui/background-grid"
 export function PrivacyPage() {
     return (
         <div>
-            <BackgroundGrid />
-
-            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
-
             <section className="relative z-10 py-20 px-4">
                 <div className="container mx-auto max-w-3xl mb-24">
-                    {/* Page heading */}
+                    { }
                     <div className="mb-12">
                         <p className="text-sm font-medium text-primary uppercase tracking-widest mb-3">Legal</p>
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
@@ -105,9 +101,9 @@ export function PrivacyPage() {
                                 We may use the following third-party providers to operate the Service:
                             </p>
                             <ul className="list-disc list-inside space-y-2 mt-2">
-                                <li><strong className="text-foreground">MongoDB Atlas</strong> — database hosting.</li>
-                                <li><strong className="text-foreground">Vercel</strong> — infrastructure and deployment.</li>
-                                <li><strong className="text-foreground">OpenAI / LLM providers</strong> — AI pipeline processing (no data is used to train third-party models).</li>
+                                <li><strong className="text-foreground">MongoDB Atlas</strong> : database hosting.</li>
+                                <li><strong className="text-foreground">Vercel</strong> : infrastructure and deployment.</li>
+                                <li><strong className="text-foreground">OpenAI / LLM providers</strong> : AI pipeline processing (no data is used to train third-party models).</li>
                             </ul>
                             <p className="mt-4">
                                 Each provider is bound by their own privacy policies and data processing agreements.

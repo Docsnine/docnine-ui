@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
-import { UserPlus, X, Mail, Shield, Eye, Pencil, RotateCcw, Ban, Check, AlertCircle, User } from "lucide-react"
+import { UserPlus, X, Mail, Shield, Eye, Pencil, RotateCcw, Ban, Check, AlertCircle, User } from "@/components/icons"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -456,8 +456,8 @@ export function SharePanel({ open, onOpenChange, projectId, projectName, isOwner
         {/* Footer note */}
         <div className="shrink-0 border-t border-border pt-3 text-xs text-muted-foreground">
           <p>
-            <strong>Viewer</strong> — can read documentation and attachments.{" "}
-            <strong>Editor</strong> — can also edit docs and upload files.{" "}
+            <strong>Viewer</strong> : can read documentation and attachments.{" "}
+            <strong>Editor</strong> : can also edit docs and upload files.{" "}
             {!canShareEdit && <span className="text-primary font-medium cursor-pointer" onClick={() => { setUpgradeFeature({ name: "Editor Access", plan: "pro", description: "Upgrade to Pro to invite collaborators with editor access." }); setUpgradeOpen(true) }}>Upgrade to Pro for editor access.</span>}
           </p>
           {maxShares !== null && (

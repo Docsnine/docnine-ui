@@ -6,7 +6,7 @@ import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, MailCheck } from "lucide-react"
+import { ArrowLeft, MailCheck } from "@/components/icons"
 import { authApi } from "@/lib/api"
 import Loader1 from "@/components/ui/loader1"
 import { ApiException } from "@/types/ApiTypes"
@@ -52,7 +52,7 @@ export function ForgotPasswordPage() {
             <MailCheck className="h-5 w-5 text-primary" />
           </div>
           <div className="space-y-1.5">
-            <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Check your inbox</h1>
+            <h1 className="font-display text-[24px] font-semibold tracking-[0.02em] leading-snug text-foreground">Check your inbox</h1>
             <p className="text-[14px] text-muted-foreground leading-relaxed">
               If an account exists with that email, we've sent a password reset link. It may take a minute to arrive.
             </p>
@@ -67,7 +67,7 @@ export function ForgotPasswordPage() {
       ) : (
         <div className="space-y-7">
           <div className="space-y-1.5">
-            <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Forgot password?</h1>
+            <h1 className="font-display text-[24px] font-semibold tracking-[0.02em] leading-snug text-foreground">Forgot password?</h1>
             <p className="text-[14px] text-muted-foreground">
               Enter your email and we'll send you a reset link.
             </p>

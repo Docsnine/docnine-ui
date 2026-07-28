@@ -17,10 +17,10 @@ import {
     Eye,
     EyeOff,
     ShieldCheck,
-} from "lucide-react"
+} from "@/components/icons"
 import Loader1 from "@/components/ui/loader1"
 
-// ── Inline feedback banner ───────────────────────────────────────────────────
+
 function Feedback({ type, message }: { type: "success" | "error"; message: string }) {
     return (
         <div
@@ -38,7 +38,7 @@ function Feedback({ type, message }: { type: "success" | "error"; message: strin
     )
 }
 
-// ── Profile info form ────────────────────────────────────────────────────────
+
 function ProfileInfoCard() {
     const { user, setTokens } = useAuthStore()
     const [name, setName] = useState(user?.name ?? "")
@@ -46,7 +46,7 @@ function ProfileInfoCard() {
     const [isLoading, setIsLoading] = useState(false)
     const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
-    // Keep form in sync if the store user changes (e.g. after refresh)
+    
     useEffect(() => {
         if (user) {
             setName(user.name)
@@ -66,7 +66,7 @@ function ProfileInfoCard() {
             if (name !== user?.name) patches.name = name.trim()
             if (email !== user?.email) patches.email = email.trim()
             const data = await authApi.updateProfile(patches)
-            // Sync the store — preserve the existing access token
+            
             const { getAccessToken } = await import("@/lib/api")
             const token = getAccessToken()
             if (token) setTokens(data.user, token)
@@ -94,7 +94,7 @@ function ProfileInfoCard() {
                 <form onSubmit={handleSubmit} className="space-y-5">
                     {feedback && <Feedback {...feedback} />}
 
-                    {/* Avatar placeholder */}
+                    {}
                     <div className="flex items-center gap-4">
                         <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center text-xl font-bold text-primary select-none">
                             {(user?.name?.[0] ?? "?").toUpperCase()}
@@ -157,7 +157,7 @@ function ProfileInfoCard() {
     )
 }
 
-// ── Change password form ─────────────────────────────────────────────────────
+
 function ChangePasswordCard() {
     const { clearAuth } = useAuthStore()
     const [currentPassword, setCurrentPassword] = useState("")
@@ -185,7 +185,7 @@ function ChangePasswordCard() {
             setCurrentPassword("")
             setNewPassword("")
             setConfirmNewPassword("")
-            // The backend clears the refresh cookie; sign out the current session too
+            
             setTimeout(() => { clearAuth() }, 2000)
         } catch (err: any) {
             setFeedback({
@@ -295,7 +295,7 @@ function ChangePasswordCard() {
     )
 }
 
-// ── Account info card ────────────────────────────────────────────────────────
+
 function AccountInfoCard() {
     const { user } = useAuthStore()
     if (!user) return null
@@ -339,7 +339,7 @@ function AccountInfoCard() {
     )
 }
 
-// ── Main page ────────────────────────────────────────────────────────────────
+
 export function ProfilePage() {
     return (
         <div className="flex justify-center py-7 px-4">

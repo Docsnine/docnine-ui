@@ -1,4 +1,4 @@
-import { AlertTriangle, RefreshCw } from "lucide-react"
+import { AlertTriangle, RefreshCw } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { ErrorBannerProps } from "@/types/StateTypes"
 

@@ -1,5 +1,5 @@
 /**
- * OtherDocsPanel — "Other Docs" tab content inside the documentation viewer.
+ * OtherDocsPanel : "Other Docs" tab content inside the documentation viewer.
  *
  * Features:
  *   • Upload supporting documents (any common file format, max 10 MB)
@@ -27,7 +27,7 @@ import {
     AlertCircle,
     ChevronDown,
     Lock,
-} from "lucide-react"
+} from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -165,7 +165,7 @@ function AttachmentRow({
     // Authenticated download/preview URL
     const rawUrl = attachmentsApi.downloadUrl(projectId, attachment._id)
     // We stream it through the API (which requires the Bearer token).
-    // For iframes/images we need an authenticated URL — we create a blob URL.
+    // For iframes/images we need an authenticated URL : we create a blob URL.
     const [blobUrl, setBlobUrl] = useState<string | null>(null)
     const blobRef = useRef<string | null>(null)
 
@@ -196,7 +196,7 @@ function AttachmentRow({
             setBlobUrl(url)
             setShowPreview(true)
         } catch {
-            // fall through — download button still works
+            // fall through : download button still works
         }
     }
 
@@ -408,7 +408,7 @@ function DropZone({ onFiles }: { onFiles: (files: File[]) => void }) {
                     Drop files here or <span className="text-primary">browse</span>
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                    PDF, DOCX, XLSX, CSV, PPTX, TXT, images — up to 10 MB each
+                    PDF, DOCX, XLSX, CSV, PPTX, TXT, images : up to 10 MB each
                 </p>
             </div>
             <input
@@ -474,7 +474,7 @@ export function OtherDocsPanel({ projectId }: OtherDocsPanelProps) {
                 "More Attachments",
                 "starter",
                 `Your plan allows up to ${maxAttachments} attachment${maxAttachments === 1 ? "" : "s"} per project. Upgrade to attach unlimited files.`,
-                () => { /* noop — modal will show */ },
+                () => { /* noop : modal will show */ },
             )
             return
         }
@@ -530,7 +530,7 @@ export function OtherDocsPanel({ projectId }: OtherDocsPanelProps) {
                 <div>
                     <h2 className="text-xl font-bold tracking-tight text-foreground mb-1">Other Docs</h2>
                     <p className="text-sm text-muted-foreground">
-                        Attach supplementary files — requirements, specs, and reference materials.
+                        Attach supplementary files : requirements, specs, and reference materials.
                     </p>
                 </div>
                 <label

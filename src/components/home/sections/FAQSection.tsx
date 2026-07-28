@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react"
+import { ChevronDown } from "@/components/icons"
 import { useState, useEffect, useRef } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -8,20 +8,20 @@ gsap.registerPlugin(ScrollTrigger)
 
 const FAQS = [
   {
-    question: "How does Docnine documentation work?",
-    answer: "Docnine scans your codebase, extracts APIs, components, and schemas, then uses AI to generate structured, readable documentation automatically."
+    question: "How does Docnine work?",
+    answer: "Docnine scans your codebase for APIs, components, and schemas, then uses AI to draft clear, structured documentation you can review and publish."
   },
   {
     question: "Can I use my own OpenAI or Anthropic API key?",
-    answer: "Yes! You can bring your own API key for OpenAI, Anthropic, or Google Gemini to power your documentation generation."
+    answer: "Yes. You can bring your own key for OpenAI, Anthropic, or Google Gemini to power generation."
   },
   {
-    question: "What file types and languages does Docnine support?",
-    answer: "Docnine supports all major programming languages including JavaScript, TypeScript, Python, Go, Rust, and many more."
+    question: "Which languages and file types are supported?",
+    answer: "Most common languages are covered , including JavaScript, TypeScript, Python, Go, Rust, and more."
   },
   {
-    question: "Is Docnine really free to use?",
-    answer: "Yes! The free plan lets you scan up to 2 projects and generate documentation at no cost. Upgrade to a paid plan to unlock exports, sharing, portals, and more."
+    question: "Is Docnine free to try?",
+    answer: "Yes. The free plan lets you scan up to two projects and generate docs at no cost. Paid plans unlock exports, sharing, portals, and more."
   },
 ]
 
@@ -54,10 +54,10 @@ export function FAQSection() {
         <div className="mb-16 text-center">
           <p className="font-mono text-sm text-primary mb-4">// FAQ //</p>
           <h2 className="text-[32px] leading-[1.1] sm:text-[44px] font-extrabold tracking-[-0.02em] text-foreground mb-4">
-            Frequently Asked Questions
+            Questions people ask us
           </h2>
           <p className="text-lg text-muted-foreground">
-            Everything you need to know about Docnine.
+            Short answers to the basics. Need more detail? Reach out anytime.
           </p>
         </div>
 

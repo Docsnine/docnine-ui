@@ -3,7 +3,7 @@
  * Displays provider options and other import methods
  */
 
-import { CheckCircle2, UploadCloudIcon, Plus, LinkIcon, CloudIcon } from "lucide-react"
+import { CheckCircle2, UploadCloudIcon, Plus, LinkIcon, CloudIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { PROVIDER_CONFIG } from "@/configs/ProjectConfig"

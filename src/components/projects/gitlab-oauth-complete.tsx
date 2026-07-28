@@ -30,7 +30,7 @@ export function GitlabOAuthCompletePage() {
                 "__docnine_gitlab_oauth_result",
                 JSON.stringify({ status, user, msg, ts: Date.now() }),
             )
-        } catch { /* private-browsing storage quota — best-effort */ }
+        } catch { /* private-browsing storage quota : best-effort */ }
 
         // 2. postMessage as a fast path when opener is still reachable.
         if (window.opener && !window.opener.closed) {

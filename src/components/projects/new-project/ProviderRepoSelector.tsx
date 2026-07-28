@@ -2,7 +2,7 @@
  * Component: Provider Repository Selector Step
  */
 
-import { Search, AlertCircle } from "lucide-react"
+import { Search, AlertCircle } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DialogFooter } from "@/components/ui/dialog"

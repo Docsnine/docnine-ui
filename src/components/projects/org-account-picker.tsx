@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { OrgAccountPickerProps } from "@/types/GithubTypes"
-import { User, Building2 } from "lucide-react"
+import { User, Building2 } from "@/components/icons"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // OrgAccountPicker
@@ -10,17 +10,17 @@ import { User, Building2 } from "lucide-react"
 //   [Personal account]  [Org A]  [Org B]  …
 //
 // The selected pill is highlighted with primary colours.
-// Selection is driven entirely via props — parent owns the state.
+// Selection is driven entirely via props : parent owns the state.
 //
 // Props:
-//   username     — GitHub login of the authenticated user (shown as the
+//   username     : GitHub login of the authenticated user (shown as the
 //                  "personal account" option, always present)
-//   orgs         — list of organisations returned by GET /github/orgs
-//   orgsLoading  — show skeleton pills while the orgs request is in flight
-//   selected     — currently selected value:
+//   orgs         : list of organisations returned by GET /github/orgs
+//   orgsLoading  : show skeleton pills while the orgs request is in flight
+//   selected     : currently selected value:
 //                    null   → personal account
 //                    string → org login
-//   onSelect     — called with null (personal) or org login string
+//   onSelect     : called with null (personal) or org login string
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function OrgAccountPicker({

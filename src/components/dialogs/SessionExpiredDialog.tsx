@@ -1,4 +1,4 @@
-import { AlertCircle } from "lucide-react"
+import { AlertCircle } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -27,7 +27,7 @@ export function SessionExpiredDialog({
     }
 
     return (
-        // Prevent closing via Escape or backdrop click — the user is already
+        // Prevent closing via Escape or backdrop click : the user is already
         // logged out at this point and must re-authenticate to continue.
         <Dialog
             open={open}

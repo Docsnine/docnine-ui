@@ -1,15 +1,15 @@
 /**
- * doc-status.tsx — Shared UI components for the Documentation Progress Tracker.
+ * doc-status.tsx : Shared UI components for the Documentation Progress Tracker.
  *
  * Exports:
- *  - DOC_STATUS_CONFIG  — display config for each DocStatus value
- *  - DocStatusBadge     — compact badge for use in lists / cards
- *  - DocStatusDot       — tiny coloured dot indicator (for tight spaces)
- *  - DocStatusPanel     — full-featured panel for the documentation sidebar
+ *  - DOC_STATUS_CONFIG  : display config for each DocStatus value
+ *  - DocStatusBadge     : compact badge for use in lists / cards
+ *  - DocStatusDot       : tiny coloured dot indicator (for tight spaces)
+ *  - DocStatusPanel     : full-featured panel for the documentation sidebar
  */
 import { useState, useRef, useEffect } from "react"
 import { formatDistanceToNow } from "date-fns"
-import { ChevronDown, User, Calendar, AlertCircle, History, PenLine, Eye, RotateCcw, CheckCircle2, Globe, AlertTriangle, Archive } from "lucide-react"
+import { ChevronDown, User, Calendar, AlertCircle, History, PenLine, Eye, RotateCcw, CheckCircle2, Globe, AlertTriangle, Archive } from "@/components/icons"
 import { cn } from "@/lib/utils"
 import { useDocTrackerStore } from "@/store/doc-tracker"
 import { DocSectionTrack, DocStatus } from "@/types/DocStatusTypes"
@@ -45,7 +45,7 @@ export function DocStatusBadge({ status, className, compact }: DocStatusBadgePro
 
 // ── DocStatusDot ──────────────────────────────────────────────────────────────
 
-/** Tiny dot indicator — only shown when status is not 'draft' */
+/** Tiny dot indicator : only shown when status is not 'draft' */
 export function DocStatusDot({ status, className }: { status: DocStatus; className?: string }) {
   if (status === "draft") return null
   const cfg = DOC_STATUS_CONFIG[status]

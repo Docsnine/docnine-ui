@@ -16,7 +16,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle } from "@/components/icons"
 import { useAuthStore } from "@/store/auth"
 import { useProjectStore } from "@/store/projects"
 import {

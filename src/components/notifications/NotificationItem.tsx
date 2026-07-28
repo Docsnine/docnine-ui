@@ -12,7 +12,7 @@ import {
   Archive,
   CheckCheck,
   Download,
-} from "lucide-react";
+} from "@/components/icons";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Notification, NotificationEntityType } from "@/types/NotificationTypes";

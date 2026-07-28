@@ -1,7 +1,7 @@
 import { getSiteUrl } from "@/lib/seo";
 import { SeoConfig } from "@/types/SeoTypes";
 
-// System / oauth pages — no indexing
+// System / oauth pages : no indexing
 export const SYSTEM_PATHS = [
   "/verify",
   "/auth/callback",
@@ -131,9 +131,9 @@ const siteUrl = getSiteUrl();
 
 export const PUBLIC_PAGES: Record<string, SeoConfig> = {
   "/": {
-    title: "Docnine -  AI Documentation for Engineering Teams",
+    title: "Docnine , AI documentation for engineering teams",
     description:
-      "Ship better documentations, faster. Stop writing documentation by hand. Create and maintain developer documentation with AI. Docnine generates docs from your codebase, then keeps them up to date as your code evolves.",
+      "Generate clear developer docs from your codebase and keep them up to date as your code changes. Less busywork, better documentation.",
     pathname: "/",
     keywords: MARKETING_KEYWORDS,
     appendSiteName: false,
@@ -147,7 +147,7 @@ export const PUBLIC_PAGES: Record<string, SeoConfig> = {
       operatingSystem: "Web",
       url: siteUrl,
       description:
-        "Generate, publish, and maintain developer documentation from code with AI.",
+        "Generate and maintain developer documentation from your code with AI.",
       offers: {
         "@type": "Offer",
         price: "0",
@@ -157,24 +157,24 @@ export const PUBLIC_PAGES: Record<string, SeoConfig> = {
     },
   },
   "/login": {
-    title: "Sign In To Your Account",
+    title: "Sign in",
     description:
-      "Sign in to Docnine to generate, publish, and maintain documentation for your codebase — automatically.",
+      "Sign in to Docnine to generate and maintain documentation for your codebase.",
     pathname: "/login",
     keywords: AUTH_KEYWORDS,
     robots: "index, follow",
     structuredData: {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      name: "Sign In to Docnine",
+      name: "Sign in to Docnine",
       url: `${siteUrl}/login`,
-      description: "Secure sign-in to the Docnine documentation platform.",
+      description: "Sign in to your Docnine account.",
     },
   },
   "/signup": {
-    title: "Create a Free Account",
+    title: "Create a free account",
     description:
-      "Get started with Docnine for free. Connect your repo and generate your first documentation in minutes.",
+      "Create a free Docnine account, connect a repo, and generate your first docs in minutes.",
     pathname: "/signup",
     keywords: [
       ...AUTH_KEYWORDS,
@@ -186,16 +186,16 @@ export const PUBLIC_PAGES: Record<string, SeoConfig> = {
     structuredData: {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      name: "Sign Up for Docnine",
+      name: "Sign up for Docnine",
       url: `${siteUrl}/signup`,
       description:
-        "Create a free Docnine account to auto-generate documentation from your codebase.",
+        "Create a free Docnine account to generate documentation from your codebase.",
     },
   },
   "/pricing": {
-    title: "Pricing Plans",
+    title: "Pricing",
     description:
-      "Start free, then scale. Compare Docnine plans for solo developers and teams — including unlimited projects, security audits, and shared portals.",
+      "Start free, then upgrade when you need more. Compare Docnine plans for individuals and teams.",
     pathname: "/pricing",
     keywords: [
       ...MARKETING_KEYWORDS,
@@ -210,13 +210,13 @@ export const PUBLIC_PAGES: Record<string, SeoConfig> = {
       name: "Docnine Pricing",
       url: `${siteUrl}/pricing`,
       description:
-        "Pricing and plan comparison for Docnine's AI documentation platform.",
+        "Pricing and plan comparison for Docnine.",
     },
   },
   "/docs": {
-    title: "Platform Documentation",
+    title: "Documentation",
     description:
-      "Everything you need to set up Docnine: GitHub integration, webhooks, AI agent workflows, public portals, exports, and billing.",
+      "Guides for setting up Docnine , GitHub, webhooks, AI workflows, portals, exports, and billing.",
     pathname: "/docs",
     keywords: [
       ...MARKETING_KEYWORDS,
@@ -228,17 +228,17 @@ export const PUBLIC_PAGES: Record<string, SeoConfig> = {
     structuredData: {
       "@context": "https://schema.org",
       "@type": "TechArticle",
-      headline: "Docnine Platform Documentation",
+      headline: "Docnine documentation",
       url: `${siteUrl}/docs`,
       description:
-        "Official setup and usage guide for the Docnine documentation platform.",
+        "Setup guides and reference docs for Docnine.",
       author: { "@type": "Organization", name: "Docnine", url: siteUrl },
     },
   },
   "/contact": {
-    title: "Contact Us",
+    title: "Contact us",
     description:
-      "Reach the Docnine team for support, feature requests, enterprise pricing, or partnership enquiries.",
+      "Questions, feedback, or partnership ideas? Reach the Docnine team.",
     pathname: "/contact",
     keywords: ["contact docnine", "docnine support", "docnine enterprise"],
     structuredData: {
@@ -249,22 +249,22 @@ export const PUBLIC_PAGES: Record<string, SeoConfig> = {
     },
   },
   "/terms": {
-    title: "Terms and Conditions",
+    title: "Terms of use",
     description:
-      "Review Docnine's terms and conditions — account usage, service limits, data handling, and your legal rights.",
+      "Terms that govern your use of Docnine.",
     pathname: "/terms",
     keywords: ["docnine terms", "terms and conditions", "docnine legal"],
     structuredData: {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      name: "Docnine Terms and Conditions",
+      name: "Docnine Terms of Use",
       url: `${siteUrl}/terms`,
     },
   },
   "/privacy": {
-    title: "Privacy Policy",
+    title: "Privacy policy",
     description:
-      "Learn how Docnine collects, uses, and safeguards your account data, repository contents, and product usage information.",
+      "How Docnine collects, uses, and protects your information.",
     pathname: "/privacy",
     keywords: ["docnine privacy", "privacy policy", "data protection", "GDPR"],
     structuredData: {

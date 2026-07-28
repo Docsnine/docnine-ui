@@ -1,127 +1,54 @@
-import { useEffect, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { ArrowRight } from "lucide-react"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { NoiseOverlay } from "@/components/ui/noise-overlay"
+import { Link } from "react-router-dom"
+import { ArrowRight } from "@/components/icons"
+import { PlatformCapabilityCards } from "./PlatformCapabilityCards"
 
-gsap.registerPlugin(ScrollTrigger)
-
-function useCountUp(target: number, suffix: string = "") {
-    const ref = useRef<HTMLSpanElement>(null)
-    const triggered = useRef(false)
-
-    useEffect(() => {
-        if (!ref.current) return
-        const el = ref.current
-
-        ScrollTrigger.create({
-            trigger: el,
-            start: "top 80%",
-            onEnter: () => {
-                if (triggered.current) return
-                triggered.current = true
-                gsap.fromTo(
-                    { val: 0 },
-                    { val: target },
-                    {
-                        duration: 2,
-                        ease: "power2.out",
-                        onUpdate() {
-                            const current = Math.round(gsap.getProperty(this.targets()[0], "val") as number)
-                            el.textContent = current.toLocaleString() + suffix
-                        },
-                    }
-                )
-            },
-        })
-    }, [target, suffix])
-
-    return ref
-}
+const INTEGRATIONS = ["GitHub", "GitLab", "Bitbucket", "Azure DevOps", "OpenAPI", "Markdown"]
 
 export function AboutSection() {
-    const sectionRef = useRef<HTMLDivElement>(null)
-    const usersRef = useCountUp(3, "k")
-    const companiesRef = useCountUp(20, "+")
+  return (
+    <section className="relative z-10 border-t border-border/60 bg-background px-4 py-20 sm:px-6 sm:py-24">
+      <div className="container mx-auto max-w-6xl">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-section text-foreground">
+            Built for teams who treat docs like part of the product
+          </h2>
+          <p className="mt-4 text-[15px] text-muted-foreground">
+            Plug into the tools you already use, and keep documentation in the same flow as delivery ,
+            not a side project that drifts out of date.
+          </p>
+          <Link
+            to="/docs"
+            className="mt-5 inline-flex items-center text-[14px] font-medium text-foreground hover:text-primary"
+          >
+            Read the docs <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+          </Link>
+        </div>
 
-    useEffect(() => {
-        if (!sectionRef.current) return
-        const ctx = gsap.context(() => {
-            gsap.from(".about-text", {
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: "top 75%",
-                },
-                y: 40,
-                opacity: 0,
-                duration: 0.8,
-                ease: "power4.out",
-                stagger: 0.15,
-            })
-            gsap.from(".stat-card", {
-                scrollTrigger: {
-                    trigger: ".stat-card",
-                    start: "top 80%",
-                },
-                y: 60,
-                opacity: 0,
-                duration: 0.8,
-                ease: "power4.out",
-                stagger: 0.2,
-            })
-        }, sectionRef)
-        return () => ctx.revert()
-    }, [])
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-y border-border/70 py-8">
+          {INTEGRATIONS.map((name) => (
+            <span
+              key={name}
+              className="text-[13px] font-semibold tracking-wide text-muted-foreground/80 sm:text-[15px]"
+            >
+              {name}
+            </span>
+          ))}
+        </div>
 
-    return (
-        <section ref={sectionRef} className="relative z-10 overflow-hidden py-24 px-4 bg-secondary">
-            <NoiseOverlay opacity={0.16} />
-            <div className="container mx-auto max-w-6xl">
-                {/* Section Tag */}
-                <p className="about-text font-mono text-sm text-primary mb-6">// About Our Platform //</p>
+        <div className="mt-20">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-section text-foreground">
+              Everything you need in one place
+            </h2>
+            <p className="mt-3 text-[15px] text-muted-foreground">
+              From the first scan to day-to-day updates, Docnine helps you create docs people can
+              actually trust.
+            </p>
+          </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-                    {/* Left: Text Content */}
-                    <div>
-                        <h2 className="about-text text-[36px] leading-[1.1] sm:text-[44px] font-extrabold tracking-[-0.02em] text-foreground mb-6">
-                            Transform Your Documentation Process With{" "}
-                            <span className="text-muted-foreground">Smarter, Faster, AI-Driven Technology</span>
-                        </h2>
-                        <p className="about-text text-lg text-muted-foreground leading-relaxed mb-8">
-                            From scanning to generation, our platform streamlines every step. Ship confidently with docs that stay accurate and up to date.
-                        </p>
-                        <Button
-                            asChild
-                            className="about-text bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6 h-11 text-sm font-semibold"
-                        >
-                            <a href="https://github.com/Docsnine" target="_blank" rel="noreferrer">
-                                Learn More <ArrowRight className="ml-2 h-4 w-4" />
-                            </a>
-                        </Button>
-                    </div>
-
-                    {/* Right: Stats Cards */}
-                    <div className="space-y-6">
-                        <div className="stat-card bg-white dark:bg-card rounded-3xl border border-border p-8">
-                            <h3 className="text-[36px] sm:text-[48px] leading-none font-extrabold tracking-[-0.02em] text-foreground mb-2">
-                                <span ref={usersRef}>0</span> <span className="text-muted-foreground text-[24px] sm:text-[36px]">Users</span>
-                            </h3>
-                            <p className="text-muted-foreground leading-relaxed">
-                                Developers and tech writers trust our tools to simplify documentation and reduce time-to-ship.
-                            </p>
-                        </div>
-                        <div className="stat-card bg-white dark:bg-card rounded-3xl border border-border p-8">
-                            <h3 className="text-[36px] sm:text-[48px] leading-none font-extrabold tracking-[-0.02em] text-foreground mb-2">
-                                <span ref={companiesRef}>0</span> <span className="text-muted-foreground text-[24px] sm:text-[36px]">Companies</span>
-                            </h3>
-                            <p className="text-muted-foreground leading-relaxed">
-                                Join forward-thinking companies building better docs through structured, AI-driven documentation.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    )
+          <PlatformCapabilityCards />
+        </div>
+      </div>
+    </section>
+  )
 }

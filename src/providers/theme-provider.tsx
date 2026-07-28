@@ -21,6 +21,8 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement
 
+    if (root.hasAttribute("data-portal-theme-lock")) return
+
     root.classList.remove("light", "dark")
 
     if (theme === "system") {

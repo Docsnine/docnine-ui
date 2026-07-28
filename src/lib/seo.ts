@@ -104,7 +104,7 @@ export function applySeo(config: SeoConfig | null) {
     ) ??
     siteUrl;
 
-  // Build title — append suffix unless the title already contains "Docnine"
+  // Build title : append suffix unless the title already contains "Docnine"
   const appendSuffix = config.appendSiteName ?? true;
   const fullTitle =
     appendSuffix && !/docnine/i.test(config.title)
@@ -179,7 +179,7 @@ export function useSeo(config: SeoConfig | null) {
     applySeo(config);
 
     return () => {
-      // Only clean up structured data — title/meta are overwritten
+      // Only clean up structured data : title/meta are overwritten
       // by the next page's useSeo call, so no flicker needed.
       removeStructuredData(sdId);
     };

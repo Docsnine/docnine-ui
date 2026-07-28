@@ -60,8 +60,6 @@ const TermsPage = lazy(() => import("@/pages/guest/terms").then(m => ({ default:
 const PrivacyPage = lazy(() => import("@/pages/guest/privacy").then(m => ({ default: m.PrivacyPage })))
 const ContactPage = lazy(() => import("@/pages/guest/contact").then(m => ({ default: m.ContactPage })))
 
-// ─── Full-screen loader ───────────────────────────────────────────
-
 function PageLoader() {
   return (
     <div className="flex min-h-screen items-center gap-3 justify-center bg-background">
@@ -71,8 +69,6 @@ function PageLoader() {
   )
 }
 
-// ─── Billing redirect ─────────────────────────────────────────────
-
 function BillingRedirect() {
   const [searchParams] = useSearchParams()
   const forward = new URLSearchParams(searchParams)
@@ -80,18 +76,11 @@ function BillingRedirect() {
   return <Navigate to={`/settings?${forward.toString()}`} replace />
 }
 
-// ─── Route guards ─────────────────────────────────────────────────
-
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />
 }
 
-/**
- * Landing page only — redirects authenticated users to /home.
- * Login and signup are intentionally NOT wrapped here so users can
- * switch accounts or sign in to a second account while logged in.
- */
 function LandingOnlyRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   return isAuthenticated ? <Navigate to="/home" replace /> : <>{children}</>
@@ -104,12 +93,9 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
     : <Navigate to="/home" replace />
 }
 
-// ─── SEO ──────────────────────────────────────────────────────────
 function getRouteSeo(pathname: string): SeoConfig | null {
-  // Dynamic portal — SEO set inside PublicPortalPage itself
   if (matchPath("/docs/:slug", pathname)) return null
 
-  // Authenticated workspace — no indexing
   if (
     pathname.startsWith("/projects") ||
     pathname.startsWith("/documentations") ||
@@ -120,7 +106,7 @@ function getRouteSeo(pathname: string): SeoConfig | null {
   ) {
     return {
       title: "Workspace",
-      description: "Docnine workspace — manage your projects and documentation.",
+      description: "Docnine workspace : manage your projects and documentation.",
       pathname,
       robots: "noindex, nofollow",
       keywords: [],
@@ -158,15 +144,10 @@ function ScrollRestoration() {
   return null
 }
 
-// ─── App routes ───────────────────────────────────────────────────
 function AppRoutes() {
   const { initAuth, initialized } = useAuthStore()
   const { sessionExpiredOpen, hideSessionExpired } = useSessionStore()
 
-  /**
-   * Activate background token refresh 
-   * (every 24 hours)
-   */
   useTokenRefresh()
 
   useEffect(() => {
@@ -206,7 +187,7 @@ function AppRoutes() {
 
           {/* Guest layouts */}
           <Route element={<AuthLayout />}>
-            {/* ── Auth — open to everyone, including logged-in users ── */}
+            {/* ── Auth : open to everyone, including logged-in users ── */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/verify" element={<VerifyPage />} />

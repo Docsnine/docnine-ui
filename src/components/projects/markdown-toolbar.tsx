@@ -1,5 +1,5 @@
 import { useRef, useState } from "react"
-import { Bold, Italic, List, ListOrdered, Code, Link as LinkIcon, Heading1, Heading2, ImageIcon, Quote, MoreVertical } from "lucide-react"
+import { Bold, Italic, List, ListOrdered, Code, Link as LinkIcon, Heading1, Heading2, ImageIcon, Quote, MoreVertical } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -171,7 +171,7 @@ export function MarkdownToolbar({ onInsert }: MarkdownToolbarProps) {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => { onInsert("---"); setMoreOpen(false) }}>
-              <span className="text-xs mr-2">—</span>
+              <span className="text-xs mr-2">:</span>
               Horizontal Line
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => { onInsert("| ", " |"); setMoreOpen(false) }} title="Table Header">

@@ -4,10 +4,7 @@ import { githubApi } from "@/lib/api"
 import Loader1 from "@/components/ui/loader1"
 import { ApiException } from "@/types/ApiTypes"
 
-/**
- * GitHub OAuth Initiator Page
- * Fetches OAuth URL from backend and redirects
- */
+
 export function GithubOAuthPage() {
     const [searchParams] = useSearchParams()
     const isPopup = searchParams.get("popup") === "1"

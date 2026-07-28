@@ -1,4 +1,4 @@
-import { Sparkles, GitCompare } from "lucide-react"
+import { Sparkles, GitCompare } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import Loader1 from "@/components/ui/loader1"
 import { StaleSectionBannerProps } from "@/types/StaleTypes"
@@ -24,7 +24,7 @@ export function StaleSectionBanner({
                         </p>
                     ) : (
                         <p className="text-[12px] text-primary/60 mt-0.5">
-                            Your edit is preserved — compare before deciding.
+                            Your edit is preserved : compare before deciding.
                         </p>
                     )}
                 </div>

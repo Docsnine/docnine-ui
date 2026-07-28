@@ -1,7 +1,7 @@
 import { NATIVE_TABS } from "@/configs/DocumentationConfig";
 import { DocTab, TabDef } from "@/types/DocumentationTypes";
 import { CustomTab } from "@/types/ProjectTypes";
-import { FileCode } from "lucide-react";
+import { FileCode } from "@/components/icons";
 
 // ── Build full tab list from native + custom tabs ──────────────────
 export function buildTabList(customTabs: CustomTab[] = []): TabDef[] {

@@ -1,3 +1,4 @@
+import { CTA } from "../common"
 import {
   HeroSection,
   AboutSection,
@@ -12,6 +13,7 @@ export function HomePage() {
       <div id="features">
         <FeaturesSection />
       </div>
+      <CTA />
     </div>
   )
 }

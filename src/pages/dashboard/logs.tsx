@@ -34,7 +34,7 @@ import {
 import { cn } from "@/lib/utils"
 import TopBar from "@/components/projects/top-bar"
 
-// ── Category icon map ────────────────────────────────────────────────────────
+
 const CATEGORY_ICON: Record<string, React.ReactNode> = {
   auth: <UserIcon className="h-3.5 w-3.5" />,
   project: <FolderGit2 className="h-3.5 w-3.5" />,
@@ -67,7 +67,7 @@ const CATEGORY_COLOR: Record<string, string> = {
   system: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
 }
 
-// ── Severity badge helpers ───────────────────────────────────────────────────
+
 const SEVERITY_BADGE: Record<string, { label: string; cls: string } | undefined> = {
   warning: { label: "Warning", cls: "bg-yellow-500/10 text-yellow-600 border border-yellow-500/20" },
   error: { label: "Error", cls: "bg-red-500/10 text-red-600 border border-red-500/20" },
@@ -80,14 +80,14 @@ const SEVERITY_ROW: Record<string, string> = {
   critical: "border-l-2 border-rose-700/60 bg-rose-500/5",
 }
 
-// ── Human-readable action labels ─────────────────────────────────────────────
+
 function actionLabel(log: ActivityLog): string {
   const actor = log.actorName || "Someone"
   const project = log.projectName ? ` on ${log.projectName}` : ""
   const meta = (log.metadata ?? {}) as Record<string, string>
 
   switch (log.action) {
-    // Auth
+    
     case "AUTH_SIGNUP": return `${actor} signed up`
     case "AUTH_LOGIN": return `${actor} signed in`
     case "AUTH_LOGOUT": return `${actor} signed out`
@@ -95,51 +95,51 @@ function actionLabel(log: ActivityLog): string {
     case "AUTH_PASSWORD_RESET_REQUESTED": return `${actor} requested a password reset`
     case "AUTH_PASSWORD_RESET": return `${actor} reset their password`
     case "AUTH_EMAIL_VERIFIED": return `${actor} verified their email`
-    // Project
+    
     case "PROJECT_CREATED": return `${actor} created project${project}`
     case "PROJECT_DELETED": return `${actor} deleted project${project}`
     case "PROJECT_ARCHIVED": return `${actor} archived project${project}`
     case "PROJECT_RENAMED": return `${actor} renamed project${project}`
-    // Pipeline
+    
     case "PIPELINE_STARTED": return `Pipeline started${project}`
     case "PIPELINE_COMPLETED": return `Pipeline completed${project}`
     case "PIPELINE_FAILED": return `Pipeline failed${project}`
     case "PIPELINE_TIMEOUT": return `Pipeline timed out${project}`
-    // Agents
+    
     case "AGENT_STARTED": return `Agent started${project}`
     case "AGENT_COMPLETED": return `Agent completed${project}`
     case "AGENT_FAILED": return `Agent failed${project}`
-    // Docs
+    
     case "DOC_SECTION_EDITED": return `${actor} edited ${meta.section ?? "a section"}${project}`
     case "DOC_SECTION_RESET": return `${actor} reset a doc section${project}`
     case "DOC_VERSION_SNAPSHOT": return `Doc snapshot taken${project}`
     case "DOC_VERSION_RESTORED": return `Doc version restored${project}`
-    // Security
+    
     case "SECURITY_SCAN_STARTED": return `Security scan started${project}`
     case "SECURITY_SCAN_COMPLETED": return `Security scan completed${project}`
     case "SECURITY_FINDING_HIGH": return `High-severity security finding${project}`
     case "SECURITY_FINDING_CRITICAL": return `Critical security finding${project}`
-    // API Spec
+    
     case "APISPEC_UPLOADED": return `${actor} uploaded an API spec${project}`
     case "APISPEC_REANALYZED": return `API spec reanalyzed${project}`
-    // Attachments
+    
     case "ATTACHMENT_UPLOADED": return `${actor} uploaded an attachment${project}`
     case "ATTACHMENT_DELETED": return `${actor} deleted an attachment${project}`
-    // Sharing
+    
     case "SHARE_INVITE_SENT": return `${actor} invited ${meta.inviteeEmail ?? "a user"}${project}`
     case "SHARE_INVITE_ACCEPTED": return `${meta.inviteeEmail ?? "A user"} accepted an invite${project}`
     case "SHARE_MEMBER_REMOVED": return `${actor} removed ${meta.inviteeEmail ?? "a user"}${project}`
     case "SHARE_ROLE_CHANGED": return `${actor} changed ${meta.inviteeEmail ?? "a user"}'s role to ${meta.newRole ?? "a new role"}${project}`
-    // Portal
+    
     case "PORTAL_PUBLISHED": return `${actor} published portal${project}`
     case "PORTAL_UNPUBLISHED": return `${actor} unpublished portal${project}`
     case "PORTAL_SETTINGS_UPDATED": return `${actor} updated portal settings${project}`
-    // Exports
+    
     case "EXPORT_PDF": return `${actor} exported PDF${project}`
     case "EXPORT_YAML": return `${actor} exported YAML${project}`
     case "EXPORT_NOTION": return `${actor} exported to Notion${project}`
     case "EXPORT_GOOGLE_DOCS": return `${actor} exported to Google Docs${project}`
-    // Integrations
+    
     case "INTEGRATION_GITHUB_CONNECTED": return `${actor} connected GitHub`
     case "INTEGRATION_GITHUB_DISCONNECTED": return `${actor} disconnected GitHub`
     case "INTEGRATION_GITLAB_CONNECTED": return `${actor} connected GitLab`
@@ -154,7 +154,7 @@ function actionLabel(log: ActivityLog): string {
     case "INTEGRATION_SLACK_DISCONNECTED": return `${actor} disconnected Slack`
     case "INTEGRATION_GOOGLE_CONNECTED": return `${actor} connected Google`
     case "INTEGRATION_GOOGLE_DISCONNECTED": return `${actor} disconnected Google`
-    // Subscription
+    
     case "SUBSCRIPTION_UPGRADED": return `${actor} upgraded subscription`
     case "SUBSCRIPTION_DOWNGRADED": return `${actor} downgraded subscription`
     case "SUBSCRIPTION_CANCELLED": return `${actor} cancelled subscription`
@@ -162,16 +162,16 @@ function actionLabel(log: ActivityLog): string {
     case "SUBSCRIPTION_PAYMENT_FAILED": return `Subscription payment failed`
     case "SUBSCRIPTION_TRIAL_STARTED": return `${actor} started a trial`
     case "SUBSCRIPTION_TRIAL_ENDED": return `Trial ended`
-    // API Tokens
+    
     case "API_TOKEN_CREATED": return `${actor} created an API token`
     case "API_TOKEN_REVOKED": return `${actor} revoked an API token`
-    // System
+    
     case "SYSTEM_ERROR": return `System error`
     default: return log.action.replace(/_/g, " ").toLowerCase()
   }
 }
 
-// ── Initials avatar ──────────────────────────────────────────────────────────
+
 function Initials({ name }: { name: string }) {
   const parts = (name || "?").trim().split(/\s+/)
   const text = parts.length >= 2
@@ -184,7 +184,7 @@ function Initials({ name }: { name: string }) {
   )
 }
 
-// ── Date group helpers ───────────────────────────────────────────────────────
+
 function dateGroup(d: Date): string {
   if (isToday(d)) return "Today"
   if (isYesterday(d)) return "Yesterday"
@@ -194,7 +194,7 @@ function dateGroup(d: Date): string {
 
 const GROUP_ORDER = ["Today", "Yesterday", "This Week", "Earlier"]
 
-// ── Expandable metadata panel ────────────────────────────────────────────────
+
 function MetadataPanel({ metadata }: { metadata: Record<string, unknown> }) {
   const entries = Object.entries(metadata).filter(([, v]) => v !== undefined && v !== null)
   if (entries.length === 0) return null
@@ -210,7 +210,7 @@ function MetadataPanel({ metadata }: { metadata: Record<string, unknown> }) {
   )
 }
 
-// ── Single log entry row ─────────────────────────────────────────────────────
+
 function LogEntry({ log }: { log: ActivityLog }) {
   const [expanded, setExpanded] = useState(false)
   const ts = new Date(log.createdAt)
@@ -224,12 +224,12 @@ function LogEntry({ log }: { log: ActivityLog }) {
 
   return (
     <div className={cn("group px-4 py-3 flex items-start gap-3 hover:bg-muted/30 transition-colors", rowHighlight)}>
-      {/* Category icon */}
+      {}
       <span className={cn("mt-0.5 rounded-md p-1.5 shrink-0", catColor)}>
         {catIcon}
       </span>
 
-      {/* Avatar + message */}
+      {}
       <div className="flex-1 min-w-0">
         <div className="flex items-start gap-2 flex-wrap">
           <Initials name={log.actorName} />
@@ -243,7 +243,7 @@ function LogEntry({ log }: { log: ActivityLog }) {
           )}
         </div>
 
-        {/* Meta expand */}
+        {}
         {hasMeta && (
           <button
             className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
@@ -261,7 +261,7 @@ function LogEntry({ log }: { log: ActivityLog }) {
         )}
       </div>
 
-      {/* Timestamp : visible on all screen sizes */}
+      {}
       <time
         dateTime={log.createdAt}
         title={absTime}
@@ -273,11 +273,11 @@ function LogEntry({ log }: { log: ActivityLog }) {
   )
 }
 
-// ── Filter bar ───────────────────────────────────────────────────────────────
+
 const CATEGORIES = ["auth", "project", "pipeline", "doc", "security", "apispec", "attachment", "sharing", "portal", "export", "integration", "subscription", "system"] as const
 const SEVERITIES = ["info", "success", "warning", "error", "critical"] as const
 
-// ── Main page ────────────────────────────────────────────────────────────────
+
 export function LogsPage() {
   const [logs, setLogs] = useState<ActivityLog[]>([])
   const [total, setTotal] = useState(0)
@@ -318,15 +318,15 @@ export function LogsPage() {
     }
   }, [category, severity, from, to, page])
 
-  // Initial load + polling every 30 s
+  
   useEffect(() => {
     load(true)
     pollingRef.current = setInterval(() => load(true), 30_000)
     return () => { if (pollingRef.current) clearInterval(pollingRef.current) }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [category, severity, from, to])
 
-  // Group logs by date bucket
+  
   const grouped = logs.reduce<Record<string, ActivityLog[]>>((acc, log) => {
     const g = dateGroup(new Date(log.createdAt))
       ; (acc[g] ??= []).push(log)
@@ -349,7 +349,7 @@ export function LogsPage() {
       </TopBar>
 
       <div className="space-y-5">
-        {/* Filter bar */}
+        {}
         <div className="flex flex-wrap gap-3 items-end">
           <div className="flex flex-col gap-1 min-w-35">
             <Label className="text-xs text-muted-foreground">Category</Label>
@@ -411,14 +411,14 @@ export function LogsPage() {
           )}
         </div>
 
-        {/* Summary line */}
+        {}
         {!loading && total > 0 && (
           <p className="text-xs text-muted-foreground">
             Showing {logs.length} of {total} events
           </p>
         )}
 
-        {/* Error */}
+        {}
         {error && (
           <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             <AlertTriangle className="h-4 w-4 shrink-0" />
@@ -426,7 +426,7 @@ export function LogsPage() {
           </div>
         )}
 
-        {/* Loading skeleton */}
+        {}
         {loading && (
           <div className="space-y-0 border border-border rounded-xl overflow-hidden divide-y divide-border/50">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -442,7 +442,7 @@ export function LogsPage() {
           </div>
         )}
 
-        {/* Empty state */}
+        {}
         {!loading && !error && logs.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="rounded-full bg-muted p-5 mb-5">
@@ -457,7 +457,7 @@ export function LogsPage() {
           </div>
         )}
 
-        {/* Timeline */}
+        {}
         {!loading && logs.length > 0 && (
           <div className="space-y-6">
             {GROUP_ORDER.filter((g) => grouped[g]?.length).map((group) => (
@@ -473,7 +473,7 @@ export function LogsPage() {
               </div>
             ))}
 
-            {/* Load More */}
+            {}
             {hasMore && (
               <div className="flex justify-center pt-2">
                 <Button

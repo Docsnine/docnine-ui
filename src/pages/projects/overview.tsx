@@ -40,7 +40,7 @@ import { useConfirm } from "@/hooks"
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog"
 import { cn } from "@/lib/utils"
 
-// ── Helper for file downloads ──────────────────────────────────────────
+
 const triggerDownload = (blob: Blob, filename: string) => {
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
@@ -50,7 +50,7 @@ const triggerDownload = (blob: Blob, filename: string) => {
     URL.revokeObjectURL(url)
 }
 
-// ── Doc section metadata ───────────────────────────────────────────────
+
 const DOC_SECTIONS = [
     { key: "readme", label: "README", icon: FileText, color: "text-blue-600 dark:text-blue-400" },
     { key: "apiReference", label: "API Reference", icon: FileCode, color: "text-violet-600 dark:text-violet-400" },
@@ -112,7 +112,7 @@ export function ProjectOverviewPage() {
             .finally(() => setIsLoading(false))
     }, [id, getProject])
 
-    // ── Loading skeleton ───────────────────────────────────────────────
+    
     if (isLoading) {
         return (
             <div className="space-y-5">
@@ -129,7 +129,7 @@ export function ProjectOverviewPage() {
         )
     }
 
-    // ── Error / not found ──────────────────────────────────────────────
+    
     if (error || !project) {
         return (
             <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -147,7 +147,7 @@ export function ProjectOverviewPage() {
         )
     }
 
-    // ── Status badge ───────────────────────────────────────────────────
+    
     const getStatusBadge = () => {
         switch (project.status) {
             case "completed":
@@ -183,7 +183,7 @@ export function ProjectOverviewPage() {
         }
     }
 
-    // ── Action handlers ────────────────────────────────────────────────
+    
     const handleRetry = async () => {
         setActionLoading("retry")
         try {
@@ -333,14 +333,14 @@ export function ProjectOverviewPage() {
         }
     }
 
-    // ── Derived list of generated doc sections ─────────────────────────
+    
     const generatedSections = DOC_SECTIONS.filter((s) => !!project[s.key as keyof typeof project])
 
     return (
         <>
             <div className="space-y-5 mt-2">
 
-                {/* Breadcrumb */}
+                {}
                 <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground min-w-0">
                     <Link
                         to="/projects"
@@ -353,7 +353,7 @@ export function ProjectOverviewPage() {
                     <span className="text-foreground font-medium truncate">{project.name}</span>
                 </div>
 
-                {/* Header card */}
+                {}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card rounded-xl border border-border p-5">
                     <div className="space-y-1.5 min-w-0">
                         <div className="flex items-center gap-2.5 flex-wrap">
@@ -396,7 +396,7 @@ export function ProjectOverviewPage() {
                         </div>
                     </div>
 
-                    {/* Action buttons */}
+                    {}
                     <div className="flex items-center gap-2 flex-wrap shrink-0">
                         {isOwner && (
                             <Button
@@ -449,10 +449,10 @@ export function ProjectOverviewPage() {
                     </div>
                 </div>
 
-                {/* Body */}
+                {}
                 <div className="grid gap-4 md:grid-cols-3">
 
-                    {/* ── Main content ─────────────────────────────────── */}
+                    {}
                     <Card className="md:col-span-2 order-2 md:order-1 shadow-none">
                         <CardHeader className="pb-3">
                             <CardTitle className="text-[15px] font-semibold">Project Overview</CardTitle>
@@ -463,7 +463,7 @@ export function ProjectOverviewPage() {
                         <CardContent>
                             {project.status === "completed" && (
                                 <div className="space-y-5">
-                                    {/* Generated sections */}
+                                    {}
                                     {generatedSections.length > 0 && (
                                         <div>
                                             <p className="text-[12px] font-medium text-muted-foreground uppercase tracking-wider mb-3">
@@ -483,7 +483,7 @@ export function ProjectOverviewPage() {
                                         </div>
                                     )}
 
-                                    {/* GitHub README preview */}
+                                    {}
                                     <div className="border-t border-border/50 pt-5">
                                         <div className="flex items-center gap-2 mb-3">
                                             <Github className="h-4 w-4 text-muted-foreground" />
@@ -553,7 +553,7 @@ export function ProjectOverviewPage() {
                         </CardContent>
                     </Card>
 
-                    {/* ── Actions sidebar ───────────────────────────────── */}
+                    {}
                     <Card className="order-1 md:order-2 shadow-none">
                         <CardHeader className="pb-3">
                             <CardTitle className="text-[15px] font-semibold">Actions</CardTitle>
@@ -562,7 +562,7 @@ export function ProjectOverviewPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-2">
-                            {/* Export feedback */}
+                            {}
                             {exportMessage && (
                                 <div className={cn(
                                     "rounded-lg px-3 py-2 text-[12px] border mb-1",
@@ -579,7 +579,7 @@ export function ProjectOverviewPage() {
                                 </div>
                             )}
 
-                            {/* Export buttons */}
+                            {}
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -640,7 +640,7 @@ export function ProjectOverviewPage() {
                                 )}
                             </Button>
 
-                            {/* Danger zone */}
+                            {}
                             {isOwner && (
                                 <div className="border-t border-border/50 pt-2 space-y-1 mt-1">
                                     {project.status !== "archived" && project.status !== "analyzing" && (

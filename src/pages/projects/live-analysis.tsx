@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils"
 import Loader1 from "@/components/ui/loader1"
 import { LogEntry, LogSeverity } from "@/types/LiveAnalysisTypes"
 
-// ── Event helpers ──────────────────────────────────────────────────────────
+
 
 function eventToSeverity(step: string, status?: string): LogSeverity {
   if (step === "done") return "success"
@@ -45,7 +45,7 @@ function eventToMessage(event: Record<string, any>): string {
   return parts.join(" : ") || "Processing…"
 }
 
-// ── Severity styling ───────────────────────────────────────────────────────
+
 
 function SeverityIcon({ severity }: { severity: LogSeverity }) {
   switch (severity) {
@@ -74,7 +74,7 @@ function severityTextClass(severity: LogSeverity) {
   }
 }
 
-// ── Component ──────────────────────────────────────────────────────────────
+
 
 export function LiveAnalysisPage() {
   const { id } = useParams<{ id: string }>()
@@ -100,14 +100,14 @@ export function LiveAnalysisPage() {
 
   useEffect(() => { pausedRef.current = isPaused }, [isPaused])
 
-  // Auto-scroll when not paused
+  
   useEffect(() => {
     if (!isPaused) {
       logsEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }
   }, [logs, isPaused])
 
-  // Load project name + start SSE stream
+  
   useEffect(() => {
     if (!id) return
 
@@ -172,7 +172,7 @@ export function LiveAnalysisPage() {
                 abortRef.current?.abort()
               }
             } catch {
-              // Malformed JSON : ignore
+              
             }
           },
 
@@ -194,10 +194,10 @@ export function LiveAnalysisPage() {
     })()
 
     return () => { ctrl.abort() }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [id, connectionKey])
 
-  // ── Terminal header label ──────────────────────────────────────────────
+  
   const terminalLabel = (() => {
     if (pipelineStatus === "done") return "Pipeline complete"
     if (pipelineStatus === "error") return "Pipeline stopped : error encountered"
@@ -212,7 +212,7 @@ export function LiveAnalysisPage() {
   return (
     <div className="space-y-5 max-w-5xl mx-auto flex flex-col" style={{ height: "calc(100vh - 7rem)" }}>
 
-      {/* ── Page header ────────────────────────────────────────────── */}
+      {}
       <div className="flex items-start sm:items-center justify-between shrink-0 flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild className="-ml-2 h-8 w-8">
@@ -243,7 +243,7 @@ export function LiveAnalysisPage() {
             </Badge>
           )}
 
-          {/* Post-completion actions */}
+          {}
           {!isActive && pipelineStatus === "done" && (
             <Button asChild size="sm" className="h-9">
               <Link to={`/projects/${id}/docs`}>
@@ -273,7 +273,7 @@ export function LiveAnalysisPage() {
                   setConnectionState("connecting")
                   setConnectionKey((k) => k + 1)
                 } catch {
-                  // Keep timeout UI visible if retry fails
+                  
                 } finally {
                   setIsRetrying(false)
                 }
@@ -286,7 +286,7 @@ export function LiveAnalysisPage() {
             </Button>
           )}
 
-          {/* Pause / Resume : only visible while stream is active */}
+          {}
           {isActive && (
             <Button
               variant="outline"
@@ -302,7 +302,7 @@ export function LiveAnalysisPage() {
         </div>
       </div>
 
-      {/* ── Stream connection error ─────────────────────────────────── */}
+      {}
       {loadError && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-[13px] text-destructive flex items-center gap-2 shrink-0">
           <AlertTriangle className="h-4 w-4 shrink-0" />
@@ -310,7 +310,7 @@ export function LiveAnalysisPage() {
         </div>
       )}
 
-      {/* ── Post-completion banner ──────────────────────────────────── */}
+      {}
       {!isActive && pipelineStatus === "done" && (
         <div className="rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-[13px] text-green-700 dark:text-green-400 flex items-center gap-2 shrink-0">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
@@ -330,9 +330,9 @@ export function LiveAnalysisPage() {
         </div>
       )}
 
-      {/* ── Terminal card ───────────────────────────────────────────── */}
+      {}
       <Card className="flex-1 flex flex-col overflow-hidden shadow-none min-h-0">
-        {/* Terminal bar */}
+        {}
         <CardHeader className="py-2.5 px-4 border-b border-border/30 bg-muted/30 shrink-0 flex flex-row items-center gap-2">
           <div className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full bg-rose-400/70" />
@@ -355,7 +355,7 @@ export function LiveAnalysisPage() {
           )}
         </CardHeader>
 
-        {/* Log output */}
+        {}
         <CardContent className="flex-1 overflow-y-auto p-0 font-mono text-[13px] min-h-0">
           {logs.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
@@ -374,7 +374,7 @@ export function LiveAnalysisPage() {
                     severityRowClass(log.severity)
                   )}
                 >
-                  {/* Timestamp */}
+                  {}
                   <span className="text-muted-foreground/50 shrink-0 w-[72px] text-[11px] mt-0.5 tabular-nums">
                     {new Date(log.timestamp).toLocaleTimeString([], {
                       hour12: false,
@@ -384,12 +384,12 @@ export function LiveAnalysisPage() {
                     })}
                   </span>
 
-                  {/* Icon */}
+                  {}
                   <span className="mt-0.5">
                     <SeverityIcon severity={log.severity} />
                   </span>
 
-                  {/* Message */}
+                  {}
                   <span className={cn("break-all leading-relaxed", severityTextClass(log.severity))}>
                     {log.message}
                   </span>

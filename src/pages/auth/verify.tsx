@@ -7,11 +7,7 @@ import Loader1 from "@/components/ui/loader1"
 import { ApiException } from "@/types/ApiTypes"
 import { AuthShell } from "@/components/common/auth-shell"
 
-/**
- * Handles two cases:
- *   1. ?token=<token> → calls POST /auth/verify-email automatically
- *   2. No token param → static "check your email" screen (after signup)
- */
+
 export function VerifyPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
@@ -42,7 +38,7 @@ export function VerifyPage() {
       })
   }, [token])
 
-  // ── Verifying… ─────────────────────────────────────────────────────────
+  
   if (token && status === "loading") {
     return (
       <AuthShell>
@@ -54,7 +50,7 @@ export function VerifyPage() {
     )
   }
 
-  // ── Verified ────────────────────────────────────────────────────────────
+  
   if (token && status === "success") {
     return (
       <AuthShell>
@@ -79,7 +75,7 @@ export function VerifyPage() {
     )
   }
 
-  // ── Verification failed ─────────────────────────────────────────────────
+  
   if (token && status === "error") {
     return (
       <AuthShell>
@@ -99,7 +95,7 @@ export function VerifyPage() {
     )
   }
 
-  // ── No token : "check your email" screen (after signup) ────────────────
+  
   return (
     <AuthShell>
       <div className="space-y-6">

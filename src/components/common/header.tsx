@@ -51,7 +51,8 @@ export function TopHeader({ className }: { className?: string }) {
           </Button>
         </div>
 
-        <div className="flex items-center gap-3 md:hidden">
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
           <Link
             to="/login"
             className="text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"

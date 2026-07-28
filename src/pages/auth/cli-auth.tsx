@@ -33,10 +33,10 @@ function cancelWithBeacon(sessionId: string) {
       keepalive: true,
       credentials: "include",
     }).catch(() => {
-      // best effort only
+      
     });
   } catch {
-    // best effort only
+    
   }
 }
 
@@ -98,7 +98,7 @@ export function CliAuthPage() {
     try {
       await authApi.cliCancel(sessionId);
     } catch {
-      // best effort
+      
     }
 
     setState("cancelled");

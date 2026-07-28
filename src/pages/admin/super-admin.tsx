@@ -25,9 +25,9 @@ import { Input } from "@/components/ui/input"
 import Loader1 from "@/components/ui/loader1"
 import { AdminProject, AdminStats, AdminSubscription, AdminUser } from "@/types/AdminTypes"
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+
+
+
 
 const PLAN_COLORS: Record<string, string> = {
   free: "bg-muted text-muted-foreground",
@@ -86,9 +86,9 @@ function Pagination({
   )
 }
 
-// ---------------------------------------------------------------------------
-// Stat Card
-// ---------------------------------------------------------------------------
+
+
+
 
 function StatCard({
   title,
@@ -119,9 +119,9 @@ function StatCard({
   )
 }
 
-// ---------------------------------------------------------------------------
-// Delete confirm inline button
-// ---------------------------------------------------------------------------
+
+
+
 
 function DeleteButton({ onConfirm, loading }: { onConfirm: () => void; loading?: boolean }) {
   const [confirm, setConfirm] = useState(false)
@@ -159,9 +159,9 @@ function DeleteButton({ onConfirm, loading }: { onConfirm: () => void; loading?:
   )
 }
 
-// ---------------------------------------------------------------------------
-// Tabs
-// ---------------------------------------------------------------------------
+
+
+
 
 type Tab = "overview" | "users" | "projects" | "subscriptions"
 
@@ -172,15 +172,15 @@ const TABS: { id: Tab; label: string; Icon: React.ElementType }[] = [
   { id: "subscriptions", label: "Subscriptions", Icon: CreditCard },
 ]
 
-// ---------------------------------------------------------------------------
-// Main page
-// ---------------------------------------------------------------------------
+
+
+
 
 export function SuperAdminPage() {
   const { user } = useAuthStore()
   const navigate = useNavigate()
 
-  // Guard : redirect non-super-admins
+  
   useEffect(() => {
     if (user && user.role !== "super-admin") {
       navigate("/projects", { replace: true })
@@ -189,7 +189,7 @@ export function SuperAdminPage() {
 
   const [activeTab, setActiveTab] = useState<Tab>("overview")
 
-  // ── Stats ──────────────────────────────────────────────────
+  
   const [stats, setStats] = useState<AdminStats | null>(null)
   const [statsLoading, setStatsLoading] = useState(true)
   const [statsError, setStatsError] = useState<string | null>(null)
@@ -209,7 +209,7 @@ export function SuperAdminPage() {
 
   useEffect(() => { loadStats() }, [loadStats])
 
-  // ── Users ──────────────────────────────────────────────────
+  
   const [users, setUsers] = useState<AdminUser[]>([])
   const [usersTotal, setUsersTotal] = useState(0)
   const [usersPage, setUsersPage] = useState(1)
@@ -226,7 +226,7 @@ export function SuperAdminPage() {
       setUsersTotal(res.pagination.total)
       setUsersPage(res.pagination.page)
       setUsersTotalPages(res.pagination.totalPages)
-    } catch { /* silent */ } finally {
+    } catch {  } finally {
       setUsersLoading(false)
     }
   }, [])
@@ -241,14 +241,14 @@ export function SuperAdminPage() {
       await adminApi.deleteUser(id)
       setUsers((prev) => prev.filter((u) => u._id !== id))
       setUsersTotal((prev) => prev - 1)
-      // Refresh stats
+      
       loadStats()
-    } catch { /* silent */ } finally {
+    } catch {  } finally {
       setDeletingUserId(null)
     }
   }
 
-  // ── Projects ───────────────────────────────────────────────
+  
   const [projects, setProjects] = useState<AdminProject[]>([])
   const [projectsTotal, setProjectsTotal] = useState(0)
   const [projectsPage, setProjectsPage] = useState(1)
@@ -265,7 +265,7 @@ export function SuperAdminPage() {
       setProjectsTotal(res.pagination.total)
       setProjectsPage(res.pagination.page)
       setProjectsTotalPages(res.pagination.totalPages)
-    } catch { /* silent */ } finally {
+    } catch {  } finally {
       setProjectsLoading(false)
     }
   }, [])
@@ -281,12 +281,12 @@ export function SuperAdminPage() {
       setProjects((prev) => prev.filter((p) => p._id !== id))
       setProjectsTotal((prev) => prev - 1)
       loadStats()
-    } catch { /* silent */ } finally {
+    } catch {  } finally {
       setDeletingProjectId(null)
     }
   }
 
-  // ── Subscriptions ──────────────────────────────────────────
+  
   const [subs, setSubs] = useState<AdminSubscription[]>([])
   const [subsTotal, setSubsTotal] = useState(0)
   const [subsPage, setSubsPage] = useState(1)
@@ -302,7 +302,7 @@ export function SuperAdminPage() {
       setSubsTotal(res.pagination.total)
       setSubsPage(res.pagination.page)
       setSubsTotalPages(res.pagination.totalPages)
-    } catch { /* silent */ } finally {
+    } catch {  } finally {
       setSubsLoading(false)
     }
   }, [])
@@ -311,14 +311,14 @@ export function SuperAdminPage() {
     if (activeTab === "subscriptions") loadSubs(1, subsPlanFilter)
   }, [activeTab, loadSubs])
 
-  // ── Render ─────────────────────────────────────────────────
+  
   if (!user || user.role !== "super-admin") {
     return null
   }
 
   return (
     <div className="space-y-6">
-      {/* Tabs */}
+      {}
       <div className="flex gap-1 border-b border-border overflow-x-auto">
         {TABS.map(({ id, label, Icon }) => (
           <button
@@ -335,7 +335,7 @@ export function SuperAdminPage() {
         ))}
       </div>
 
-      {/* ── Overview ── */}
+      {}
       {activeTab === "overview" && (
         <div className="space-y-6">
           {statsError && (
@@ -345,7 +345,7 @@ export function SuperAdminPage() {
             </div>
           )}
 
-          {/* Stat cards */}
+          {}
           {statsLoading ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {Array.from({ length: 4 }).map((_, i) => (
@@ -392,7 +392,7 @@ export function SuperAdminPage() {
                 />
               </div>
 
-              {/* Plan breakdown */}
+              {}
               <Card className="shadow-none">
                 <CardHeader>
                   <CardTitle className="text-base">Users by Plan</CardTitle>
@@ -426,7 +426,7 @@ export function SuperAdminPage() {
         </div>
       )}
 
-      {/* ── Users ── */}
+      {}
       {activeTab === "users" && (
         <div className="space-y-4">
           <div className="flex items-center gap-3">
@@ -517,7 +517,7 @@ export function SuperAdminPage() {
         </div>
       )}
 
-      {/* ── Projects ── */}
+      {}
       {activeTab === "projects" && (
         <div className="space-y-4">
           <div className="flex items-center gap-3">
@@ -603,7 +603,7 @@ export function SuperAdminPage() {
         </div>
       )}
 
-      {/* ── Subscriptions ── */}
+      {}
       {activeTab === "subscriptions" && (
         <div className="space-y-4">
           <div className="flex items-center gap-3">

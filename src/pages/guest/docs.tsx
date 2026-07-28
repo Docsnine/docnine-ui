@@ -1,18 +1,4 @@
-/**
- * Platform Documentation Page : /docs
- *
- * Covers:
- *  - Getting started
- *  - Connecting a GitHub repo
- *  - YAML / OpenAPI integration
- *  - GitHub webhook (auto-sync on push)
- *  - AI chat & editing docs
- *  - Publishing a portal
- *  - Exporting docs
- *  - Docnine CLI
- *  - Plans & billing
- *  - Support
- */
+
 
 import { useState, useEffect, useRef } from "react"
 import { Link } from "react-router-dom"
@@ -25,7 +11,7 @@ import {
 import BackgroundGrid from "@/components/ui/background-grid"
 import { cn } from "@/lib/utils"
 
-// ── Types ─────────────────────────────────────────────────────────────────
+
 
 interface DocSection {
     id: string
@@ -34,7 +20,7 @@ interface DocSection {
     subsections?: { id: string; label: string }[]
 }
 
-// ── Sidebar sections ──────────────────────────────────────────────────────
+
 
 const SECTIONS: DocSection[] = [
     {
@@ -151,7 +137,7 @@ const SECTIONS: DocSection[] = [
     },
 ]
 
-// ── Code block ────────────────────────────────────────────────────────────
+
 function CodeBlock({ code, language = "yaml" }: { code: string; language?: string }) {
     const [copied, setCopied] = useState(false)
     return (
@@ -172,7 +158,7 @@ function CodeBlock({ code, language = "yaml" }: { code: string; language?: strin
     )
 }
 
-// ── Callout ───────────────────────────────────────────────────────────────
+
 function Callout({ type = "info", children }: { type?: "info" | "warning" | "tip"; children: React.ReactNode }) {
     const styles = {
         info: { bg: "bg-blue-500/10 border-blue-500/30", icon: <Info className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" /> },
@@ -188,7 +174,7 @@ function Callout({ type = "info", children }: { type?: "info" | "warning" | "tip
     )
 }
 
-// ── Step ──────────────────────────────────────────────────────────────────
+
 function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
     return (
         <div className="flex gap-4 py-5 px-5 border-b border-border/50 last:border-0">
@@ -203,7 +189,7 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
     )
 }
 
-// ── Section heading ───────────────────────────────────────────────────────
+
 function H2({ id, children }: { id: string; children: React.ReactNode }) {
     return (
         <h2 id={id} className="text-2xl font-bold text-foreground mt-12 mb-4 scroll-mt-24 flex items-center gap-2 group">
@@ -226,7 +212,7 @@ function H3({ id, children }: { id: string; children: React.ReactNode }) {
     )
 }
 
-// ── Main component ────────────────────────────────────────────────────────
+
 export function PlatformDocsPage() {
     const [activeSection, setActiveSection] = useState("what-is-docnine")
     const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -234,7 +220,7 @@ export function PlatformDocsPage() {
     const [showBackToTop, setShowBackToTop] = useState(false)
     const mainRef = useRef<HTMLDivElement>(null)
 
-    // Active section tracking via IntersectionObserver
+    
     useEffect(() => {
         const allIds = SECTIONS.flatMap((s) => [s.id, ...(s.subsections?.map((sub) => sub.id) ?? [])])
         const observers: IntersectionObserver[] = []
@@ -252,7 +238,7 @@ export function PlatformDocsPage() {
         return () => observers.forEach((o) => o.disconnect())
     }, [])
 
-    // Back-to-top
+    
     useEffect(() => {
         const handler = () => setShowBackToTop(window.scrollY > 400)
         window.addEventListener("scroll", handler)
@@ -265,7 +251,7 @@ export function PlatformDocsPage() {
         setSidebarOpen(false)
     }
 
-    // Filter sections for search
+    
     const filteredSections = searchQuery.trim()
         ? SECTIONS.map((s) => ({
             ...s,
@@ -280,14 +266,14 @@ export function PlatformDocsPage() {
 
     return (
         <div>
-            {/* Grid clipped to top half */}
+            {}
             <div className="absolute inset-x-0 top-0 h-1/12 overflow-hidden pointer-events-none">
                 <BackgroundGrid />
             </div>
 
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-foreground/5 blur-[120px] pointer-events-none z-0" />
 
-            {/* Mobile sidebar toggle */}
+            {}
             <div className="sticky top-0 z-30 lg:hidden flex items-center gap-3 px-4 py-3 border-b border-border bg-background/90 backdrop-blur-md">
                 <button
                     onClick={() => setSidebarOpen((v) => !v)}
@@ -303,7 +289,7 @@ export function PlatformDocsPage() {
             </div>
 
             <div className="relative z-10 flex max-w-7xl mx-auto">
-                {/* ── Sidebar ── */}
+                {}
                 <aside
                     className={cn(
                         "fixed lg:sticky top-[var(--header-h,5rem)] z-40 h-[calc(100vh-4rem)] w-72 shrink-0",
@@ -313,7 +299,7 @@ export function PlatformDocsPage() {
                     )}
                     style={{ top: "0px" }}
                 >
-                    {/* Search */}
+                    {}
                     <div className="p-4 border-b border-border">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
@@ -332,7 +318,7 @@ export function PlatformDocsPage() {
                         </div>
                     </div>
 
-                    {/* Nav */}
+                    {}
                     <nav className="p-4 space-y-5">
                         {filteredSections.map((section) => (
                             <div key={section.id}>
@@ -372,14 +358,14 @@ export function PlatformDocsPage() {
                     </nav>
                 </aside>
 
-                {/* Mobile overlay */}
+                {}
                 {sidebarOpen && (
                     <div className="fixed inset-0 z-30 bg-background/50 lg:hidden" onClick={() => setSidebarOpen(false)} />
                 )}
 
-                {/* ── Main content ── */}
+                {}
                 <main ref={mainRef} className="flex-1 min-w-0 px-6 lg:px-12 py-12 max-w-3xl mx-auto lg:mx-0 h-[calc(100vh-4rem)] overflow-y-auto">
-                    {/* Page intro */}
+                    {}
                     <div className="mb-12">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-muted/50 text-xs text-muted-foreground mb-4">
                             <BookOpen className="h-3.5 w-3.5" /> Your Project's Single Source of Truth.
@@ -390,9 +376,9 @@ export function PlatformDocsPage() {
                         </p>
                     </div>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* GETTING STARTED */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="getting-started">
                         <H2 id="getting-started">
                             <BookOpen className="h-6 w-6 text-primary" /> Getting Started
@@ -440,9 +426,9 @@ export function PlatformDocsPage() {
                         </Callout>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* GITHUB INTEGRATION */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="github-integration">
                         <H2 id="github-integration">
                             <Github className="h-6 w-6 text-primary" /> GitHub Integration
@@ -478,9 +464,9 @@ export function PlatformDocsPage() {
                         </p>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* YAML / OPENAPI */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="yaml-openapi">
                         <H2 id="yaml-openapi">
                             <FileCode2 className="h-6 w-6 text-primary" /> YAML / OpenAPI Integration
@@ -562,9 +548,9 @@ components:
                         </Callout>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* WEBHOOKS */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="webhooks">
                         <H2 id="webhooks">
                             <Webhook className="h-6 w-6 text-primary" /> GitHub Webhooks
@@ -657,9 +643,9 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`} />
                         </Callout>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* AI & DOCUMENTATION */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="ai-docs">
                         <H2 id="ai-docs">
                             <Sparkles className="h-6 w-6 text-primary" /> AI & Documentation
@@ -715,9 +701,9 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`} />
                         </p>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* PORTALS */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="portals">
                         <H2 id="portals">
                             <Globe className="h-6 w-6 text-primary" /> Public Portals
@@ -756,9 +742,9 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`} />
                         </p>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* EXPORTS */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="exports">
                         <H2 id="exports">
                             <Download className="h-6 w-6 text-primary" /> Exporting Docs
@@ -798,9 +784,9 @@ NOTION_PARENT_PAGE_ID=your_page_id_here`} />
                         </div>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* DOCNINE CLI */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="cli">
                         <H2 id="cli">
                             <Terminal className="h-6 w-6 text-primary" /> Docnine CLI
@@ -1048,9 +1034,9 @@ jobs:
                         </div>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* PLANS */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="plans">
                         <H2 id="plans">
                             <CreditCard className="h-6 w-6 text-primary" /> Plans & Billing
@@ -1114,9 +1100,9 @@ jobs:
                         </div>
                     </section>
 
-                    {/* ────────────────────────────────────────────────── */}
-                    {/* SUPPORT */}
-                    {/* ────────────────────────────────────────────────── */}
+                    {}
+                    {}
+                    {}
                     <section id="support">
                         <H2 id="support">
                             <LifeBuoy className="h-6 w-6 text-primary" /> Support
@@ -1199,7 +1185,7 @@ jobs:
                 </main>
             </div>
 
-            {/* Back to top */}
+            {}
             {showBackToTop && (
                 <button
                     onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

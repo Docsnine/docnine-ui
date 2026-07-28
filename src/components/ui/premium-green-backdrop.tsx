@@ -46,27 +46,6 @@ export function PremiumGreenBackdrop({
             "radial-gradient(ellipse 85% 70% at 50% 35%, var(--hero-glow-a) 0%, transparent 65%)",
         }}
       />
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 70% 60% at 20% 70%, var(--hero-glow-b) 0%, transparent 55%)",
-        }}
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 70% 60% at 80% 70%, var(--hero-glow-c) 0%, transparent 55%)",
-        }}
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 90% 80% at 50% 50%, transparent 45%, var(--hero-vignette) 100%)",
-        }}
-      />
 
       <NoiseOverlay opacity={grainOpacity} blendMode="overlay" />
       <NoiseOverlay

@@ -23,7 +23,7 @@ export function AcceptInvitePage() {
     }
 
     if (!isAuthenticated) {
-      // Redirect to login and come back after
+      
       navigate(`/login?redirect=/share/accept/${token}`, { replace: true })
       return
     }

@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { useAuthStore } from "@/store/auth"
 import { useSubscriptionStore } from "@/store/subscription"
+import { useProjectStore } from "@/store/projects"
 import { authApi } from "@/lib/api"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "@/components/common/theme-toggle"
@@ -32,21 +33,89 @@ import { NotificationPanel } from "@/components/notifications/NotificationPanel"
 const ROUTE_LABELS: Record<string, string> = {
   projects: "Projects",
   documentations: "Documentations",
+  docs: "Documentation",
+  live: "Live analysis",
   logs: "Logs",
   settings: "Settings",
   profile: "Profile",
   admin: "Administration",
   billing: "Billing",
+  home: "Home",
+}
+
+function isProjectIdSegment(seg: string) {
+  return /^[a-f\d]{24}$/i.test(seg) || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(seg)
 }
 
 function useBreadcrumbs() {
   const location = useLocation()
+  const projects = useProjectStore((s) => s.projects)
+  const getProject = useProjectStore((s) => s.getProject)
   const segments = location.pathname.split("/").filter(Boolean)
-  return segments.map((seg, i) => ({
-    label: ROUTE_LABELS[seg] ?? seg,
-    href: "/" + segments.slice(0, i + 1).join("/"),
-    isLast: i === segments.length - 1,
-  }))
+
+  const projectId =
+    segments[0] === "projects" && segments[1] && isProjectIdSegment(segments[1])
+      ? segments[1]
+      : null
+
+  const cachedName = projectId
+    ? projects.find((p) => p.id === projectId)?.name ?? null
+    : null
+  const [projectName, setProjectName] = useState<string | null>(cachedName)
+
+  useEffect(() => {
+    if (!projectId) {
+      setProjectName(null)
+      return
+    }
+
+    const fromCache = projects.find((p) => p.id === projectId)?.name
+    if (fromCache) {
+      setProjectName(fromCache)
+      return
+    }
+
+    let cancelled = false
+    getProject(projectId)
+      .then((p) => {
+        if (!cancelled) setProjectName(p.name)
+      })
+      .catch(() => {
+        if (!cancelled) setProjectName(null)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [projectId, projects, getProject])
+
+  const crumbs: { label: string; href: string; isLast: boolean }[] = []
+
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i]
+    const href = "/" + segments.slice(0, i + 1).join("/")
+
+    if (projectId && i === 1 && isProjectIdSegment(seg)) {
+      crumbs.push({
+        label: projectName || "Project",
+        href,
+        isLast: false,
+      })
+      continue
+    }
+
+    crumbs.push({
+      label: ROUTE_LABELS[seg] ?? seg,
+      href,
+      isLast: false,
+    })
+  }
+
+  if (crumbs.length > 0) {
+    crumbs[crumbs.length - 1] = { ...crumbs[crumbs.length - 1], isLast: true }
+  }
+
+  return crumbs
 }
 
 // ── Nav config ────────────────────────────────────────────────────────────────
@@ -133,7 +202,6 @@ function SidebarContent({
             <p className="flex-1 text-[13px] font-medium text-sidebar-foreground truncate">
               {user.name}
             </p>
-            <PlanBadge />
           </div>
         )}
       </div>
@@ -190,11 +258,6 @@ function SidebarContent({
       <div className="border-t border-sidebar-border" />
 
       <div className="px-3 pt-2 pb-3 border-t border-sidebar-border shrink-0">
-        {/* Bottom utility row */}
-        <div className="mt-2 flex items-center justify-between px-2">
-          <ThemeToggle />
-        </div>
-
         <button
           onClick={onLogout}
           className="mt-1 flex w-full items-center gap-3 rounded-md px-2 py-[7px] text-[14px] font-medium text-sidebar-muted hover:text-destructive hover:bg-destructive/10 transition-colors"
@@ -206,8 +269,6 @@ function SidebarContent({
     </div>
   )
 }
-
-// ── Layout ────────────────────────────────────────────────────────────────────
 
 export function DashboardLayout() {
   const location = useLocation()
@@ -302,12 +363,10 @@ export function DashboardLayout() {
     <ErrorBoundary>
       <div className="flex h-screen overflow-hidden bg-page">
 
-        {/* ── Desktop sidebar (always visible ≥ md) ─────────────── */}
         <aside className="hidden md:flex fixed inset-y-0 left-0 z-40 w-[260px] flex-col bg-page">
           <SidebarContent {...sidebarProps} />
         </aside>
 
-        {/* ── Mobile sidebar overlay ─────────────────────────────── */}
         {mobileSidebarOpen && (
           <div
             className="fixed inset-0 z-40 bg-black/50 md:hidden"
@@ -323,15 +382,14 @@ export function DashboardLayout() {
           <SidebarContent {...sidebarProps} onClose={() => setMobileSidebarOpen(false)} />
         </aside>
 
-        {/* ── Main workspace ─────────────────────────────────────── */}
 
         <div className="flex flex-1 flex-col md:ml-[260px] overflow-hidden bg-workspace rounded-3xl m-2 border border-workspace-border">
 
           {/* Top bar */}
-          <header className="flex h-12 shrink-0 items-center justify-between border-b border-workspace-border px-4 sm:px-6">
+          <header className="grid h-12 shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-workspace-border px-4 sm:px-6">
 
             {/* Left: hamburger (mobile) + breadcrumb */}
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex min-w-0 items-center gap-2">
               <button
                 className="md:hidden flex items-center justify-center h-7 w-7 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
                 onClick={() => setMobileSidebarOpen((o) => !o)}
@@ -361,22 +419,18 @@ export function DashboardLayout() {
               </nav>
             </div>
 
-            {/* Right: search + bell + avatar */}
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="relative hidden w-[min(28rem,42vw)] sm:block">
+              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              <Input
+                type="search"
+                placeholder="Search projects..."
+                className="h-8 w-full bg-muted/50 pl-8 text-sm border-border/60 focus-visible:ring-1 rounded-lg"
+                value={searchValue}
+                onChange={handleSearchChange}
+              />
+            </div>
 
-              {/* Search */}
-              <div className="relative hidden sm:block">
-                <Search className="absolute left-2.5 top-[9px] h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-                <Input
-                  type="search"
-                  placeholder="Search projects..."
-                  className="w-44 lg:w-56 h-8 bg-muted/50 pl-8 text-sm border-border/60 focus-visible:ring-1 rounded-lg"
-                  value={searchValue}
-                  onChange={handleSearchChange}
-                />
-              </div>
-
-              {/* Notification bell */}
+            <div className="flex items-center justify-end gap-2 shrink-0">
               <div className="relative" ref={notificationRef}>
                 <button
                   onClick={() => setNotificationOpen((p) => !p)}
@@ -393,7 +447,6 @@ export function DashboardLayout() {
                 )}
               </div>
 
-              {/* Avatar + dropdown */}
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen((o) => !o)}
@@ -432,7 +485,6 @@ export function DashboardLayout() {
             </div>
           </header>
 
-          {/* Scrollable content */}
           <main className="flex-1 overflow-y-auto">
             <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-5 py-8">
               <Outlet />

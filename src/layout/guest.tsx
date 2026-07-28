@@ -11,9 +11,6 @@ export function GuestLayout({ allowCTA = true }: { allowCTA?: boolean }) {
 
             <main className="relative min-h-screen bg-background text-foreground overflow-hidden font-sans">
                 <Outlet />
-
-                {/* CTA Section */}
-                {allowCTA && <CTA />}
             </main>
 
             <Footer />

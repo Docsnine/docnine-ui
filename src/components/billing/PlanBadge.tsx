@@ -15,7 +15,6 @@ export function PlanBadge({ className, showStatus = true }: PlanBadgeProps) {
     const Icon = PLAN_ICONS[plan] ?? Star
     const colourClass = PLAN_COLOURS[plan] ?? PLAN_COLOURS.free
 
-    // Build optional status indicator
     let statusBadge: React.ReactNode = null
     if (showStatus) {
         if (status === "trialing" && trialEndsAt) {
@@ -51,9 +50,8 @@ export function PlanBadge({ className, showStatus = true }: PlanBadgeProps) {
                 className,
             )}
         >
-            <Icon className="h-3 w-3" />
             {planName}
-            {statusBadge}
+            {statusBadge} Plan
         </Badge>
     )
 }

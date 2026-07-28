@@ -78,20 +78,20 @@ export function LoginPage() {
     <AuthShell>
       <div className="space-y-7">
 
-        {/* Heading */}
+        {}
         <div className="space-y-1.5">
           <h1 className="font-display text-[24px] font-semibold tracking-[0.02em] leading-snug text-foreground">Welcome back</h1>
           <p className="text-[14px] text-muted-foreground">Sign in to pick up where you left off.</p>
         </div>
 
-        {/* Error */}
+        {}
         {error && (
           <div className="rounded-xl bg-destructive/10 border border-destructive/20 px-4 py-3 text-[13px] text-destructive">
             {error}
           </div>
         )}
 
-        {/* OAuth */}
+        {}
         <div className="space-y-2.5">
           <button
             type="button"
@@ -111,14 +111,14 @@ export function LoginPage() {
           </button>
         </div>
 
-        {/* Divider */}
+        {}
         <div className="flex items-center gap-3">
           <div className="h-px flex-1 bg-border" />
           <span className="text-[12px] text-muted-foreground uppercase tracking-wider">or</span>
           <div className="h-px flex-1 bg-border" />
         </div>
 
-        {/* Form */}
+        {}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="email" className="text-[13px] font-medium">Email</Label>
@@ -162,7 +162,7 @@ export function LoginPage() {
           </Button>
         </form>
 
-        {/* Footer */}
+        {}
         <p className="text-center text-[13px] text-muted-foreground">
           Don't have an account?{" "}
           <Link to="/signup" className="text-foreground font-medium hover:text-primary transition-colors">

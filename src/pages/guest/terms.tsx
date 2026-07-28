@@ -8,7 +8,7 @@ export function TermsPage() {
 
             <section className="relative z-10 py-20 px-4">
                 <div className="container mx-auto max-w-3xl mb-24">
-                    {/* Page heading */}
+                    {}
                     <div className="mb-12">
                         <p className="text-sm font-medium text-primary uppercase tracking-widest mb-3">Legal</p>
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">

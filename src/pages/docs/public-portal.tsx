@@ -1,16 +1,4 @@
-/**
- * Public Documentation Portal
- *
- * Accessible at /docs/:slug : no authentication required.
- * Supports:
- *   - Fully public portals
- *   - Password-protected portals (password gate modal)
- *   - Custom branding (colors, logo, header/footer)
- *   - Per-section visibility (public / coming_soon)
- *   - Auto-generated table of contents per section
- *   - Client-side search across all published content
- *   - SEO meta tags injected via useEffect
- */
+
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import { useParams, Link } from "react-router-dom"
@@ -27,7 +15,7 @@ import { PortalSectionKey, PublicPortalData } from "@/types/PortalTypes"
 import { publicPortalApi } from "@/lib/api"
 import { PORTAL_SECTION_KEYS, PORTAL_SECTION_LABELS } from "@/configs/PortalConfig"
 
-// ── Types ─────────────────────────────────────────────────────────────────
+
 interface TocEntry {
     id: string
     level: number
@@ -41,9 +29,9 @@ interface SearchHit {
     matchIndex: number
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────
 
-/** Replicate DocRenderer's slugify so ToC hrefs match the heading IDs it renders. */
+
+
 function slugifyHeading(text: string): string {
     return text
         .toLowerCase()
@@ -53,7 +41,7 @@ function slugifyHeading(text: string): string {
         .trim() || "section"
 }
 
-/** Extract headings from a markdown string for the ToC sidebar. */
+
 function extractToc(markdown: string): TocEntry[] {
     const lines = markdown.split("\n")
     const toc: TocEntry[] = []
@@ -71,7 +59,7 @@ function extractToc(markdown: string): TocEntry[] {
     return toc
 }
 
-/** Build a search excerpt around the first match of query in text */
+
 function buildExcerpt(text: string, query: string, radius = 120): string {
     const idx = text.toLowerCase().indexOf(query.toLowerCase())
     if (idx === -1) return text.slice(0, 200)
@@ -80,7 +68,7 @@ function buildExcerpt(text: string, query: string, radius = 120): string {
     return (start > 0 ? "…" : "") + text.slice(start, end) + (end < text.length ? "…" : "")
 }
 
-// ── Password Gate ─────────────────────────────────────────────────────────
+
 function PasswordGate({
     slug,
     onUnlock,
@@ -149,7 +137,7 @@ function PasswordGate({
     )
 }
 
-// ── Main Page ─────────────────────────────────────────────────────────────
+
 export function PublicPortalPage() {
     const { slug } = useParams<{ slug: string }>()
     const [data, setData] = useState<PublicPortalData | null>(null)
@@ -162,7 +150,7 @@ export function PublicPortalPage() {
     const [showBackToTop, setShowBackToTop] = useState(false)
     const contentRef = useRef<HTMLDivElement>(null)
 
-    // ── Fetch portal ───────────────────────────────────────────────
+    
     const fetchPortal = useCallback(async (pw?: string) => {
         if (!slug) return
         setLoading(true)
@@ -170,7 +158,7 @@ export function PublicPortalPage() {
         try {
             const res = await publicPortalApi.get(slug, pw)
             setData(res)
-            // Auto-select the first visible section
+            
             if (res.sectionVisibility) {
                 const firstVisible = PORTAL_SECTION_KEYS.find(
                     (k) => res.sectionVisibility![k] !== "internal",
@@ -188,7 +176,7 @@ export function PublicPortalPage() {
         fetchPortal()
     }, [fetchPortal])
 
-    // ── SEO ────────────────────────────────────────────────────────
+    
     useEffect(() => {
         if (!data) return
         const { portal, project } = data
@@ -220,7 +208,7 @@ export function PublicPortalPage() {
         }
     }, [data])
 
-    // ── Back-to-top ────────────────────────────────────────────────
+    
     useEffect(() => {
         const el = contentRef.current
         if (!el) return
@@ -229,7 +217,7 @@ export function PublicPortalPage() {
         return () => el.removeEventListener("scroll", onScroll)
     }, [])
 
-    // ── Derived data ───────────────────────────────────────────────
+    
     const branding = data?.portal.branding ?? {}
     const primaryColor = branding.primaryColor ?? "#6366f1"
 
@@ -252,7 +240,7 @@ export function PublicPortalPage() {
         return extractToc(currentContent)
     }, [currentContent])
 
-    // ── Search ─────────────────────────────────────────────────────
+    
     const searchResults = useMemo<SearchHit[]>(() => {
         if (!searchQuery.trim() || !data?.content) return []
         const q = searchQuery.toLowerCase()
@@ -272,13 +260,13 @@ export function PublicPortalPage() {
         return hits
     }, [searchQuery, data, visibleSections])
 
-    // ── CSS custom properties for branding ────────────────────────
+    
     const brandingStyle: React.CSSProperties = {
         "--portal-primary": primaryColor,
         "--portal-bg": branding.bgColor,
     } as React.CSSProperties
 
-    // ── States ─────────────────────────────────────────────────────
+    
 
     if (loading) {
         return (
@@ -303,7 +291,7 @@ export function PublicPortalPage() {
         )
     }
 
-    // Password gate
+    
     if (data?.protected) {
         return (
             <PasswordGate
@@ -324,13 +312,13 @@ export function PublicPortalPage() {
 
     return (
         <div className="min-h-screen flex flex-col bg-background" style={brandingStyle}>
-            {/* ── Top navigation bar ── */}
+            {}
             <header
                 className="sticky top-0 z-30 border-b border-border/60 bg-background/95 backdrop-blur-sm"
                 style={branding.bgColor ? { backgroundColor: branding.bgColor } : undefined}
             >
                 <div className="max-w-screen-xl mx-auto flex items-center gap-4 px-4 sm:px-6 h-14">
-                    {/* Mobile sidebar toggle */}
+                    {}
                     <button
                         className="lg:hidden p-1.5 rounded-md hover:bg-muted"
                         onClick={() => setSidebarOpen((v) => !v)}
@@ -338,7 +326,7 @@ export function PublicPortalPage() {
                         {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                     </button>
 
-                    {/* Logo + title */}
+                    {}
                     <div className="flex items-center gap-3 min-w-0">
                         {branding.logo && (
                             <img src={branding.logo} alt="logo" className="h-7 w-auto object-contain shrink-0" />
@@ -353,7 +341,7 @@ export function PublicPortalPage() {
 
                     <div className="flex-1" />
 
-                    {/* Search bar */}
+                    {}
                     <div className="relative hidden sm:flex items-center">
                         <Search className="absolute left-2.5 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
                         <input
@@ -365,17 +353,17 @@ export function PublicPortalPage() {
                         />
                     </div>
 
-                    {/* Theme toggle */}
+                    {}
                     <ThemeToggle />
 
-                    {/* Access badge */}
+                    {}
                     {portal.accessMode === "password" && (
                         <span className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
                             <Lock className="h-3 w-3" /> Protected
                         </span>
                     )}
 
-                    {/* Powered by */}
+                    {}
                     <a
                         href="https://docnine.app"
                         target="_blank"
@@ -387,7 +375,7 @@ export function PublicPortalPage() {
                     </a>
                 </div>
 
-                {/* Mobile search */}
+                {}
                 <div className="lg:hidden px-4 pb-2">
                     <div className="relative flex items-center">
                         <Search className="absolute left-2.5 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
@@ -402,7 +390,7 @@ export function PublicPortalPage() {
                 </div>
             </header>
 
-            {/* ── Search results overlay ── */}
+            {}
             {searchQuery.trim() && (
                 <div className="fixed inset-0 z-20 flex items-start justify-center pt-20 px-4 bg-background/80 backdrop-blur-sm">
                     <div className="w-full max-w-2xl rounded-xl border border-border bg-background shadow-2xl overflow-hidden">
@@ -445,9 +433,9 @@ export function PublicPortalPage() {
                 </div>
             )}
 
-            {/* ── Body ── */}
+            {}
             <div className="flex flex-1 max-w-screen-xl mx-auto w-full">
-                {/* ── Sidebar ── */}
+                {}
                 <aside
                     className={cn(
                         "fixed lg:sticky top-14 z-20 h-[calc(100vh-3.5rem)] lg:h-[calc(100svh-3.5rem)] w-64 shrink-0",
@@ -496,7 +484,7 @@ export function PublicPortalPage() {
                     </nav>
                 </aside>
 
-                {/* Mobile sidebar overlay */}
+                {}
                 {sidebarOpen && (
                     <div
                         className="fixed inset-0 z-10 bg-background/50 lg:hidden"
@@ -504,7 +492,7 @@ export function PublicPortalPage() {
                     />
                 )}
 
-                {/* ── Main content ── */}
+                {}
                 <main className="flex-1 flex min-w-0" ref={contentRef as any}>
                     <article className="flex-1 min-w-0 px-6 lg:px-10 py-8 max-w-3xl">
                         <h1 className="text-2xl font-bold mb-1 flex items-center gap-2">
@@ -518,7 +506,7 @@ export function PublicPortalPage() {
                         <div className="h-px bg-border my-4" />
 
                         {currentIsComingSoon ? (
-                            // Coming soon placeholder
+                            
                             <div className="rounded-xl border border-dashed border-border p-12 text-center space-y-3">
                                 <AlertTriangle className="h-10 w-10 mx-auto text-muted-foreground/40" />
                                 <h3 className="font-semibold text-lg">Coming Soon</h3>
@@ -533,7 +521,7 @@ export function PublicPortalPage() {
                         )}
                     </article>
 
-                    {/* ── Table of Contents ── */}
+                    {}
                     {toc.length > 0 && (
                         <aside className="hidden xl:block w-56 shrink-0 sticky top-14 h-[calc(100svh-3.5rem)] overflow-y-auto py-8 pr-6">
                             <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">On this page</p>
@@ -564,7 +552,7 @@ export function PublicPortalPage() {
 
             </div>
 
-            {/* ── Footer ── */}
+            {}
             {(branding.footerText || (branding.footerLinks && branding.footerLinks.length > 0)) && (
                 <footer className="border-t border-border py-6 px-6 text-center">
                     {branding.footerLinks && branding.footerLinks.length > 0 && (
@@ -588,7 +576,7 @@ export function PublicPortalPage() {
                 </footer>
             )}
 
-            {/* ── Back to top ── */}
+            {}
             {showBackToTop && (
                 <button
                     onClick={() => contentRef.current?.scrollTo({ top: 0, behavior: "smooth" })}

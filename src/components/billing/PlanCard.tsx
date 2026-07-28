@@ -56,7 +56,7 @@ function PlanCard({
 
             {/* Header */}
             <div className="mb-4 flex items-center gap-2">
-                <Icon className={cn("h-5 w-5", accent)} />
+                {/* <Icon className={cn("h-5 w-5", accent)} /> */}
                 <span className="font-semibold">{plan.name}</span>
             </div>
 

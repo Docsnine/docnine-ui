@@ -45,7 +45,7 @@ import Loader1 from "@/components/ui/loader1"
 import { BillingPlan, InvoiceData, SubscriptionData, UsageData, PaymentMethodData } from "@/types/BillingTypes"
 import { billingApi } from "@/lib/api"
 
-// ── helpers ───────────────────────────────────────────────────────────────────
+
 function fmtMoney(cents: number, currency = "USD") {
     return new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -92,7 +92,7 @@ function InvoiceStatusBadge({ status }: { status: InvoiceData["status"] }) {
     )
 }
 
-// ── Change plan modal ───────────────────────────────────────────────────────
+
 function ChangePlanModal({
     open,
     onClose,
@@ -122,14 +122,14 @@ function ChangePlanModal({
         }
     }, [open, plans.length, loadPlans])
 
-    // Determine if selected plan is upgrade, downgrade, or same tier
+    
     const currentLevel = PLAN_LEVEL[currentPlan] ?? 0
     const planDirection = (planId: string): "upgrade" | "downgrade" | "current" | "same" => {
         if (planId === currentPlan) return "current"
         const targetLevel = PLAN_LEVEL[planId] ?? 0
         if (targetLevel > currentLevel) return "upgrade"
         if (targetLevel < currentLevel) return "downgrade"
-        return "same" // same tier, different cycle
+        return "same" 
     }
 
     async function handleConfirm() {
@@ -142,23 +142,23 @@ function ChangePlanModal({
 
             if (result.type === "upgrade") {
                 if (result.paymentLink) {
-                    // No saved card : must complete payment first
+                    
                     setResultMsg({
                         type: "redirect",
                         text: "You'll be redirected to complete payment.",
                         link: result.paymentLink,
                     })
-                    // Give user a moment to read, then redirect
+                    
                     setTimeout(() => { window.location.href = result.paymentLink! }, 2000)
                 } else {
-                    // Saved card charged immediately
+                    
                     await onRefresh()
                     setResultMsg({ type: "success", text: "Upgraded successfully! Your new plan is now active." })
                     setTimeout(() => { setResultMsg(null); onClose() }, 2000)
                 }
             } 
             
-            // Upgrade with no payment required (prorated amount is 0 or negative)
+            
             else if (result.type === "immediate_no_charge") {
                 await onRefresh()
                 setResultMsg({ type: "success", text: "Plan upgraded successfully! No additional charge needed." })
@@ -173,7 +173,7 @@ function ChangePlanModal({
             } 
             
             else {
-                // type === "none" : same plan/cycle
+                
                 setResultMsg({ type: "success", text: "No change needed : you're already on this plan." })
                 setTimeout(() => { setResultMsg(null); onClose() }, 1500)
             }
@@ -186,7 +186,7 @@ function ChangePlanModal({
 
     const displayPlans = plans.filter((p) => p.id !== "free" || currentPlan === "free")
 
-    // Label for the confirm button
+    
     const selectedPlanName = displayPlans.find(p => p.id === selected)?.name ?? selected ?? ""
     const selectedDirection = selected ? planDirection(selected) : null
     const confirmLabel = (() => {
@@ -209,7 +209,7 @@ function ChangePlanModal({
                     </DialogDescription>
                 </DialogHeader>
 
-                {/* Billing cycle toggle */}
+                {}
                 <div className="flex items-center gap-1 bg-muted rounded-lg p-1 w-fit">
                     {(["monthly", "annual"] as const).map((c) => (
                         <button
@@ -255,7 +255,7 @@ function ChangePlanModal({
                                         !isSelected && !isCurrent && "border-border hover:border-primary/50 hover:bg-muted/40"
                                     )}
                                 >
-                                    {/* Status badge top-right */}
+                                    {}
                                     {isCurrent && (
                                         <span className="absolute top-2 right-2 text-[9px] font-bold tracking-wide text-muted-foreground uppercase">Current</span>
                                     )}
@@ -270,7 +270,7 @@ function ChangePlanModal({
                                         {price > 0 && <span className="text-xs font-normal text-muted-foreground">/mo</span>}
                                     </p>
 
-                                    {/* Upgrade / Downgrade pill */}
+                                    {}
                                     {!isCurrent && (
                                         <div className={cn(
                                             "mt-1.5 inline-flex items-center gap-1 text-[10px] font-semibold rounded-full px-1.5 py-0.5",
@@ -331,7 +331,7 @@ function ChangePlanModal({
     )
 }
 
-// ── Current plan card ────────────────────────────────────────────────────────
+
 function CurrentPlanCard({
     sub,
     usage,
@@ -440,7 +440,7 @@ function CurrentPlanCard({
                 </CardHeader>
 
                 <CardContent className="space-y-5">
-                    {/* Plan details */}
+                    {}
                     <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
                         <div>
                             <p className="text-muted-foreground mb-0.5">Plan</p>
@@ -475,7 +475,7 @@ function CurrentPlanCard({
                         </div>
                     </div>
 
-                    {/* Usage meters */}
+                    {}
                     {usage && sub.limits.aiChatsPerMonth !== null && (
                         <div>
                             <p className="text-sm text-muted-foreground mb-1">
@@ -500,7 +500,7 @@ function CurrentPlanCard({
                         </div>
                     )}
 
-                    {/* Pending downgrade */}
+                    {}
                     {sub.pendingPlan && (
                         <div className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
                             Scheduled to downgrade to{" "}
@@ -511,7 +511,7 @@ function CurrentPlanCard({
                         </div>
                     )}
 
-                    {/* Actions */}
+                    {}
                     <div className="flex flex-wrap gap-2 pt-1">
                         <Button
                             size="sm"
@@ -557,7 +557,7 @@ function CurrentPlanCard({
                 onRefresh={onRefresh}
             />
 
-            {/* Cancel dialog */}
+            {}
             <Dialog open={cancelOpen} onOpenChange={(v) => !v && setCancelOpen(false)}>
                 <DialogContent className="max-w-md">
                     <DialogHeader>
@@ -607,7 +607,7 @@ function CurrentPlanCard({
                 </DialogContent>
             </Dialog>
 
-            {/* Pause dialog */}
+            {}
             <Dialog open={pauseOpen} onOpenChange={(v) => !v && setPauseOpen(false)}>
                 <DialogContent className="max-w-sm">
                     <DialogHeader>
@@ -671,7 +671,7 @@ function CurrentPlanCard({
     )
 }
 
-// ── Seat management card ──────────────────────────────────────────────────────
+
 function SeatsCard({
     sub,
     onRefresh,
@@ -692,12 +692,12 @@ function SeatsCard({
             const result = await billingApi.addSeats(qty)
 
             if (result.type === "immediate") {
-                // Charged immediately via saved card
+                
                 await onRefresh()
                 setSuccess(true)
                 setTimeout(() => setSuccess(false), 3000)
             } else {
-                // No saved card / token failed : redirect to Flutterwave
+                
                 setRedirecting(true)
                 setTimeout(() => {
                     window.location.href = result.paymentLink
@@ -767,7 +767,7 @@ function SeatsCard({
     )
 }
 
-// ── Payment methods card ──────────────────────────────────────────────────────
+
 function PaymentMethodsCard({ onRefresh }: { onRefresh: () => void }) {
     const [methods, setMethods] = useState<PaymentMethodData[]>([])
     const [loading, setLoading] = useState(true)
@@ -872,7 +872,7 @@ function PaymentMethodsCard({ onRefresh }: { onRefresh: () => void }) {
                                 )}
                             >
                                 <div className="flex items-center gap-3 min-w-0">
-                                    {/* Type icon */}
+                                    {}
                                     <div className={cn(
                                         "h-9 w-9 rounded-lg flex items-center justify-center shrink-0",
                                         pm.isDefault ? "bg-primary/10" : "bg-muted"
@@ -880,7 +880,7 @@ function PaymentMethodsCard({ onRefresh }: { onRefresh: () => void }) {
                                         <MethodIcon className={cn("h-4 w-4", pm.isDefault ? "text-primary" : "text-muted-foreground")} />
                                     </div>
 
-                                    {/* Details */}
+                                    {}
                                     <div className="min-w-0">
                                         <div className="flex items-center gap-2 flex-wrap">
                                             <p className="text-sm font-medium">{title}</p>
@@ -930,7 +930,7 @@ function PaymentMethodsCard({ onRefresh }: { onRefresh: () => void }) {
     )
 }
 
-// ── Invoice details modal ────────────────────────────────────────────────────
+
 function InvoiceDetailsModal({
     invoice,
     open,
@@ -1024,7 +1024,7 @@ function InvoiceDetailsModal({
     )
 }
 
-// ── Billing history card ──────────────────────────────────────────────────────
+
 function BillingHistoryCard() {
     const [invoices, setInvoices] = useState<InvoiceData[]>([])
     const [total, setTotal] = useState(0)
@@ -1186,7 +1186,7 @@ function BillingHistoryCard() {
     )
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
+
 export function BillingPage() {
     const [searchParams] = useSearchParams()
     const welcome = searchParams.get("welcome") === "1"
@@ -1212,7 +1212,7 @@ export function BillingPage() {
 
     return (
         <div className="mx-auto max-w-3xl px-4 py-8 space-y-6">
-            {/* Page header */}
+            {}
             <div>
                 <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
                     <CreditCard className="h-6 w-6 text-primary" />
@@ -1223,7 +1223,7 @@ export function BillingPage() {
                 </p>
             </div>
 
-            {/* Welcome banner after checkout */}
+            {}
             {welcome && subscription?.status === "trialing" && (
                 <div className="flex items-center gap-3 rounded-lg border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-400">
                     <CheckCircle2 className="h-5 w-5 shrink-0" />
@@ -1257,7 +1257,7 @@ export function BillingPage() {
     )
 }
 
-// ── Tab variant (embedded inside Settings) ───────────────────────────────────
+
 export function BillingTab() {
     const { subscription, usage, load, refresh } = useSubscriptionStore()
     const [searchParams, setSearchParams] = useSearchParams()
@@ -1269,14 +1269,14 @@ export function BillingTab() {
         | null
     >(null)
 
-    // ── Auto-verify Flutterwave callback on mount ──────────────────
+    
     useEffect(() => {
         const transactionId = searchParams.get("transaction_id")
         const txRef = searchParams.get("tx_ref") ?? searchParams.get("ref")
         const fwStatus = searchParams.get("status")
-        const intent = searchParams.get("intent") // 'seats' for seat-addition flow
+        const intent = searchParams.get("intent") 
 
-        // Clean all FW/custom params from URL immediately so refresh doesn't re-trigger
+        
         if (transactionId || txRef) {
             setSearchParams((prev) => {
                 const next = new URLSearchParams(prev)
@@ -1291,7 +1291,7 @@ export function BillingTab() {
 
         if (!transactionId && !txRef) return
 
-        // Flutterwave cancelled / failed : don't call verify
+        
         if (fwStatus === "cancelled") {
             setVerifyState({ status: "failed", message: "Payment was cancelled." })
             return
@@ -1316,7 +1316,7 @@ export function BillingTab() {
                 })
             }
         })()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        
     }, [])
 
     useEffect(() => {
@@ -1338,7 +1338,7 @@ export function BillingTab() {
     return (
         <div className="space-y-6">
 
-            {/* Payment verification banner */}
+            {}
             {verifyState?.status === "verifying" && (
                 <div className="flex items-center gap-3 rounded-lg border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-sm text-blue-400">
                     <Loader1 className="h-4 w-4  shrink-0" />

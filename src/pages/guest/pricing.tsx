@@ -23,7 +23,7 @@ import Loader1 from "@/components/ui/loader1"
 import { BillingPlan } from "@/types/BillingTypes"
 import { COMPARISON_ROWS, FEATURE_ROWS, PLAN_ACCENT } from "@/configs/BillingConfig"
 
-// ── Comparison table ─────────────────────────────────────────────────────────
+
 function ComparisonTable({ plans }: { plans: BillingPlan[] }) {
     return (
         <div className="overflow-x-auto border-border z-10 rounded-2xl border bg-card p-6 transition-all">
@@ -80,7 +80,7 @@ function ComparisonTable({ plans }: { plans: BillingPlan[] }) {
     )
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
+
 export function PricingPage() {
     const navigate = useNavigate()
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -141,7 +141,7 @@ export function PricingPage() {
                 <BackgroundGrid />
             </div>
 
-            {/* Hero */}
+            {}
             <section className="mx-auto relative z-10 max-w-5xl px-6 pt-16 pb-12 text-center">
                 <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
                     Simple, transparent pricing
@@ -153,7 +153,7 @@ export function PricingPage() {
                     </span>
                 </p>
 
-                {/* Billing cycle toggle */}
+                {}
                 <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-border bg-card px-4 py-2">
                     <span
                         className={cn(
@@ -179,10 +179,10 @@ export function PricingPage() {
                 </div>
             </section>
 
-            {/* Plan cards */}
+            {}
             <section className="mx-auto max-w-6xl px-2 pb-16 relative z-10">
                 {error && (
-                    <p className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400 text-center">
+                    <p className="mb-6 rounded-lg px-4 py-3 text-sm text-red-400 text-center">
                         {error}
                     </p>
                 )}
@@ -206,7 +206,7 @@ export function PricingPage() {
                             ))}
                         </div>
 
-                        {/* Comparison table */}
+                        {}
                         {plans.length > 0 && (
                             <div className="mt-20">
                                 <h2 className="mb-8 text-center text-2xl font-bold">

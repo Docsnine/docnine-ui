@@ -1,18 +1,4 @@
-/**
- * /auth/callback : OAuth landing page.
- *
- * The server redirects here after a successful GitHub or Google social login:
- *   /auth/callback?accessToken=<jwt>&userId=<id>
- *
- * On error:
- *   /auth/callback?error=<code>
- *
- * This page:
- *  1. Reads the query params.
- *  2. On success: calls authApi.me() to fetch the full user object,
- *     stores tokens in the Zustand store, then redirects to /home.
- *  3. On error: shows a user-friendly message with a link back to /login.
- */
+
 import { useEffect, useState } from "react"
 import { useSearchParams, useNavigate, Link } from "react-router-dom"
 import { XCircle } from "lucide-react"
@@ -52,17 +38,17 @@ export function AuthCallbackPage() {
       return
     }
 
-    // Store the token so authApi.me() can use it.
+    
     setAccessToken(accessToken)
 
-    // Fetch the full user profile from /auth/me.
+    
     authApi.me().then(({ user }) => {
       setTokens(user, accessToken)
       navigate("/home", { replace: true })
     }).catch(() => {
       setErrorMessage("Failed to load your account. Please try signing in again.")
     })
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, []) 
 
   return (
     <div className="relative min-h-screen bg-background text-foreground flex flex-col items-center justify-center overflow-hidden font-sans">

@@ -110,7 +110,7 @@ export function ApiSpecImportModal({ projectId, open, onClose, onImported, exist
                 {existingSpec && (
                     <div className="mx-1 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-primary dark:text-primary/30">
                         Currently imported: <span className="font-semibold">{existingSpec.info.title}</span>{" "}
-                        ({existingSpec.specVersion}) — importing will replace the existing spec.
+                        ({existingSpec.specVersion}) : importing will replace the existing spec.
                     </div>
                 )}
 
@@ -178,7 +178,7 @@ export function ApiSpecImportModal({ projectId, open, onClose, onImported, exist
                                         <p className="text-sm text-muted-foreground">
                                             Drag & drop or <span className="text-primary underline underline-offset-2">click to select</span>
                                         </p>
-                                        <p className="mt-1 text-xs text-muted-foreground/60">.json, .yaml, .yml — max 5 MB</p>
+                                        <p className="mt-1 text-xs text-muted-foreground/60">.json, .yaml, .yml : max 5 MB</p>
                                     </>
                                 )}
                             </div>

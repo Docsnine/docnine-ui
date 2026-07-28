@@ -105,9 +105,9 @@ export function PrivacyPage() {
                                 We may use the following third-party providers to operate the Service:
                             </p>
                             <ul className="list-disc list-inside space-y-2 mt-2">
-                                <li><strong className="text-foreground">MongoDB Atlas</strong> — database hosting.</li>
-                                <li><strong className="text-foreground">Vercel</strong> — infrastructure and deployment.</li>
-                                <li><strong className="text-foreground">OpenAI / LLM providers</strong> — AI pipeline processing (no data is used to train third-party models).</li>
+                                <li><strong className="text-foreground">MongoDB Atlas</strong> : database hosting.</li>
+                                <li><strong className="text-foreground">Vercel</strong> : infrastructure and deployment.</li>
+                                <li><strong className="text-foreground">OpenAI / LLM providers</strong> : AI pipeline processing (no data is used to train third-party models).</li>
                             </ul>
                             <p className="mt-4">
                                 Each provider is bound by their own privacy policies and data processing agreements.

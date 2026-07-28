@@ -618,7 +618,7 @@ export function DocumentationViewerPage() {
         headerFooter: true,
       })
 
-      // Download as print-ready HTML — users open the file and use browser Print → Save as PDF
+      // Download as print-ready HTML : users open the file and use browser Print → Save as PDF
       const blob = new Blob([pdfHtml], { type: "text/html;charset=utf-8" })
       triggerDownload(blob, `${project?.meta?.name ?? id}-documentation.html`)
 
@@ -759,7 +759,7 @@ export function DocumentationViewerPage() {
         try {
           const { url } = await projectsApi.getGoogleDocsConnectUrl(id)
           window.open(url, "_blank", "noopener,noreferrer")
-          setExportMessage("✗ Google Drive not connected — authorise in the new tab, then export again")
+          setExportMessage("✗ Google Drive not connected : authorise in the new tab, then export again")
         } catch {
           setExportMessage("✗ Connect Google Drive in Settings → Export Connections, then try again")
         }
@@ -1317,7 +1317,7 @@ export function DocumentationViewerPage() {
                     )
                   )}
 
-                  {/* Other Docs tab — file attachments panel */}
+                  {/* Other Docs tab : file attachments panel */}
                   {activeTab === "other_docs" && project && (
                     <OtherDocsPanel projectId={project._id} />
                   )}

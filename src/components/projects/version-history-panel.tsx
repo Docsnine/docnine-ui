@@ -219,7 +219,7 @@ export function VersionHistoryPanel({
         setRestoredId(versionId)
         setPreviewVersion(null)
         setConfirmingId(null)
-        // Refresh list — restore creates a new entry at the top
+        // Refresh list : restore creates a new entry at the top
         const fresh = await versionsApi.list(projectId, section, 1)
         setVersions(fresh.versions)
         setTotal(fresh.total)
@@ -420,7 +420,7 @@ export function VersionHistoryPanel({
                             : "border-border/40 hover:border-border bg-background",
                         )}
                       >
-                        {/* Top row — badges + timestamp + actions */}
+                        {/* Top row : badges + timestamp + actions */}
                         <div className="flex items-start justify-between gap-1">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5 flex-wrap">
@@ -431,7 +431,7 @@ export function VersionHistoryPanel({
                                 {cfg.label}
                               </Badge>
 
-                              {/* "Latest" badge — always truthful: newest snapshot in the list */}
+                              {/* "Latest" badge : always truthful: newest snapshot in the list */}
                               {isLatest && (
                                 <Badge
                                   variant="outline"
@@ -441,7 +441,7 @@ export function VersionHistoryPanel({
                                 </Badge>
                               )}
 
-                              {/* Active indicator — only when this latest snapshot IS what's shown */}
+                              {/* Active indicator : only when this latest snapshot IS what's shown */}
                               {isLatest && !isUserEdited && (
                                 <Badge
                                   variant="outline"
@@ -500,7 +500,7 @@ export function VersionHistoryPanel({
                                 : <Eye className="h-3 w-3" />}
                             </Button>
 
-                            {/* Restore — available on all versions (even latest, as it re-confirms) */}
+                            {/* Restore : available on all versions (even latest, as it re-confirms) */}
                             {!isLatest && (
                               <Button
                                 variant="ghost"

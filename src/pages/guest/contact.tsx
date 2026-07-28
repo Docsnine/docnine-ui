@@ -39,10 +39,10 @@ export function ContactPage() {
                     <div className="mb-16 text-center">
                         <p className="text-sm font-medium text-primary uppercase tracking-widest mb-3">Get in touch</p>
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
-                            Contact Us
+                            Contact us
                         </h1>
                         <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-                            Have a question, found a bug, or just want to say hello? We'd love to hear from you.
+                            Questions, bug reports, or just saying hello , we’d love to hear from you.
                         </p>
                     </div>
 

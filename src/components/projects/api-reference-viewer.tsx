@@ -178,7 +178,7 @@ function EndpointDetail({ endpoint, spec, projectId, canEdit, onNoteUpdated, onT
             onNoteUpdated(noteDraft)
             setNoteEditing(false)
         } catch {
-            // silently fail — user can retry
+            // silently fail : user can retry
         } finally {
             setNoteSaving(false)
         }

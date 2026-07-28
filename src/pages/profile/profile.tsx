@@ -66,7 +66,7 @@ function ProfileInfoCard() {
             if (name !== user?.name) patches.name = name.trim()
             if (email !== user?.email) patches.email = email.trim()
             const data = await authApi.updateProfile(patches)
-            // Sync the store — preserve the existing access token
+            // Sync the store : preserve the existing access token
             const { getAccessToken } = await import("@/lib/api")
             const token = getAccessToken()
             if (token) setTokens(data.user, token)

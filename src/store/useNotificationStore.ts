@@ -66,7 +66,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         unreadCount: data.unreadCount,
       });
     } catch {
-      // Silently fail — existing notifications remain visible
+      // Silently fail : existing notifications remain visible
     } finally {
       set({ isLoadingMore: false });
     }
@@ -77,7 +77,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       const data = await notificationsApi.unreadCount();
       set({ unreadCount: data.count });
     } catch {
-      // Non-critical — badge just won't update
+      // Non-critical : badge just won't update
     }
   },
 

@@ -1,5 +1,5 @@
 /**
- * projects.ts — Project Zustand store backed by real backend APIs.
+ * projects.ts : Project Zustand store backed by real backend APIs.
  *
  * The backend uses its own status terminology (queued/running/done/error/archived).
  * We map those to the UI status terms (analyzing/completed/failed/archived).

@@ -59,7 +59,7 @@ export function PlanBadge({ className, showStatus = true }: PlanBadgeProps) {
 }
 
 /**
- * Headless helper — returns true if the current user's plan meets the minimum.
+ * Headless helper : returns true if the current user's plan meets the minimum.
  * Useful for conditional rendering without the badge UI.
 */
 export function usePlanCheck(minPlan: string): boolean {

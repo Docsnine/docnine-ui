@@ -75,7 +75,7 @@ import {
 // In production this will be the deployed backend origin.
 export const API_BASE = import.meta.env.VITE_API_URL || "";
 
-// In-memory access token store (not localStorage — too easy to steal).
+// In-memory access token store (not localStorage : too easy to steal).
 // The refresh token lives in an httpOnly cookie managed by the browser.
 let _accessToken: string | null = null;
 
@@ -203,7 +203,7 @@ export async function apiFetch<T = unknown>(
     // Only show the modal when:
     //  - the user was authenticated before (not on first load for new users), AND
     //  - the request required auth (skipAuth=true means it's an anonymous or
-    //    auth-management call like /auth/refresh itself — those must not trigger
+    //    auth-management call like /auth/refresh itself : those must not trigger
     //    the modal or we'd get a false "session expired" right after login)
     if (res.status === 401 && !skipAuth) {
       const authState = useAuthStore.getState();
@@ -370,7 +370,7 @@ export const authApi = {
 
   /**
    * ---------------------------------------------------------------------------
-   * Google Docs export — settings-level (no project ID needed)
+   * Google Docs export : settings-level (no project ID needed)
    * ---------------------------------------------------------------------------
    * */
   getGoogleDocsStatus: () =>
@@ -394,7 +394,7 @@ export const authApi = {
 
   /**
    * ---------------------------------------------------------------------------
-   * Notion export — settings-level (per-user API key storage)
+   * Notion export : settings-level (per-user API key storage)
    * ---------------------------------------------------------------------------
    * */
   getNotionStatus: () =>
@@ -421,7 +421,7 @@ export const authApi = {
 
   /**
    * ---------------------------------------------------------------------------
-   * Webhook Integration — settings-level (global webhook)
+   * Webhook Integration : settings-level (global webhook)
    * ---------------------------------------------------------------------------
    * */
   getWebhookStatus: () =>
@@ -467,7 +467,7 @@ export const authApi = {
 
   /**
    * ---------------------------------------------------------------------------
-   * API Tokens — for MCP, CLI, and other integrations
+   * API Tokens : for MCP, CLI, and other integrations
    * ---------------------------------------------------------------------------
    * */
   createToken: (body: {
@@ -663,7 +663,7 @@ export const projectsApi = {
     }),
 
   /**
-   * Validate a ZIP file before uploading (optional — checks structure, size, etc).
+   * Validate a ZIP file before uploading (optional : checks structure, size, etc).
    */
   validateZip: (file: File) => {
     const fd = new FormData();
@@ -722,7 +722,7 @@ export const projectsApi = {
   /**
    * Trigger an incremental sync (or full re-run when force=true).
    * Returns the updated project and an SSE stream URL for live progress.
-   * Mirrors the retry flow — reuse the same SSE component.
+   * Mirrors the retry flow : reuse the same SSE component.
    */
   sync: (id: string, force = false) =>
     apiFetch<{ project: ApiProject; streamUrl: string }>(
@@ -836,7 +836,7 @@ export const projectsApi = {
 export const versionsApi = {
   /**
    * List snapshots for a section, newest first.
-   * Supports pagination — pass `page` (1-based) and `limit` (default 20).
+   * Supports pagination : pass `page` (1-based) and `limit` (default 20).
    */
   list: (projectId: string, section: string, page = 1, limit = 20) =>
     apiFetch<{
@@ -976,7 +976,7 @@ export const sharingApi = {
 
 /**
  * Stream tokens from POST /projects/:id/chat via SSE.
- * Returns an AbortController — call .abort() to stop the stream.
+ * Returns an AbortController : call .abort() to stop the stream.
  */
 export function chatStream(
   projectId: string,
@@ -1201,7 +1201,7 @@ export const customTabsApi = {
 // Billing API
 // ---------------------------------------------------------------------------
 export const billingApi = {
-  /** Public — no auth required. Returns all plan definitions. */
+  /** Public : no auth required. Returns all plan definitions. */
   getPlans: () =>
     apiFetch<{ plans: BillingPlan[] }>("/billing/plans", { skipAuth: true }),
 

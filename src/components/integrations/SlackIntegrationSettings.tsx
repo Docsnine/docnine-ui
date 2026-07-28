@@ -505,7 +505,7 @@ export function SlackIntegrationSettings({ projectId }) {
                                 placeholder="#security-alerts"
                             />
                             <p className="text-xs text-muted-foreground">
-                                Channel name (e.g., #security-alerts) — saved automatically
+                                Channel name (e.g., #security-alerts) : saved automatically
                             </p>
                         </div>
                     </div>

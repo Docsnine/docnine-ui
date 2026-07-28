@@ -84,8 +84,8 @@ export function SignupPage() {
 
         {/* Heading */}
         <div className="space-y-1.5">
-          <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Create your account</h1>
-          <p className="text-[14px] text-muted-foreground">Turn your projects into living documentation.</p>
+          <h1 className="font-display text-[24px] font-semibold tracking-[0.02em] leading-snug text-foreground">Create your account</h1>
+          <p className="text-[14px] text-muted-foreground">Connect a project and generate your first docs in minutes.</p>
         </div>
 
         {/* Error */}

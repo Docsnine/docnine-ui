@@ -1,5 +1,5 @@
 /**
- * doc-tracker.ts — Per-project documentation status tracker.
+ * doc-tracker.ts : Per-project documentation status tracker.
  *
  * Persisted to localStorage via zustand/middleware.
  * Tracks a status, optional assignee, optional due date, and an audit log

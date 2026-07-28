@@ -63,9 +63,9 @@ export function VerifyPage() {
             <CheckCircle2 className="h-5 w-5 text-green-500" />
           </div>
           <div className="space-y-1.5">
-            <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Email verified</h1>
+            <h1 className="font-display text-[24px] font-semibold tracking-[0.02em] leading-snug text-foreground">Email verified</h1>
             <p className="text-[14px] text-muted-foreground">
-              Your account is active. You can now sign in and start building documentation.
+              Your account is ready. Sign in and start documenting your projects.
             </p>
           </div>
           <Button
@@ -88,7 +88,7 @@ export function VerifyPage() {
             <XCircle className="h-5 w-5 text-destructive" />
           </div>
           <div className="space-y-1.5">
-            <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Verification failed</h1>
+            <h1 className="font-display text-[24px] font-semibold tracking-[0.02em] leading-snug text-foreground">Verification failed</h1>
             <p className="text-[14px] text-muted-foreground">{errorMessage}</p>
           </div>
           <Button variant="outline" className="w-full h-11 rounded-xl text-[14px]" asChild>
@@ -99,7 +99,7 @@ export function VerifyPage() {
     )
   }
 
-  // ── No token — "check your email" screen (after signup) ────────────────
+  // ── No token : "check your email" screen (after signup) ────────────────
   return (
     <AuthShell>
       <div className="space-y-6">
@@ -107,9 +107,10 @@ export function VerifyPage() {
           <MailCheck className="h-5 w-5 text-primary" />
         </div>
         <div className="space-y-1.5">
-          <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Check your email</h1>
+          <h1 className="font-display text-[24px] font-semibold tracking-[0.02em] leading-snug text-foreground">Check your email</h1>
           <p className="text-[14px] text-muted-foreground leading-relaxed">
-            We've sent a verification link to your email address. Click the link to activate your account and continue to the dashboard.
+            We sent a verification link to your email. Open it to activate your account, then you’ll
+            be ready to go.
           </p>
         </div>
         <Button variant="outline" className="w-full h-11 rounded-xl text-[14px]" asChild>

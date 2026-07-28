@@ -1,7 +1,7 @@
 /**
  * Public Documentation Portal
  *
- * Accessible at /docs/:slug — no authentication required.
+ * Accessible at /docs/:slug : no authentication required.
  * Supports:
  *   - Fully public portals
  *   - Password-protected portals (password gate modal)

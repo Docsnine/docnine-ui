@@ -1,5 +1,5 @@
 /**
- * useTokenRefresh — Automatically refreshes access token periodically
+ * useTokenRefresh : Automatically refreshes access token periodically
  *
  * With the extended 2-day access token TTL, this hook provides an extra
  * layer of protection by silently refreshing the token every 24 hours
@@ -9,7 +9,7 @@
  * - Refreshes token every 24 hours (86400ms)
  * - Only runs when user is authenticated
  * - Can be manually triggered via returned function
- * - Silent — user won't notice anything
+ * - Silent : user won't notice anything
  * - Respects pause/resume (checks auth state)
  */
 
@@ -39,7 +39,7 @@ export function useTokenRefresh() {
     } catch {
       // Refresh token is expired or invalid. The next API call will detect the
       // 401, fail the silent refresh, and trigger the SessionExpiredDialog.
-      console.debug("[useTokenRefresh] Token refresh failed — session will expire on next request");
+      console.debug("[useTokenRefresh] Token refresh failed : session will expire on next request");
     }
   };
 

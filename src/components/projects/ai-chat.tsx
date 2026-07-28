@@ -106,7 +106,7 @@ export function AIChatPanel({
     try {
       localStorage.setItem(localKey, JSON.stringify(messages))
     } catch {
-      // quota exceeded — ignore
+      // quota exceeded : ignore
     }
   }, [messages, localKey])
 
@@ -189,7 +189,7 @@ export function AIChatPanel({
     try {
       await chatApi.reset(projectId)
     } catch {
-      // ignore — history cleared locally regardless
+      // ignore : history cleared locally regardless
     }
   }
 
@@ -236,7 +236,7 @@ export function AIChatPanel({
             </div>
           )}
 
-          {/* Empty state — suggested prompts */}
+          {/* Empty state : suggested prompts */}
           {isEmpty && sessionId && (
             <div className="space-y-3">
               <p className="text-xs text-muted-foreground text-center pt-2">

@@ -44,7 +44,7 @@ export function PortalSettingsModal({
     const [error, setError] = useState<string | null>(null)
     const [saveSuccess, setSaveSuccess] = useState(false)
 
-    // Draft state — uncommitted edits
+    // Draft state : uncommitted edits
     const [draftSections, setDraftSections] = useState<PortalSectionConfig[]>([])
     const [draftBranding, setDraftBranding] = useState<PortalBranding>({})
     const [draftSeo, setDraftSeo] = useState<{ seoTitle: string; seoDescription: string }>({
@@ -396,7 +396,7 @@ export function PortalSettingsModal({
                             {activeTab === "branding" && (
                                 <div className="space-y-4">
                                     <p className="text-xs text-muted-foreground">
-                                        Customize the look of your public portal. All fields are optional — a clean default theme is applied when not set.
+                                        Customize the look of your public portal. All fields are optional : a clean default theme is applied when not set.
                                     </p>
 
                                     <div className="grid grid-cols-2 gap-4">

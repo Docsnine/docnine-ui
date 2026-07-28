@@ -24,7 +24,7 @@ export function StaleSectionBanner({
                         </p>
                     ) : (
                         <p className="text-[12px] text-primary/60 mt-0.5">
-                            Your edit is preserved — compare before deciding.
+                            Your edit is preserved : compare before deciding.
                         </p>
                     )}
                 </div>

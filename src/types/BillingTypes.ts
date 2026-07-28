@@ -138,7 +138,7 @@ export interface SubscriptionState {
 
   // Load subscription + usage for the authenticated user
   load: () => Promise<void>;
-  // Load available plans (public — no auth)
+  // Load available plans (public : no auth)
   loadPlans: () => Promise<void>;
   // Reset on logout
   reset: () => void;

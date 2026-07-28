@@ -4,26 +4,26 @@ const STEPS = [
   {
     number: 1,
     icon: UserPlus,
-    title: "Sign Up",
-    description: "Create your account in under 30 seconds.",
+    title: "Create an account",
+    description: "You’re in within about 30 seconds , no lengthy setup.",
   },
   {
     number: 2,
     icon: GitBranch,
     title: "Connect GitHub",
-    description: "Link your GitHub account and pick any repo.",
+    description: "Link your GitHub account and choose a repo to document.",
   },
   {
     number: 3,
     icon: FileText,
-    title: "AI Generates Docs",
-    description: "Scans and produces structured documentation.",
+    title: "Generate docs",
+    description: "We scan the project and draft clear, structured documentation.",
   },
   {
     number: 4,
     icon: Send,
-    title: "Chat & Collaborate",
-    description: "Let the AI answer from your code with teammates",
+    title: "Ask and collaborate",
+    description: "Get answers from your code, and work on docs with your team.",
   },
 ]
 
@@ -32,10 +32,10 @@ export function StepsSection() {
     <section className="relative z-10 py-24 px-4 bg-background">
       <div className="container mx-auto max-w-5xl text-center">
         <h2 className="text-[28px] leading-tight sm:text-[38px] lg:text-[48px] font-bold tracking-tight text-foreground mb-4 sm:mb-6">
-          Up and running in 4 steps
+          Up and running in four steps
         </h2>
         <p className="text-base sm:text-xl text-muted-foreground mb-10 sm:mb-16">
-          No complex config. No enterprise sales calls. Your docs are live in minutes.
+          No heavy config. No sales call required. Most teams have usable docs within minutes.
         </p>
 
         <div className="relative grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">

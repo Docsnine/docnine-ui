@@ -180,7 +180,7 @@ export function SuperAdminPage() {
   const { user } = useAuthStore()
   const navigate = useNavigate()
 
-  // Guard — redirect non-super-admins
+  // Guard : redirect non-super-admins
   useEffect(() => {
     if (user && user.role !== "super-admin") {
       navigate("/projects", { replace: true })
@@ -666,7 +666,7 @@ export function SuperAdminPage() {
                       <td className="px-4 py-3"><PlanBadge plan={s.plan} /></td>
                       <td className="px-4 py-3 hidden sm:table-cell"><StatusBadge status={s.status} /></td>
                       <td className="px-4 py-3 hidden md:table-cell">
-                        <span className="text-xs capitalize text-muted-foreground">{s.billingCycle ?? "—"}</span>
+                        <span className="text-xs capitalize text-muted-foreground">{s.billingCycle ?? ":"}</span>
                       </td>
                       <td className="px-4 py-3 hidden md:table-cell">
                         <span className="text-xs text-muted-foreground">

@@ -171,7 +171,7 @@ export function MarkdownToolbar({ onInsert }: MarkdownToolbarProps) {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => { onInsert("---"); setMoreOpen(false) }}>
-              <span className="text-xs mr-2">—</span>
+              <span className="text-xs mr-2">:</span>
               Horizontal Line
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => { onInsert("| ", " |"); setMoreOpen(false) }} title="Table Header">

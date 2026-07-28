@@ -1,6 +1,6 @@
 /**
  * ----------------------------------------------------------------------------------
- * PlansModal — inline dialog showing all pricing plans.
+ * PlansModal : inline dialog showing all pricing plans.
  * Opened from UpgradeModal "View all plans" so the user never leaves the page.
  * ----------------------------------------------------------------------------------
  */

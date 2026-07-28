@@ -80,8 +80,8 @@ export function LoginPage() {
 
         {/* Heading */}
         <div className="space-y-1.5">
-          <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Welcome back</h1>
-          <p className="text-[14px] text-muted-foreground">Documentation workspace awaits.</p>
+          <h1 className="font-display text-[24px] font-semibold tracking-[0.02em] leading-snug text-foreground">Welcome back</h1>
+          <p className="text-[14px] text-muted-foreground">Sign in to pick up where you left off.</p>
         </div>
 
         {/* Error */}

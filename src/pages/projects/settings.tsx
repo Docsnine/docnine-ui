@@ -88,7 +88,7 @@ export function ProjectSettingsPage() {
             const result = await projectsApi.sync(id, force)
             // Update local project state to reflect "analyzing" status
             setProject((prev) => prev ? { ...prev, apiStatus: "running", status: "analyzing" } : prev)
-            setSyncFeedback({ type: "success", msg: "Sync started — redirecting to live progress…" })
+            setSyncFeedback({ type: "success", msg: "Sync started : redirecting to live progress…" })
             // Navigate to live analysis after a short delay
             setTimeout(() => {
                 navigate(`/projects/${id}/live?streamUrl=${encodeURIComponent(result.streamUrl)}`)

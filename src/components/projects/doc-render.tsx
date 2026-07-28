@@ -1,10 +1,10 @@
 /**
- * DocRenderer.tsx — v2 (all bugs fixed)
+ * DocRenderer.tsx : v2 (all bugs fixed)
  *
  * Bug fixes over v1:
- *  #1  remark-gfm: static import instead of require() — works in Vite ESM
+ *  #1  remark-gfm: static import instead of require() : works in Vite ESM
  *  #2  Code blocks: pre renderer owns block code; code renderer is inline-only
- *  #3  li ordered/index: props don't exist in v8 — detected via CSS data-attr
+ *  #3  li ordered/index: props don't exist in v8 : detected via CSS data-attr
  *  #4  Heading slugify: recursive text extraction handles bold/code children
  *  #5  Badge paragraph: mdast type:"image" check, not hast tagName:"img"
  *  #6  CopyButton: icon + text gap fixed
@@ -277,7 +277,7 @@ const components: Components = {
         )
     },
 
-    // ── CODE  (FIX #2: inline only — block code never reaches here) ────────────
+    // ── CODE  (FIX #2: inline only : block code never reaches here) ────────────
 
     code({ className, children }) {
         return (
@@ -379,7 +379,7 @@ const components: Components = {
                         style={{ content: "counter(doc-list)" }}
                         aria-hidden
                     >
-                        {/* static count — CSS counter handles the actual display */}
+                        {/* static count : CSS counter handles the actual display */}
                         {(() => {
                             // Get index from parent children list (mdast listItem nodes)
                             const siblings = (node as any)?.parent?.children ?? []

@@ -42,7 +42,7 @@ function eventToMessage(event: Record<string, any>): string {
   if (event.step) parts.push(`[${event.step}]`)
   if (event.msg) parts.push(event.msg)
   if (event.detail) parts.push(event.detail)
-  return parts.join(" — ") || "Processing…"
+  return parts.join(" : ") || "Processing…"
 }
 
 // ── Severity styling ───────────────────────────────────────────────────────
@@ -172,7 +172,7 @@ export function LiveAnalysisPage() {
                 abortRef.current?.abort()
               }
             } catch {
-              // Malformed JSON — ignore
+              // Malformed JSON : ignore
             }
           },
 
@@ -200,7 +200,7 @@ export function LiveAnalysisPage() {
   // ── Terminal header label ──────────────────────────────────────────────
   const terminalLabel = (() => {
     if (pipelineStatus === "done") return "Pipeline complete"
-    if (pipelineStatus === "error") return "Pipeline stopped — error encountered"
+    if (pipelineStatus === "error") return "Pipeline stopped : error encountered"
     if (pipelineStatus === "timeout") return "Pipeline timed out"
     if (connectionState === "connecting") return "Connecting to pipeline…"
     if (connectionState === "reconnecting") return "Reconnecting…"
@@ -286,7 +286,7 @@ export function LiveAnalysisPage() {
             </Button>
           )}
 
-          {/* Pause / Resume — only visible while stream is active */}
+          {/* Pause / Resume : only visible while stream is active */}
           {isActive && (
             <Button
               variant="outline"

@@ -1,5 +1,5 @@
 /**
- * Platform Documentation Page — /docs
+ * Platform Documentation Page : /docs
  *
  * Covers:
  *  - Getting started
@@ -386,7 +386,7 @@ export function PlatformDocsPage() {
                         </div>
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Docnine Docs</h1>
                         <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                            Everything you need to set up, configure, and get the most out of Docnine — from connecting your first repo to publishing a fully branded documentation portal.
+                            Everything you need to set up, configure, and get the most out of Docnine : from connecting your first repo to publishing a fully branded documentation portal.
                         </p>
                     </div>
 
@@ -400,7 +400,7 @@ export function PlatformDocsPage() {
 
                         <H3 id="what-is-docnine">What is Docnine?</H3>
                         <p className="text-muted-foreground leading-relaxed mb-4">
-                            Docnine is an AI-powered documentation platform. It uses a multi-agent pipeline to scan GitHub repositories and generate structured documentation — automatically. It covers your README, internal developer guides, API reference, database schema, and security audit in one unified place.
+                            Docnine is an AI-powered documentation platform. It uses a multi-agent pipeline to scan GitHub repositories and generate structured documentation : automatically. It covers your README, internal developer guides, API reference, database schema, and security audit in one unified place.
                         </p>
                         <p className="text-muted-foreground leading-relaxed">
                             Once generated, you can edit any section, chat directly with your codebase, publish a public documentation portal, and export to PDF, YAML, Notion, or Google Docs.
@@ -415,7 +415,7 @@ export function PlatformDocsPage() {
                                 Check your inbox for a verification link and click it to activate your account.
                             </Step>
                             <Step n={3} title="Access your dashboard">
-                                You'll land on the Projects dashboard — this is where all your projects live.
+                                You'll land on the Projects dashboard : this is where all your projects live.
                             </Step>
                         </div>
 
@@ -474,7 +474,7 @@ export function PlatformDocsPage() {
 
                         <H3 id="repo-picker">Using the repo picker</H3>
                         <p className="text-muted-foreground leading-relaxed">
-                            Once your GitHub account is connected, clicking <strong>"Browse repos"</strong> in the new project form opens a repo picker that lists all repositories you have access to — search, filter by org, and click to select.
+                            Once your GitHub account is connected, clicking <strong>"Browse repos"</strong> in the new project form opens a repo picker that lists all repositories you have access to : search, filter by org, and click to select.
                         </p>
                     </section>
 
@@ -544,13 +544,13 @@ components:
                                 <code className="block text-sm font-mono bg-muted px-3 py-2 rounded mt-2">https://api.myapp.com/openapi.yaml</code>
                             </Step>
                             <Step n={3} title="Save">
-                                Docnine fetches and stores a snapshot. You can re-sync at any time (or set up auto-sync via webhook — see below).
+                                Docnine fetches and stores a snapshot. You can re-sync at any time (or set up auto-sync via webhook : see below).
                             </Step>
                         </div>
 
                         <H3 id="import-raw">Paste raw spec</H3>
                         <p className="text-muted-foreground leading-relaxed">
-                            You can also paste the raw YAML or JSON content directly into the text editor in the import modal — no file or URL needed. This is useful for quick testing or when the spec lives in your clipboard.
+                            You can also paste the raw YAML or JSON content directly into the text editor in the import modal : no file or URL needed. This is useful for quick testing or when the spec lives in your clipboard.
                         </p>
 
                         <H3 id="sync-spec">Auto-sync on update</H3>
@@ -575,14 +575,14 @@ components:
                             GitHub webhooks allow Docnine to automatically re-generate your documentation every time you push code to your repository. Once set up, your docs stay in sync with your codebase without any manual intervention.
                         </p>
                         <p className="text-muted-foreground leading-relaxed">
-                            When a <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">push</code> event fires, Docnine runs an incremental sync — only re-generating sections affected by the changed files.
+                            When a <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">push</code> event fires, Docnine runs an incremental sync : only re-generating sections affected by the changed files.
                         </p>
 
                         <H3 id="webhook-setup">Setup guide</H3>
 
-                        <h4 className="text-lg font-semibold mt-6 mb-3">Option A — Use a real GitHub webhook (recommended)</h4>
+                        <h4 className="text-lg font-semibold mt-6 mb-3">Option A : Use a real GitHub webhook (recommended)</h4>
                         <p className="text-muted-foreground leading-relaxed mb-4">
-                            Set up an actual webhook in your repo settings pointing to <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">https://api.docnineai.com/webhook/github</code>. GitHub will POST the full push payload with a valid signature computed using your <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">WEBHOOK_SECRET</code>. Your existing handleWebhook code already handles this correctly — no workflow file needed.
+                            Set up an actual webhook in your repo settings pointing to <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">https://api.docnineai.com/webhook/github</code>. GitHub will POST the full push payload with a valid signature computed using your <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">WEBHOOK_SECRET</code>. Your existing handleWebhook code already handles this correctly : no workflow file needed.
                         </p>
 
                         <div className="rounded-xl border border-border overflow-hidden">
@@ -605,7 +605,7 @@ components:
                                 In your Vercel dashboard → <strong>Project Settings → Environment Variables</strong>, confirm <code className="font-mono bg-muted px-1 rounded text-xs">WEBHOOK_SECRET</code> is set to the exact same string you entered in GitHub.
                             </Step>
                             <Step n={4} title="Delete the GitHub Actions workflow file (if present)">
-                                Remove <code className="font-mono bg-muted px-1 rounded text-xs">.github/workflows/document.yml</code> from your repo — it's now redundant and will cause confusion.
+                                Remove <code className="font-mono bg-muted px-1 rounded text-xs">.github/workflows/document.yml</code> from your repo : it's now redundant and will cause confusion.
                             </Step>
                             <Step n={5} title="Test the connection">
                                 After saving, GitHub will send a ping event. You'll see a green checkmark at <code className="font-mono bg-muted px-1 rounded text-xs">https://github.com/your-username/your-repo/settings/hooks</code> if the connection is working. On your next push to main, the full documentation sync will trigger automatically.
@@ -613,10 +613,10 @@ components:
                         </div>
 
                         <Callout type="info">
-                            This is the <strong>recommended approach</strong> because GitHub handles the signature and payload delivery — your server receives verified, complete push event data.
+                            This is the <strong>recommended approach</strong> because GitHub handles the signature and payload delivery : your server receives verified, complete push event data.
                         </Callout>
 
-                        <h4 className="text-lg font-semibold mt-8 mb-3">Option B — Use GitHub Actions workflow</h4>
+                        <h4 className="text-lg font-semibold mt-8 mb-3">Option B : Use GitHub Actions workflow</h4>
                         <p className="text-muted-foreground leading-relaxed mb-4">
                             If you prefer, you can use a GitHub Actions workflow file that triggers on every push and calls the Docnine API. This approach works but requires maintaining a workflow file and doesn't provide signature verification.
                         </p>
@@ -725,7 +725,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`} />
 
                         <H3 id="portal-overview">What is a portal?</H3>
                         <p className="text-muted-foreground leading-relaxed">
-                            A <strong>portal</strong> is a publicly accessible documentation website generated from your project. It gets its own URL (<code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">docnine.app/docs/your-portal</code>) and can be shared with customers, contributors, or anyone else — no Docnine account needed.
+                            A <strong>portal</strong> is a publicly accessible documentation website generated from your project. It gets its own URL (<code className="font-mono bg-muted px-1.5 py-0.5 rounded text-sm">docnine.app/docs/your-portal</code>) and can be shared with customers, contributors, or anyone else : no Docnine account needed.
                         </p>
                         <Callout type="info">
                             Portals require at minimum a <strong>Starter</strong> plan. Free plan users cannot publish portals.
@@ -747,7 +747,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`} />
                             <li>Set a primary colour, background colour, and accent colour</li>
                             <li>Add a header tagline and footer text/links</li>
                             <li>Configure SEO title and meta description</li>
-                            <li>Set a custom domain (Pro & Team — DNS managed externally)</li>
+                            <li>Set a custom domain (Pro & Team : DNS managed externally)</li>
                         </ul>
 
                         <H3 id="portal-password">Password protection</H3>
@@ -786,7 +786,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`} />
                             Export buttons appear in the project overview page toolbar. If your plan doesn't include a specific format, clicking it will show an upgrade prompt.
                         </Callout>
 
-                        <H3 id="export-notion">Notion export — setup</H3>
+                        <H3 id="export-notion">Notion export : setup</H3>
                         <div className="rounded-xl border border-border overflow-hidden">
                             <Step n={1} title="Create a Notion integration">Go to <a href="https://notion.so/my-integrations" target="_blank" rel="noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">notion.so/my-integrations <ExternalLink className="h-3 w-3" /></a> and create a new integration. Copy the <strong>Internal Integration Token</strong>.</Step>
                             <Step n={2} title="Share a page with the integration">In Notion, open the page you want docs exported to → <strong>Share</strong> → invite your integration.</Step>
@@ -808,7 +808,7 @@ NOTION_PARENT_PAGE_ID=your_page_id_here`} />
 
                         <H3 id="cli-overview">Overview</H3>
                         <p className="text-muted-foreground leading-relaxed mb-4">
-                            The <strong>Docnine CLI</strong> brings all of Docnine's documentation generation, security auditing, and AI features straight to your terminal. You can scan local repositories, generate documentation, ask questions about your codebase, and integrate everything into CI/CD pipelines — without leaving the command line.
+                            The <strong>Docnine CLI</strong> brings all of Docnine's documentation generation, security auditing, and AI features straight to your terminal. You can scan local repositories, generate documentation, ask questions about your codebase, and integrate everything into CI/CD pipelines : without leaving the command line.
                         </p>
                         <div className="rounded-xl border border-border divide-y divide-border overflow-hidden my-4">
                             {[
@@ -898,7 +898,7 @@ docnine generate
 # Specify a project ID explicitly
 docnine generate --project <project-id>
 
-# Watch mode — re-generate when files change
+# Watch mode : re-generate when files change
 docnine generate --watch`} />
                         <p className="text-muted-foreground leading-relaxed">
                             The CLI shows a real-time progress spinner for each pipeline stage (scanning, schema analysis, API extraction, security audit, doc writing). Once complete, your documentation is available in the Docnine dashboard.
@@ -911,7 +911,7 @@ docnine generate --watch`} />
                         <CodeBlock language="bash" code={`# Ask a one-off question
 docnine ask "How does authentication work in this project?"
 
-# Interactive REPL mode — keep asking questions
+# Interactive REPL mode : keep asking questions
 docnine ask --interactive
 
 # Specify a project explicitly
@@ -1082,7 +1082,7 @@ jobs:
 
                         <H3 id="upgrade">Upgrading your plan</H3>
                         <p className="text-muted-foreground leading-relaxed mb-4">
-                            Go to <Link to="/settings" className="text-primary hover:underline">Settings → Billing</Link> or visit the <Link to="/pricing" className="text-primary hover:underline">Pricing page</Link> and click <strong>Start free trial</strong> on any paid plan. All paid plans include a <strong>7-day free trial</strong> — no credit card required to start.
+                            Go to <Link to="/settings" className="text-primary hover:underline">Settings → Billing</Link> or visit the <Link to="/pricing" className="text-primary hover:underline">Pricing page</Link> and click <strong>Start free trial</strong> on any paid plan. All paid plans include a <strong>7-day free trial</strong> : no credit card required to start.
                         </p>
 
                         <H3 id="limits">Limits & quotas</H3>

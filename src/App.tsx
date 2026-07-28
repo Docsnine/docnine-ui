@@ -88,7 +88,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Landing page only — redirects authenticated users to /home.
+ * Landing page only : redirects authenticated users to /home.
  * Login and signup are intentionally NOT wrapped here so users can
  * switch accounts or sign in to a second account while logged in.
  */
@@ -106,10 +106,10 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 
 // ─── SEO ──────────────────────────────────────────────────────────
 function getRouteSeo(pathname: string): SeoConfig | null {
-  // Dynamic portal — SEO set inside PublicPortalPage itself
+  // Dynamic portal : SEO set inside PublicPortalPage itself
   if (matchPath("/docs/:slug", pathname)) return null
 
-  // Authenticated workspace — no indexing
+  // Authenticated workspace : no indexing
   if (
     pathname.startsWith("/projects") ||
     pathname.startsWith("/documentations") ||
@@ -120,7 +120,7 @@ function getRouteSeo(pathname: string): SeoConfig | null {
   ) {
     return {
       title: "Workspace",
-      description: "Docnine workspace — manage your projects and documentation.",
+      description: "Docnine workspace : manage your projects and documentation.",
       pathname,
       robots: "noindex, nofollow",
       keywords: [],
@@ -206,7 +206,7 @@ function AppRoutes() {
 
           {/* Guest layouts */}
           <Route element={<AuthLayout />}>
-            {/* ── Auth — open to everyone, including logged-in users ── */}
+            {/* ── Auth : open to everyone, including logged-in users ── */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/verify" element={<VerifyPage />} />

@@ -1,5 +1,5 @@
 /**
- * /auth/callback — OAuth landing page.
+ * /auth/callback : OAuth landing page.
  *
  * The server redirects here after a successful GitHub or Google social login:
  *   /auth/callback?accessToken=<jwt>&userId=<id>

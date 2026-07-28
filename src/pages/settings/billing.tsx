@@ -142,7 +142,7 @@ function ChangePlanModal({
 
             if (result.type === "upgrade") {
                 if (result.paymentLink) {
-                    // No saved card — must complete payment first
+                    // No saved card : must complete payment first
                     setResultMsg({
                         type: "redirect",
                         text: "You'll be redirected to complete payment.",
@@ -168,13 +168,13 @@ function ChangePlanModal({
             else if (result.type === "downgrade") {
                 await onRefresh()
                 const date = result.effectiveAt ? format(new Date(result.effectiveAt), "MMM d, yyyy") : "next renewal"
-                setResultMsg({ type: "scheduled", text: `Downgrade scheduled — takes effect on ${date}.` })
+                setResultMsg({ type: "scheduled", text: `Downgrade scheduled : takes effect on ${date}.` })
                 setTimeout(() => { setResultMsg(null); onClose() }, 3000)
             } 
             
             else {
-                // type === "none" — same plan/cycle
-                setResultMsg({ type: "success", text: "No change needed — you're already on this plan." })
+                // type === "none" : same plan/cycle
+                setResultMsg({ type: "success", text: "No change needed : you're already on this plan." })
                 setTimeout(() => { setResultMsg(null); onClose() }, 1500)
             }
         } catch (err: any) {
@@ -449,7 +449,7 @@ function CurrentPlanCard({
                         <div>
                             <p className="text-muted-foreground mb-0.5">Billing</p>
                             <p className="font-medium capitalize">
-                                {sub.billingCycle ?? "—"}
+                                {sub.billingCycle ?? ":"}
                             </p>
                         </div>
                         {sub.currentPeriodEnd && (
@@ -697,7 +697,7 @@ function SeatsCard({
                 setSuccess(true)
                 setTimeout(() => setSuccess(false), 3000)
             } else {
-                // No saved card / token failed — redirect to Flutterwave
+                // No saved card / token failed : redirect to Flutterwave
                 setRedirecting(true)
                 setTimeout(() => {
                     window.location.href = result.paymentLink
@@ -758,7 +758,7 @@ function SeatsCard({
                 {redirecting && (
                     <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1.5">
                         <Loader1 className="h-3 w-3 " />
-                        Taking you to payment — seats will be added once payment is confirmed.
+                        Taking you to payment : seats will be added once payment is confirmed.
                     </p>
                 )}
                 {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
@@ -1291,7 +1291,7 @@ export function BillingTab() {
 
         if (!transactionId && !txRef) return
 
-        // Flutterwave cancelled / failed — don't call verify
+        // Flutterwave cancelled / failed : don't call verify
         if (fwStatus === "cancelled") {
             setVerifyState({ status: "failed", message: "Payment was cancelled." })
             return

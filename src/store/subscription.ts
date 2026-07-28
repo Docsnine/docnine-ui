@@ -1,8 +1,8 @@
 /**
- * subscription.ts — Zustand store for the current user's subscription state.
+ * subscription.ts : Zustand store for the current user's subscription state.
  *
  * Backed by GET /billing/subscription (requires auth).
- * Loaded lazily on first access — not fetched on app startup.
+ * Loaded lazily on first access : not fetched on app startup.
  */
 import { create } from "zustand";
 import { billingApi } from "@/lib/api";
@@ -33,7 +33,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       const data = await billingApi.getPlans();
       set({ plans: data.plans });
     } catch {
-      // Silently fail — pricing page will show error state
+      // Silently fail : pricing page will show error state
     }
   },
 
@@ -42,7 +42,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       const data = await billingApi.getSubscription();
       set({ subscription: data.subscription, usage: data.usage });
     } catch {
-      // Swallow — page already has data
+      // Swallow : page already has data
     }
   },
 
@@ -73,7 +73,7 @@ export function hasFeature(
   return !!sub.features?.[featureKey];
 }
 
-/** Plan level for comparison — higher = more powerful */
+/** Plan level for comparison : higher = more powerful */
 export const PLAN_LEVEL: Record<string, number> = {
   free: 0,
   starter: 1,

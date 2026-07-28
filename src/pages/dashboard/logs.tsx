@@ -261,7 +261,7 @@ function LogEntry({ log }: { log: ActivityLog }) {
         )}
       </div>
 
-      {/* Timestamp — visible on all screen sizes */}
+      {/* Timestamp : visible on all screen sizes */}
       <time
         dateTime={log.createdAt}
         title={absTime}
@@ -335,7 +335,7 @@ export function LogsPage() {
 
   return (
     <div>
-      <TopBar title="Activity Log" description="Full audit trail for your workspace — auth, pipelines, exports, and more.">
+      <TopBar title="Activity Log" description="Full audit trail for your workspace : auth, pipelines, exports, and more.">
         <Button
           variant="outline"
           size="sm"

@@ -74,7 +74,7 @@ export function ResetPasswordPage() {
             <KeyRound className="h-5 w-5 text-destructive" />
           </div>
           <div className="space-y-1.5">
-            <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Invalid link</h1>
+            <h1 className="font-display text-[24px] font-semibold tracking-[0.02em] leading-snug text-foreground">Invalid link</h1>
             <p className="text-[14px] text-muted-foreground">
               This password reset link is missing a token. Please request a new one.
             </p>
@@ -95,7 +95,7 @@ export function ResetPasswordPage() {
             <CheckCircle2 className="h-5 w-5 text-green-500" />
           </div>
           <div className="space-y-1.5">
-            <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Password updated</h1>
+            <h1 className="font-display text-[24px] font-semibold tracking-[0.02em] leading-snug text-foreground">Password updated</h1>
             <p className="text-[14px] text-muted-foreground">
               Your password has been reset. You can now sign in with your new password.
             </p>
@@ -112,7 +112,7 @@ export function ResetPasswordPage() {
     <AuthShell>
       <div className="space-y-7">
         <div className="space-y-1.5">
-          <h1 className="text-[26px] font-semibold tracking-tight text-foreground">Set new password</h1>
+          <h1 className="font-display text-[24px] font-semibold tracking-[0.02em] leading-snug text-foreground">Set new password</h1>
           <p className="text-[14px] text-muted-foreground">Choose a strong password for your account.</p>
         </div>
 

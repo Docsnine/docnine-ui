@@ -119,7 +119,7 @@ function SidebarContent({
 }) {
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {/* Zone 1 — Workspace identity */}
+      {/* Zone 1 : Workspace identity */}
       <div className="px-4 pt-4 pb-3 shrink-0">
         <ApplicationLogo link="/projects" className="!h-7" />
       </div>

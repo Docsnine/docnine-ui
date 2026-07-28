@@ -94,7 +94,7 @@ export const PORTAL_TEMPLATES: PortalTemplate[] = [
   {
     id: "minimal",
     label: "Minimal Paper",
-    description: "Light, calm, and easy to read — less chrome, more content.",
+    description: "Light, calm, and easy to read: less chrome, more content.",
     audience: "general",
     layout: "docs-sidebar",
     preview: {
@@ -112,7 +112,7 @@ export const PORTAL_TEMPLATES: PortalTemplate[] = [
   {
     id: "company-showcase",
     label: "Company Showcase",
-    description: "Hero intro with top navigation — polished for marketing and customer-facing docs.",
+    description: "Hero intro with top navigation: polished for marketing and customer-facing docs.",
     audience: "companies",
     layout: "hero-docs",
     preview: {
@@ -149,7 +149,7 @@ export const PORTAL_TEMPLATES: PortalTemplate[] = [
   {
     id: "enterprise-handbook",
     label: "Enterprise Handbook",
-    description: "Structured and formal — built for larger orgs and shared knowledge bases.",
+    description: "Structured and formal: built for larger orgs and shared knowledge bases.",
     audience: "enterprise",
     layout: "docs-sidebar",
     preview: {
@@ -203,7 +203,7 @@ export const PORTAL_TEMPLATES: PortalTemplate[] = [
   {
     id: "agency-portfolio",
     label: "Agency Portfolio",
-    description: "Bold dark hero with warm accent — sharp for client and portfolio docs.",
+    description: "Bold dark hero with warm accent: sharp for client and portfolio docs.",
     audience: "companies",
     layout: "hero-docs",
     preview: {

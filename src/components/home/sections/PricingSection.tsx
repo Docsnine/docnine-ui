@@ -23,7 +23,7 @@ const FALLBACK_PLANS: BillingPlan[] = [
         id: "starter",
         name: "Starter",
         tagline: "For freelancers and solo developers who need unlimited projects and exports.",
-        prices: { monthly: 10.89, annual: 8.82, annualTotal: 105.84, savingsPercent: 19 },
+        prices: { monthly: 6, annual: 4.86, annualTotal: 58.32, savingsPercent: 19 },
         limits: { projects: null, seats: 1, extraSeatPriceMonthly: null, attachmentsPerProject: null, maxFileSizeMb: 20, aiChatsPerMonth: 0, portals: 1, versionHistoryDays: 30, exportFormats: ["pdf"] },
         features: { shareViewOnly: true, shareEdit: false, maxShares: 5, archiveRestore: true, customDomain: false, docApproval: false, progressTracker: true, openApiImporter: false, apiWebhookAccess: false, githubSync: false },
     },

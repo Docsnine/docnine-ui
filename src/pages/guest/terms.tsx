@@ -3,9 +3,6 @@ import BackgroundGrid from "@/components/ui/background-grid"
 export function TermsPage() {
     return (
         <div>
-            <BackgroundGrid />
-            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-foreground/10 blur-[120px] pointer-events-none z-0" />
-
             <section className="relative z-10 py-20 px-4">
                 <div className="container mx-auto max-w-3xl mb-24">
                     {}

@@ -174,10 +174,7 @@ export function PricingPage() {
                             annual ? "text-foreground" : "text-muted-foreground",
                         )}
                     >
-                        Annual
-                        <Badge className="ml-1.5 bg-green-500/10 text-primary border-green-500/20 text-[10px] px-1.5 py-0">
-                            Save up to 24%
-                        </Badge>
+                        Annual - Save up to 24%
                     </span>
                 </div>
             </section>

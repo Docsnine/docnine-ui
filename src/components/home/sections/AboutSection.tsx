@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight } from "@/components/icons"
 import { PlatformCapabilityCards } from "./PlatformCapabilityCards"
 
 const INTEGRATIONS = ["GitHub", "GitLab", "Bitbucket", "Azure DevOps", "OpenAPI", "Markdown"]

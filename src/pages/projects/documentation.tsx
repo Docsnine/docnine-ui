@@ -23,7 +23,7 @@ import {
   AlertTriangle,
   ShieldAlert,
   File,
-} from "lucide-react"
+} from "@/components/icons"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
@@ -648,7 +648,7 @@ export function DocumentationViewerPage() {
       }
 
       const summary = getExportSummary(cleanExportData)
-      console.debug("📊 YAML Export:", summary)
+      console.debug("YAML Export:", summary)
 
       
       const blob = await projectsApi.exportBlob(id, "yaml", cleanExportData)
@@ -689,10 +689,10 @@ export function DocumentationViewerPage() {
       }
 
       const summary = getExportSummary(cleanExportData)
-      console.debug("📊 Notion Export:", summary)
+      console.debug("Notion Export:", summary)
 
       
-      console.log("📋 Notion export prepared with", cleanExportData.tabs.length, "sections")
+      console.log("Notion export prepared with", cleanExportData.tabs.length, "sections")
 
       
       const result = await projectsApi.exportNotion(id, cleanExportData)
@@ -732,13 +732,6 @@ export function DocumentationViewerPage() {
       }
 
       const summary = getExportSummary(cleanExportData)
-      console.debug("Google Docs Export:", summary)
-
-      
-      console.log("Google Docs export prepared with", cleanExportData.tabs.length, "sections")
-
-      
-      
       const result = await projectsApi.exportGoogleDocs(id, cleanExportData)
       
       window.open(result.documentUrl, "_blank", "noopener,noreferrer")
@@ -834,7 +827,7 @@ export function DocumentationViewerPage() {
   return (
     <div>
       {}
-      <div className="relative z-20 border-b border-border/70 bg-background/60 backdrop-blur-sm pb-4 max-w-7xl mx-auto">
+      <div className="relative z-20 bg-background/60 backdrop-blur-sm mx-auto">
         {}
         <div className="flex items-center justify-between gap-3 flex-wrap">
           {}
@@ -1081,7 +1074,7 @@ export function DocumentationViewerPage() {
         </div>
       </div>
 
-      <div className="flex flex-col h-[calc(100vh-8rem)] max-w-7xl mx-auto z-10">
+      <div className="flex flex-col h-[calc(100vh-8rem)] mx-auto z-10">
         {}
         <div className="flex flex-1 overflow-hidden border border-border rounded-2xl bg-card mt-6">
           {}

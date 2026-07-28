@@ -6,7 +6,7 @@ import {
   FileCode,
   FileCode2,
   ShieldAlert,
-} from "lucide-react";
+} from "@/components/icons";
 
 export const NATIVE_TABS: TabDef[] = [
   {

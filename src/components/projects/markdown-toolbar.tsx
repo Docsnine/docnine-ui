@@ -1,5 +1,5 @@
 import { useRef, useState } from "react"
-import { Bold, Italic, List, ListOrdered, Code, Link as LinkIcon, Heading1, Heading2, ImageIcon, Quote, MoreVertical } from "lucide-react"
+import { Bold, Italic, List, ListOrdered, Code, Link as LinkIcon, Heading1, Heading2, ImageIcon, Quote, MoreVertical } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,

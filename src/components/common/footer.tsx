@@ -1,4 +1,4 @@
-import { Github, MessageSquare, Twitter } from 'lucide-react'
+import { Github, MessageSquare, Twitter } from "@/components/icons"
 import { Button } from '../ui/button'
 import { Link } from 'react-router-dom'
 import { ApplicationLogo } from './application-logo';

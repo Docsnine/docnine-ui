@@ -7,7 +7,7 @@ import {
     Download, CreditCard, LifeBuoy, ChevronRight, ExternalLink,
     Terminal, Copy, Check, Search, X, Menu, ArrowUp,
     Zap, Lock, Key, AlertTriangle, Info, CheckCircle2
-} from "lucide-react"
+} from "@/components/icons"
 import BackgroundGrid from "@/components/ui/background-grid"
 import { cn } from "@/lib/utils"
 

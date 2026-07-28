@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react"
 import { useSearchParams, useNavigate, Link } from "react-router-dom"
-import { XCircle } from "lucide-react"
+import { XCircle } from "@/components/icons"
 import { useAuthStore } from "@/store/auth"
 import { authApi, setAccessToken } from "@/lib/api"
 import BackgroundGrid from "@/components/ui/background-grid"

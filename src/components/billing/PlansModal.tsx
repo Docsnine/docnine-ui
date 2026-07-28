@@ -14,7 +14,7 @@ import {
     User,
     Zap,
     X,
-} from "lucide-react"
+} from "@/components/icons"
 import {
     Dialog,
     DialogContent,

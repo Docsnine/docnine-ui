@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight } from "@/components/icons"
 import { Link } from "react-router-dom"
 import { useEffect, useRef } from "react"
 import gsap from "gsap"

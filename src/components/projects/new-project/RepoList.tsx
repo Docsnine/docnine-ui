@@ -3,7 +3,7 @@
  * Displays paginated list of repositories
  */
 
-import { CheckCircle2, RefreshCw } from "lucide-react"
+import { CheckCircle2, RefreshCw } from "@/components/icons"
 import { cn } from "@/lib/utils"
 import Loader1 from "@/components/ui/loader1"
 import type { RepoListProps } from "../../../types/ProjectTypes"

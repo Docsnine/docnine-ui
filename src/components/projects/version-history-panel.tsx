@@ -13,7 +13,7 @@ import {
   ChevronDown,
   Undo2,
   Pencil,
-} from "lucide-react"
+} from "@/components/icons"
 import { versionsApi } from "@/lib/api"
 import { DocRenderer } from "@/components/projects/doc-render"
 import { cn } from "@/lib/utils"

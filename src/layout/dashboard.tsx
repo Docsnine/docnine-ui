@@ -14,7 +14,7 @@ import {
   Bell,
   ChevronRight,
   HomeIcon,
-} from "lucide-react"
+} from "@/components/icons"
 import { Input } from "@/components/ui/input"
 import { useAuthStore } from "@/store/auth"
 import { useSubscriptionStore } from "@/store/subscription"
@@ -387,8 +387,6 @@ export function DashboardLayout() {
 
           {/* Top bar */}
           <header className="grid h-12 shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-workspace-border px-4 sm:px-6">
-
-            {/* Left: hamburger (mobile) + breadcrumb */}
             <div className="flex min-w-0 items-center gap-2">
               <button
                 className="md:hidden flex items-center justify-center h-7 w-7 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
@@ -486,7 +484,7 @@ export function DashboardLayout() {
           </header>
 
           <main className="flex-1 overflow-y-auto">
-            <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-5 py-8">
+            <div className="mx-auto px-4 sm:px-6 py-8">
               <Outlet />
             </div>
           </main>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useSearchParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { MailCheck, CheckCircle2, XCircle } from "lucide-react"
+import { MailCheck, CheckCircle2, XCircle } from "@/components/icons"
 import { authApi } from "@/lib/api"
 import Loader1 from "@/components/ui/loader1"
 import { ApiException } from "@/types/ApiTypes"

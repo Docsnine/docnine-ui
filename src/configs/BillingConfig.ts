@@ -1,5 +1,5 @@
 import { BillingPlan } from "@/types/BillingTypes";
-import { Star, User, Users, Zap } from "lucide-react";
+import { Star, User, Users, Zap } from "@/components/icons";
 
 export const COMPARISON_ROWS = [
   { label: "Projects", key: "projects" as const },

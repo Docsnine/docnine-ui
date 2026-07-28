@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { OrgAccountPickerProps } from "@/types/GithubTypes"
-import { User, Building2 } from "lucide-react"
+import { User, Building2 } from "@/components/icons"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // OrgAccountPicker

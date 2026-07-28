@@ -1,5 +1,6 @@
-import { ArrowRight, Badge, Check, Star, User, Users, Zap } from "lucide-react"
+import { ArrowRight, Check, Star, User, Users, Zap } from "@/components/icons"
 import { Button } from "../ui/button"
+import { Badge } from "../ui/badge"
 import { cn } from "@/lib/utils"
 import Loader1 from "../ui/loader1"
 import { BillingPlan } from "@/types/BillingTypes"

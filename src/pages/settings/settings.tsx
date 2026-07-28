@@ -32,7 +32,7 @@ import {
     UtensilsCrossed,
     Cloud,
     User,
-} from "lucide-react"
+} from "@/components/icons"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { BillingTab } from "@/pages/settings/billing"
@@ -419,9 +419,6 @@ function WebhookCard() {
                                 </code>
                                 <CopyButton text={webhookSettings.webhookUrl} />
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                Use this URL as your account-level webhook endpoint for push events (content-type: application/json).
-                            </p>
                         </div>
 
                         {}
@@ -468,9 +465,6 @@ function WebhookCard() {
                                     Rotate
                                 </Button>
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                <strong>Keep this secret.</strong> Store it once as <code className="text-[10px] bg-muted px-1 py-0.5 rounded">DOCNINE_WEBHOOK_SECRET</code> in each repository. The same secret works across all your Docnine projects.
-                            </p>
                         </div>
 
                         {}
@@ -484,10 +478,6 @@ function WebhookCard() {
                                     {yaml}
                                 </pre>
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                Copy this into <code className="text-[10px] bg-muted px-1 py-0.5 rounded">.github/workflows/document.yml</code> in your repository.
-                                The workflow will trigger on every push to main/master and send a signed webhook to Docnine.
-                            </p>
                         </div>
 
                         <a
@@ -848,9 +838,6 @@ function NotionCard() {
                                     {showKey ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                                 </button>
                             </div>
-                            <p className="text-[12px] text-muted-foreground">
-                                From Notion → Settings → Integrations → Create integration.
-                            </p>
                         </div>
 
                         <div className="space-y-1.5">
@@ -864,9 +851,6 @@ function NotionCard() {
                                 className="font-mono text-[13px]"
                                 required
                             />
-                            <p className="text-[12px] text-muted-foreground">
-                                The 32-character ID from your Notion page URL (after the last <code className="bg-muted px-1 rounded text-[11px]">-</code>).
-                            </p>
                         </div>
 
                         <div className="space-y-1.5">

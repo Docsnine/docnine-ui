@@ -16,7 +16,7 @@ import {
   Terminal,
   BookOpen,
   AlertTriangle,
-} from "lucide-react"
+} from "@/components/icons"
 import { fetchEventSource } from "@microsoft/fetch-event-source"
 import { cn } from "@/lib/utils"
 import Loader1 from "@/components/ui/loader1"

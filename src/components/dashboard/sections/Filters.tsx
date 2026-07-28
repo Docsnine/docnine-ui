@@ -1,4 +1,4 @@
-import { Search } from "lucide-react"
+import { Search } from "@/components/icons"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { DashboardFiltersProps } from "@/types/DashboardTypes"

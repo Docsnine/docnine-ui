@@ -23,7 +23,7 @@ import {
     Settings,
     Webhook,
     Zap,
-} from "lucide-react"
+} from "@/components/icons"
 import { cn } from "@/lib/utils"
 
 export function ProjectSettingsPage() {
@@ -38,14 +38,14 @@ export function ProjectSettingsPage() {
     const [error, setError] = useState<string | null>(null)
     const [activeTab, setActiveTab] = useState("general")
 
-    
+
     const [upgradeModal, setUpgradeModal] = useState<{ open: boolean; feature: string; plan: string; description?: string }>({
         open: false,
         feature: "",
         plan: "pro",
     })
 
-    
+
     const [webhookStatus, setWebhookStatus] = useState<{
         hasSecret: boolean
         webhookEnabled: boolean
@@ -70,7 +70,7 @@ export function ProjectSettingsPage() {
         }
     }, [slackStatus])
 
-    
+
     useEffect(() => {
         if (activeTab !== "integrations" || webhookStatus || webhookStatusLoading) return
         setWebhookStatusLoading(true)
@@ -86,10 +86,10 @@ export function ProjectSettingsPage() {
         setSyncFeedback(null)
         try {
             const result = await projectsApi.sync(id, force)
-            
+
             setProject((prev) => prev ? { ...prev, apiStatus: "running", status: "analyzing" } : prev)
             setSyncFeedback({ type: "success", msg: "Sync started : redirecting to live progress…" })
-            
+
             setTimeout(() => {
                 navigate(`/projects/${id}/live?streamUrl=${encodeURIComponent(result.streamUrl)}`)
             }, 800)
@@ -152,20 +152,7 @@ export function ProjectSettingsPage() {
             <div className="flex justify-center">
                 <div className={cn("w-full space-y-5", "max-w-3xl")}>
                     <div className="space-y-5 mt-4">
-                        {}
-                        <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
-                            <Link to="/projects" className="hover:text-foreground flex items-center gap-1 transition-colors">
-                                <ArrowLeft className="h-3.5 w-3.5" /> Projects
-                            </Link>
-                            <span>/</span>
-                            <Link to={`/projects/${project.id}`} className="hover:text-foreground transition-colors truncate max-w-[180px]">
-                                {project.name}
-                            </Link>
-                            <span>/</span>
-                            <span className="text-foreground font-medium">Settings</span>
-                        </div>
-
-                        {}
+                        { }
                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-card px-6 py-5 rounded-xl border border-border">
                             <div className="space-y-0.5">
                                 <h1 className="text-[22px] font-semibold tracking-tight">Project Settings</h1>
@@ -173,17 +160,9 @@ export function ProjectSettingsPage() {
                                     Manage your project information and integrations.
                                 </p>
                             </div>
-                            {project.status === "completed" && (
-                                <Button asChild size="sm" variant="outline">
-                                    <Link to={`/projects/${project.id}/docs`}>
-                                        <BookOpen className="mr-1.5 h-3.5 w-3.5" />
-                                        View Documentation
-                                    </Link>
-                                </Button>
-                            )}
                         </div>
 
-                        {}
+                        { }
                         {(slackStatus === "success" || slackStatus === "error") && (
                             <div
                                 className={`rounded-lg border px-4 py-3 text-[13px] ${slackStatus === "success"
@@ -197,7 +176,7 @@ export function ProjectSettingsPage() {
                             </div>
                         )}
 
-                        {}
+                        { }
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                             <TabsList className="grid w-full grid-cols-2 h-9">
                                 <TabsTrigger value="general" className="gap-1.5 text-[13px]">
@@ -210,7 +189,7 @@ export function ProjectSettingsPage() {
                                 </TabsTrigger>
                             </TabsList>
 
-                            {}
+                            { }
                             <TabsContent value="general" className="space-y-5 mt-4">
                                 {isOwner ? (
                                     <ProjectGeneralSettings project={project} onProjectUpdate={handleProjectUpdate} />
@@ -225,7 +204,7 @@ export function ProjectSettingsPage() {
                                 )}
                             </TabsContent>
 
-                            {}
+                            { }
                             <TabsContent value="integrations" className="space-y-4 mt-4">
 
                                 {!isOwner && (
@@ -236,7 +215,7 @@ export function ProjectSettingsPage() {
 
                                 {isOwner && (
                                     <>
-                                        {}
+                                        { }
                                         <Card className="shadow-none">
                                             <CardHeader className="pb-2">
                                                 <CardTitle className="text-[15px] font-semibold flex items-center gap-2">
@@ -252,7 +231,7 @@ export function ProjectSettingsPage() {
                                             </CardContent>
                                         </Card>
 
-                                        {}
+                                        { }
                                         <Card className="shadow-none">
                                             <CardHeader className="pb-3">
                                                 <div className="flex items-start justify-between">
@@ -283,7 +262,7 @@ export function ProjectSettingsPage() {
                                             <CardContent>
                                                 {hasGithubSync ? (
                                                     <div className="space-y-4">
-                                                        {}
+                                                        { }
                                                         {syncFeedback && (
                                                             <div className={cn(
                                                                 "rounded-lg border px-3 py-2.5 text-[13px]",
@@ -295,7 +274,7 @@ export function ProjectSettingsPage() {
                                                             </div>
                                                         )}
 
-                                                        {}
+                                                        { }
                                                         <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
                                                             <div className="flex items-center justify-between gap-4">
                                                                 <div className="space-y-0.5 min-w-0">
@@ -333,7 +312,7 @@ export function ProjectSettingsPage() {
                                                             )}
                                                         </div>
 
-                                                        {}
+                                                        { }
                                                         {webhookStatusLoading ? (
                                                             <div className="h-10 flex items-center">
                                                                 <Skeleton className="h-3 w-48" />
@@ -362,18 +341,6 @@ export function ProjectSettingsPage() {
                                                                 </p>
                                                             </div>
                                                         )}
-
-                                                        {}
-                                                        <p className="text-[12px] text-muted-foreground">
-                                                            Need a full re-analysis?{" "}
-                                                            <button
-                                                                className="text-primary underline underline-offset-2 disabled:opacity-50"
-                                                                disabled={syncLoading || project?.apiStatus === "running"}
-                                                                onClick={() => handleSync(true)}
-                                                            >
-                                                                Force full re-run →
-                                                            </button>
-                                                        </p>
                                                     </div>
                                                 ) : (
                                                     <div className="rounded-xl border border-dashed border-border bg-muted/20 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -397,7 +364,7 @@ export function ProjectSettingsPage() {
                                             </CardContent>
                                         </Card>
 
-                                        {}
+                                        { }
                                         <Card className="shadow-none">
                                             <CardHeader className="pb-3">
                                                 <div className="flex items-start justify-between">

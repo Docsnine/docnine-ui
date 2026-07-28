@@ -3,7 +3,7 @@ import {
   GitlabIcon,
   Code2Icon,
   CloudCheckIcon,
-} from "lucide-react";
+} from "@/components/icons";
 import type { ProviderKey, ProviderConfig } from "@/types/ProjectTypes";
 
 // ── Storage Keys ──────────────────────────────────────────────────────────

@@ -19,7 +19,7 @@ import {
     Loader2,
     BarChart3,
     FileCode2,
-} from "lucide-react"
+} from "@/components/icons"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"

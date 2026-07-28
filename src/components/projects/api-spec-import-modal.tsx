@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react"
-import { Upload, Link2, FileText, X, RefreshCw, Check, AlertCircle } from "lucide-react"
+import { Upload, Link2, FileText, X, RefreshCw, Check, AlertCircle } from "@/components/icons"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import BackgroundGrid from "@/components/ui/background-grid"
-import { Github, Mail, MessageSquare, Send, Twitter } from "lucide-react"
+import { Github, Mail, MessageSquare, Send, Twitter } from "@/components/icons"
 
 export function ContactPage() {
     const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" })

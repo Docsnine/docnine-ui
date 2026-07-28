@@ -1,4 +1,4 @@
-import { UserPlus, GitBranch, FileText, Send } from "lucide-react"
+import { UserPlus, GitBranch, FileText, Send } from "@/components/icons"
 
 const STEPS = [
   {

@@ -43,6 +43,7 @@ import {
   PortalBranding,
   PortalSectionConfig,
   PortalSectionKey,
+  PortalTemplateId,
   PublicPortalData,
 } from "@/types/PortalTypes";
 import { ApiSpec, TryItResult } from "@/types/ApiSpecTypes";
@@ -1045,6 +1046,7 @@ export const portalApi = {
       seoDescription?: string;
       customDomain?: string;
       accessMode?: PortalAccessMode;
+      templateId?: PortalTemplateId;
       password?: string | null;
     },
   ) =>

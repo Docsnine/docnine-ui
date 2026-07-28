@@ -15,7 +15,7 @@ import {
   CreditCard,
   BarChart3,
   RefreshCw,
-} from "lucide-react"
+} from "@/components/icons"
 import { adminApi } from "@/lib/api"
 import { useAuthStore } from "@/store/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"

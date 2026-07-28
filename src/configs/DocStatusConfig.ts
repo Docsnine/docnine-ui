@@ -13,7 +13,7 @@ import {
   Globe,
   PenLine,
   RotateCcw,
-} from "lucide-react";
+} from "@/components/icons";
 
 export const DOC_STATUS_CONFIG: Record<DocStatus, StatusConfig> = {
   draft: {

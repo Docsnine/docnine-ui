@@ -1,5 +1,5 @@
 import { differenceInDays } from "date-fns"
-import { Zap, Users, Star, AlertTriangle, Clock, User } from "lucide-react"
+import { Zap, Users, Star, AlertTriangle, Clock, User } from "@/components/icons"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useSubscriptionStore, PLAN_LEVEL } from "@/store/subscription"
@@ -45,7 +45,7 @@ export function PlanBadge({ className, showStatus = true }: PlanBadgeProps) {
         <Badge
             variant="outline"
             className={cn(
-                "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium",
+                "inline-flex items-center gap-1 rounded border-none px-3 py-1 text-xs font-medium",
                 colourClass,
                 className,
             )}
@@ -56,10 +56,6 @@ export function PlanBadge({ className, showStatus = true }: PlanBadgeProps) {
     )
 }
 
-/**
- * Headless helper : returns true if the current user's plan meets the minimum.
- * Useful for conditional rendering without the badge UI.
-*/
 export function usePlanCheck(minPlan: string): boolean {
     const subscription = useSubscriptionStore((s) => s.subscription)
     if (!subscription) return false

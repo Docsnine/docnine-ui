@@ -1,4 +1,4 @@
-import { Sparkles, GitCompare } from "lucide-react"
+import { Sparkles, GitCompare } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import Loader1 from "@/components/ui/loader1"
 import { StaleSectionBannerProps } from "@/types/StaleTypes"

@@ -16,7 +16,7 @@
 import { useState, useCallback, Children, isValidElement } from "react"
 import ReactMarkdown, { Components } from "react-markdown"
 import remarkGfm from "remark-gfm"          // FIX #1: static import, not require()
-import { Check, Copy, ExternalLink } from "lucide-react"
+import { Check, Copy, ExternalLink } from "@/components/icons"
 import { cn } from "@/lib/utils"
 import { LANG_META } from "@/configs/DocRenderConfig"
 import { DocRendererProps } from "@/types/DocRenderTypes"

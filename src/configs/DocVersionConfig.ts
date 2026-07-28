@@ -1,5 +1,5 @@
 import { DocVersion } from "@/types/DocVersionTypes";
-import { Pencil, RefreshCw, Sparkles } from "lucide-react";
+import { Pencil, RefreshCw, Sparkles } from "@/components/icons";
 
 export const SOURCE_CONFIG: Record<
   DocVersion["source"],

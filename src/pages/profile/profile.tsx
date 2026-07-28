@@ -17,7 +17,7 @@ import {
     Eye,
     EyeOff,
     ShieldCheck,
-} from "lucide-react"
+} from "@/components/icons"
 import Loader1 from "@/components/ui/loader1"
 
 

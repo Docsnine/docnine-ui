@@ -28,7 +28,7 @@ import {
     RefreshCw,
     ArrowRight,
     FilesIcon,
-} from "lucide-react"
+} from "@/components/icons"
 import TopBar from "@/components/projects/top-bar"
 import { DocStatusBadge } from "@/components/projects/doc-status"
 import { useDocTrackerStore } from "@/store/doc-tracker"

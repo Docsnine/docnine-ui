@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Loader, AlertCircle, CheckCircle, Slack, Settings, Trash2 } from "lucide-react";
+import { Loader, AlertCircle, CheckCircle, Slack, Settings, Trash2 } from "@/components/icons";
 import { API_BASE, getAccessToken } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -384,18 +384,6 @@ export function SlackIntegrationSettings({ projectId }) {
                             <div className="text-center mb-2">
                                 <Slack className="h-8 w-8 text-muted-foreground mx-auto mb-2 opacity-60" />
                                 <h4 className="text-[13px] font-semibold">Configure Custom Slack App</h4>
-                                <p className="text-[12px] text-muted-foreground mt-1">
-                                    Enter your Slack app credentials from{" "}
-                                    <a
-                                        href="https://api.slack.com/apps"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary underline"
-                                    >
-                                        api.slack.com/apps
-                                    </a>{" "}
-                                    → Basic Information → App Credentials.
-                                </p>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="client-id">Client ID</Label>
@@ -406,9 +394,6 @@ export function SlackIntegrationSettings({ projectId }) {
                                     placeholder="e.g. 1234567890.1234567890"
                                     disabled={updating}
                                 />
-                                <p className="text-xs text-muted-foreground">
-                                    Found in Basic Information → App Credentials
-                                </p>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="client-secret">Client Secret</Label>
@@ -420,9 +405,6 @@ export function SlackIntegrationSettings({ projectId }) {
                                     placeholder="Your client secret"
                                     disabled={updating}
                                 />
-                                <p className="text-xs text-muted-foreground">
-                                    Found in Basic Information → App Credentials
-                                </p>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="signing-secret">Signing Secret</Label>
@@ -434,9 +416,6 @@ export function SlackIntegrationSettings({ projectId }) {
                                     placeholder="Your signing secret"
                                     disabled={updating}
                                 />
-                                <p className="text-xs text-muted-foreground">
-                                    Found in Basic Information → App Credentials
-                                </p>
                             </div>
                             <div className="flex gap-2 pt-2">
                                 {hasPendingCredentials && (
@@ -504,9 +483,6 @@ export function SlackIntegrationSettings({ projectId }) {
                                 disabled={updating}
                                 placeholder="#security-alerts"
                             />
-                            <p className="text-xs text-muted-foreground">
-                                Channel name (e.g., #security-alerts) : saved automatically
-                            </p>
                         </div>
                     </div>
 

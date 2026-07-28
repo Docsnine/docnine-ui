@@ -34,7 +34,7 @@ import {
     FileText,
     Shield,
     Layers,
-} from "lucide-react"
+} from "@/components/icons"
 import Loader1 from "@/components/ui/loader1"
 import { useConfirm } from "@/hooks"
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog"
@@ -339,26 +339,11 @@ export function ProjectOverviewPage() {
     return (
         <>
             <div className="space-y-5 mt-2">
-
-                {}
-                <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground min-w-0">
-                    <Link
-                        to="/projects"
-                        className="hover:text-foreground flex items-center gap-1 transition-colors shrink-0"
-                    >
-                        <ArrowLeft className="h-3.5 w-3.5" />
-                        Projects
-                    </Link>
-                    <span className="shrink-0 opacity-50">/</span>
-                    <span className="text-foreground font-medium truncate">{project.name}</span>
-                </div>
-
                 {}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card rounded-xl border border-border p-5">
                     <div className="space-y-1.5 min-w-0">
                         <div className="flex items-center gap-2.5 flex-wrap">
                             <h1 className="text-[22px] font-semibold tracking-tight truncate">{project.name}</h1>
-                            {getStatusBadge()}
                             {!isOwner && (
                                 <Badge variant="secondary" className="capitalize text-[11px]">
                                     {project.shareRole} access
@@ -398,22 +383,6 @@ export function ProjectOverviewPage() {
 
                     {}
                     <div className="flex items-center gap-2 flex-wrap shrink-0">
-                        {isOwner && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-9"
-                                onClick={() => requirePlan(
-                                    "Share & Collaborate", "starter",
-                                    "Share your project with team members and collaborators.",
-                                    () => setShowShare(true)
-                                )}
-                            >
-                                <Share2 className="mr-1.5 h-3.5 w-3.5" />
-                                {!meetsMinPlan(subscription, "starter") && <Lock className="mr-1 h-3 w-3 opacity-50" />}
-                                Share
-                            </Button>
-                        )}
                         {project.status === "failed" && isOwner && (
                             <Button size="sm" className="h-9" onClick={handleRetry} disabled={!!actionLoading}>
                                 {actionLoading === "retry"
@@ -436,6 +405,22 @@ export function ProjectOverviewPage() {
                                     <BookOpen className="mr-1.5 h-3.5 w-3.5" />
                                     View Docs
                                 </Link>
+                            </Button>
+                        )}
+                        {isOwner && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-9"
+                                onClick={() => requirePlan(
+                                    "Share & Collaborate", "starter",
+                                    "Share your project with team members and collaborators.",
+                                    () => setShowShare(true)
+                                )}
+                            >
+                                <Share2 className="mr-1.5 h-3.5 w-3.5" />
+                                {!meetsMinPlan(subscription, "starter") && <Lock className="mr-1 h-3 w-3 opacity-50" />}
+                                Share
                             </Button>
                         )}
                         {isOwner && (

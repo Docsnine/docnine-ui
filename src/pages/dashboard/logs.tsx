@@ -30,7 +30,7 @@ import {
   User as UserIcon,
   ChevronDown,
   ChevronRight,
-} from "lucide-react"
+} from "@/components/icons"
 import { cn } from "@/lib/utils"
 import TopBar from "@/components/projects/top-bar"
 

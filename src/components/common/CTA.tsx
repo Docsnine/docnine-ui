@@ -1,6 +1,6 @@
 import { Button } from "../ui/button"
 import { Link } from "react-router-dom"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight } from "@/components/icons"
 import { PremiumGreenBackdrop } from "@/components/ui/premium-green-backdrop"
 
 export function CTA() {

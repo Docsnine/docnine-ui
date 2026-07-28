@@ -5,7 +5,7 @@ import React from 'react'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import Loader1 from '../ui/loader1'
-import { ArrowRight, Check, Minus, Star } from 'lucide-react'
+import { ArrowRight, Check, Minus, Star } from "@/components/icons"
 
 function FeatureLine({ label }: { label: string }) {
     return (

@@ -130,6 +130,32 @@
   }
 }
 
+.portal-shell[data-portal-scheme="light"] {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --border: #e4e4e7;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #1a1a1a;
+}
+
+.portal-shell[data-portal-scheme="dark"] {
+  color-scheme: dark;
+  --background: #0a1a18;
+  --foreground: #e5e5e5;
+  --card: #0f1f1c;
+  --card-foreground: #e5e5e5;
+  --muted: #122421;
+  --muted-foreground: #a3a3a3;
+  --border: rgba(255, 255, 255, 0.1);
+  --secondary: #122421;
+  --secondary-foreground: #e5e5e5;
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);

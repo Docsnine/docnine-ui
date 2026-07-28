@@ -9,7 +9,7 @@
  */
 import { useState, useRef, useEffect } from "react"
 import { formatDistanceToNow } from "date-fns"
-import { ChevronDown, User, Calendar, AlertCircle, History, PenLine, Eye, RotateCcw, CheckCircle2, Globe, AlertTriangle, Archive } from "lucide-react"
+import { ChevronDown, User, Calendar, AlertCircle, History, PenLine, Eye, RotateCcw, CheckCircle2, Globe, AlertTriangle, Archive } from "@/components/icons"
 import { cn } from "@/lib/utils"
 import { useDocTrackerStore } from "@/store/doc-tracker"
 import { DocSectionTrack, DocStatus } from "@/types/DocStatusTypes"

@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Button } from "../ui/button"
 import { Link } from "react-router-dom"
 import { ThemeToggle } from "./theme-toggle"
-import { Menu, X } from "lucide-react"
+import { Menu, X } from "@/components/icons"
 import { ApplicationLogo } from "./application-logo"
 
 export function TopHeader({ className }: { className?: string }) {

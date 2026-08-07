@@ -1,19 +1,30 @@
-import { CTA } from "../common"
 import {
+  Background,
+  FAQ,
+  Features,
   HeroSection,
-  AboutSection,
-  FeaturesSection,
-} from "./sections"
+  Logos,
+  Pricing,
+  ResourceAllocation,
+  Testimonials,
+} from "@/components/landing"
+import { useGradientExpand } from "@/hooks/landing/useGradientExpand"
 
 export function HomePage() {
+  useGradientExpand(["pricing-gradient-wrap"])
+
   return (
     <div className="relative">
       <HeroSection />
-      <AboutSection />
-      <div id="features">
-        <FeaturesSection />
-      </div>
-      <CTA />
+
+      <Background className="relative z-20">
+        <Logos />
+        <Features />
+        <ResourceAllocation />
+      </Background>
+
+      <Testimonials />
+      <Pricing />
     </div>
   )
 }

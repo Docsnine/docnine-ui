@@ -16,12 +16,12 @@ import { billingApi } from "@/lib/api"
 import { useAuthStore } from "@/store/auth"
 import { useSubscriptionStore } from "@/store/subscription"
 import { cn } from "@/lib/utils"
-import BackgroundGrid from "@/components/ui/background-grid"
 import { Switch } from "@/components/ui/switch"
 import PlanCard from "@/components/billing/PlanCard"
 import Loader1 from "@/components/ui/loader1"
 import { BillingPlan } from "@/types/BillingTypes"
 import { COMPARISON_ROWS, FEATURE_ROWS, PLAN_ACCENT } from "@/configs/BillingConfig"
+import { Background } from "@/components/landing"
 
 
 function ComparisonTable({ plans }: { plans: BillingPlan[] }) {
@@ -136,14 +136,9 @@ export function PricingPage() {
     }
 
     return (
-        <div>
-            <div className="absolute inset-x-0 top-0 h-1/2 overflow-hidden pointer-events-none">
-                <BackgroundGrid />
-            </div>
-
-            {}
-            <section className="mx-auto relative z-10 max-w-5xl px-6 pt-16 pb-12 text-center">
-                <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+        <Background className="mt-5">
+            <section className="mx-auto relative z-10 max-w-5xl px-6 pt-28 pb-12 text-center lg:pt-36">
+                <h1 data-animate className="text-4xl font-bold tracking-tight sm:text-5xl">
                     Simple, transparent pricing
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground">
@@ -219,6 +214,6 @@ export function PricingPage() {
                     </>
                 )}
             </section>
-        </div>
+        </Background>
     )
 }

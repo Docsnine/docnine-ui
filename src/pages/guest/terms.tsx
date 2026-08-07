@@ -1,13 +1,12 @@
-import BackgroundGrid from "@/components/ui/background-grid"
+import { Background } from "@/components/landing"
 
 export function TermsPage() {
     return (
-        <div>
-            <section className="relative z-10 py-20 px-4">
+        <Background className="mt-5">
+            <section className="relative z-10 py-28 px-4 lg:pt-36">
                 <div className="container mx-auto max-w-3xl mb-24">
-                    {}
                     <div className="mb-12">
-                        <p className="text-sm font-medium text-primary uppercase tracking-widest mb-3">Legal</p>
+                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-3">Legal</p>
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
                             Terms &amp; Conditions
                         </h1>
@@ -129,6 +128,6 @@ export function TermsPage() {
                     </div>
                 </div>
             </section>
-        </div>
+        </Background>
     )
 }

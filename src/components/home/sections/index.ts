@@ -1,5 +1,2 @@
-export { HeroSection } from "./HeroSection"
-export { AboutSection } from "./AboutSection"
-export { FeaturesSection } from "./FeaturesSection"
-export { PricingSection } from "./PricingSection"
-export { FAQSection } from "./FAQSection"
+/** Legacy home sections,landing now lives under @/components/landing */
+export {}

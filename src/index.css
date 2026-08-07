@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 @font-face {
   font-family: "Loubag";
   src: url("/fonts/Loubag-Medium.ttf") format("truetype");
@@ -12,10 +14,6 @@
   font-style: normal;
   font-display: swap;
 }
-
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap");
-
-@import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 

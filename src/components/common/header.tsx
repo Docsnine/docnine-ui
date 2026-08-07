@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { Button } from "../ui/button"
 import { Link } from "react-router-dom"
-import { ThemeToggle } from "./theme-toggle"
 import { Menu, X } from "@/components/icons"
 import { ApplicationLogo } from "./application-logo"
 
@@ -36,7 +35,6 @@ export function TopHeader({ className }: { className?: string }) {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <ThemeToggle />
           <Link
             to="/login"
             className="px-2 text-[13px] font-medium tracking-tight text-muted-foreground transition-colors hover:text-foreground"
@@ -52,7 +50,6 @@ export function TopHeader({ className }: { className?: string }) {
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
-          <ThemeToggle />
           <Link
             to="/login"
             className="text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"

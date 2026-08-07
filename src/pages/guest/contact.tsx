@@ -2,8 +2,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import BackgroundGrid from "@/components/ui/background-grid"
 import { Github, Mail, MessageSquare, Send, Twitter } from "@/components/icons"
+import { Background } from "@/components/landing"
 
 export function ContactPage() {
     const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" })
@@ -27,17 +27,11 @@ export function ContactPage() {
     }
 
     return (
-        <div>
-            {}
-
-            {}
-            {}
-
-            <section className="relative z-10 pt-20 px-4">
+        <Background className="mt-5">
+            <section className="relative z-10 pt-28 px-4 lg:pt-36">
                 <div className="container mx-auto max-w-6xl mb-24">
-                    {}
                     <div className="mb-16 text-center">
-                        <p className="text-sm font-medium text-primary uppercase tracking-widest mb-3">Get in touch</p>
+                        <p data-animate className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-3">Get in touch</p>
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
                             Contact us
                         </h1>
@@ -206,6 +200,6 @@ export function ContactPage() {
                     </div>
                 </div>
             </section>
-        </div>
+        </Background>
     )
 }

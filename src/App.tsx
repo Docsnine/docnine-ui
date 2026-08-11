@@ -97,16 +97,18 @@ function getRouteSeo(pathname: string): SeoConfig | null {
   if (matchPath("/docs/:slug", pathname)) return null
 
   if (
+    pathname === "/home" ||
     pathname.startsWith("/projects") ||
     pathname.startsWith("/documentations") ||
     pathname.startsWith("/logs") ||
     pathname.startsWith("/profile") ||
     pathname.startsWith("/settings") ||
+    pathname.startsWith("/billing") ||
     pathname.startsWith("/admin")
   ) {
     return {
       title: "Workspace",
-      description: "Docnine workspace : manage your projects and documentation.",
+      description: "Docnine workspace: manage your projects and documentation.",
       pathname,
       robots: "noindex, nofollow",
       keywords: [],

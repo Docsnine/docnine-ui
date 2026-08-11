@@ -1,7 +1,6 @@
-import { getSiteUrl } from "@/lib/seo";
-import { SeoConfig } from "@/types/SeoTypes";
+import { getSiteUrl } from "@/lib/seo"
+import { SeoConfig } from "@/types/SeoTypes"
 
-// System / oauth pages : no indexing
 export const SYSTEM_PATHS = [
   "/verify",
   "/auth/callback",
@@ -16,122 +15,34 @@ export const SYSTEM_PATHS = [
   "/azure/oauth/complete",
   "/forgot-password",
   "/reset-password",
-];
+]
 
 export const MARKETING_KEYWORDS = [
   "ai documentation",
   "developer documentation",
-  "github documentation generator",
-  "auto-generate docs from code",
-  "codebase documentation",
+  "documentation generator",
+  "generate docs from code",
   "api documentation tool",
-  "multi-agent ai",
+  "github documentation generator",
+  "codebase documentation",
+  "keep docs in sync",
   "docnine",
   "docnine ai",
-  "documentation generator",
-  "keep docs in sync",
-  "Docnine AI",
-  "generate documentation from code",
-  "docnine",
-  "docnine documentation",
-  "docnine ai documentation",
-  "ai code documentation",
-  "automated api docs",
-  "dev docs generator",
-  "code to docs ai",
-  "documentation automation",
-  "ai dev docs",
-  "codebase to docs",
-  "github docs generator",
-  "code documentation ai",
-  "ai documentation tool",
-  "developer docs ai",
-  "codebase documentation ai",
-  "ai generated docs",
-  "auto documentation tool",
-  "code documentation software",
-  "documentation ai tool",
-  "ai documentation generator",
-  "developer documentation ai",
-  "code to documentation ai",
-  "ai documentation assistant",
-  "codebase to documentation",
-  "ai docs generator",
-  "documentation from code",
-  "ai code docs",
-  "code documentation tool",
-  "ai documentation software",
-  "documentation generation ai",
-  "ai documentation platform",
-  "code documentation ai tool",
-  "ai documentation system",
-  "documentation ai software",
-  "ai documentation app",
-  "code documentation ai platform",
-  "ai documentation solution",
-  "documentation ai generator",
-  "ai documentation builder",
-  "code documentation ai software",
-  "ai documentation creation tool",
-  "documentation ai platform",
-  "ai documentation automation tool",
-  "code documentation ai solution",
-  "ai documentation generation software",
-  "documentation ai automation",
-  "ai documentation writing tool",
-  "code documentation ai automation",
-  "ai documentation maintenance tool",
-  "documentation ai maintenance",
-  "ai documentation sync tool",
-  "code documentation ai sync",
-  "ai documentation update tool",
-  "documentation ai update",
-  "ai documentation version control",
-  "code documentation ai versioning",
-  "ai documentation collaboration tool",
-  "documentation ai collaboration",
-  "ai documentation sharing tool",
-  "code documentation ai sharing",
-  "ai documentation publishing tool",
-  "documentation ai publishing",
-  "ai documentation export tool",
-  "code documentation ai export",
-  "ai documentation template tool",
-  "documentation ai templates",
-  "ai documentation customization tool",
-  "code documentation ai customization",
-  "ai documentation styling tool",
-  "documentation ai styling",
-  "ai documentation formatting tool",
-  "code documentation ai formatting",
-  "ai documentation structure tool",
-  "documentation ai structure",
-  "ai documentation navigation tool",
-  "code documentation ai navigation",
-  "ai documentation search tool",
-  "documentation ai search",
-  "ai documentation tagging tool",
-  "code documentation ai tagging",
-  "ai documentation metadata tool",
-];
+]
 
 export const AUTH_KEYWORDS = [
   "docnine login",
   "docnine signup",
-  "developer documentation tool",
-  "docnine authentication",
-  "docnine auth",
   "sign into docnine",
   "create docnine account",
-  "docnine",
-  "docnine documentation",
-];
+  "developer documentation tool",
+]
 
-const siteUrl = getSiteUrl();
+const siteUrl = getSiteUrl()
 
 export const PUBLIC_PAGES: Record<string, SeoConfig> = {
   "/": {
-    title: "Docnine , AI documentation for engineering teams",
+    title: "Docnine: AI documentation for engineering teams",
     description:
       "Generate clear developer docs from your codebase and keep them up to date as your code changes. Less busywork, better documentation.",
     pathname: "/",
@@ -139,22 +50,41 @@ export const PUBLIC_PAGES: Record<string, SeoConfig> = {
     appendSiteName: false,
     imageWidth: 1200,
     imageHeight: 630,
-    structuredData: {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      name: "Docnine",
-      applicationCategory: "DeveloperApplication",
-      operatingSystem: "Web",
-      url: siteUrl,
-      description:
-        "Generate and maintain developer documentation from your code with AI.",
-      offers: {
-        "@type": "Offer",
-        price: "0",
-        priceCurrency: "USD",
-        availability: "https://schema.org/InStock",
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "Docnine",
+        url: siteUrl,
+        logo: `${siteUrl}/web-app-manifest-512x512.png`,
+        sameAs: ["https://github.com/Docsnine"],
       },
-    },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "Docnine",
+        url: siteUrl,
+        description:
+          "Generate and maintain developer documentation from your code with AI.",
+        publisher: { "@type": "Organization", name: "Docnine", url: siteUrl },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: "Docnine",
+        applicationCategory: "DeveloperApplication",
+        operatingSystem: "Web",
+        url: siteUrl,
+        description:
+          "Generate and maintain developer documentation from your code with AI.",
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+          availability: "https://schema.org/InStock",
+        },
+      },
+    ],
   },
   "/login": {
     title: "Sign in",
@@ -180,7 +110,6 @@ export const PUBLIC_PAGES: Record<string, SeoConfig> = {
       ...AUTH_KEYWORDS,
       "free developer documentation",
       "docnine free plan",
-      "github docs generator free",
     ],
     robots: "index, follow",
     structuredData: {
@@ -200,7 +129,7 @@ export const PUBLIC_PAGES: Record<string, SeoConfig> = {
     keywords: [
       ...MARKETING_KEYWORDS,
       "documentation pricing",
-      "developer tools pricing",
+      "docnine pricing",
       "docnine free plan",
       "docnine pro",
     ],
@@ -209,20 +138,18 @@ export const PUBLIC_PAGES: Record<string, SeoConfig> = {
       "@type": "WebPage",
       name: "Docnine Pricing",
       url: `${siteUrl}/pricing`,
-      description:
-        "Pricing and plan comparison for Docnine.",
+      description: "Pricing and plan comparison for Docnine.",
     },
   },
   "/docs": {
     title: "Documentation",
     description:
-      "Guides for setting up Docnine , GitHub, webhooks, AI workflows, portals, exports, and billing.",
+      "Guides for setting up Docnine, GitHub, webhooks, AI workflows, portals, exports, and billing.",
     pathname: "/docs",
     keywords: [
       ...MARKETING_KEYWORDS,
       "docnine docs",
       "docnine setup guide",
-      "github webhook documentation",
       "how to use docnine",
     ],
     structuredData: {
@@ -230,8 +157,7 @@ export const PUBLIC_PAGES: Record<string, SeoConfig> = {
       "@type": "TechArticle",
       headline: "Docnine documentation",
       url: `${siteUrl}/docs`,
-      description:
-        "Setup guides and reference docs for Docnine.",
+      description: "Setup guides and reference docs for Docnine.",
       author: { "@type": "Organization", name: "Docnine", url: siteUrl },
     },
   },
@@ -250,8 +176,7 @@ export const PUBLIC_PAGES: Record<string, SeoConfig> = {
   },
   "/terms": {
     title: "Terms of use",
-    description:
-      "Terms that govern your use of Docnine.",
+    description: "Terms that govern your use of Docnine.",
     pathname: "/terms",
     keywords: ["docnine terms", "terms and conditions", "docnine legal"],
     structuredData: {
@@ -274,4 +199,4 @@ export const PUBLIC_PAGES: Record<string, SeoConfig> = {
       url: `${siteUrl}/privacy`,
     },
   },
-};
+}

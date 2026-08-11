@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+Allow: /pricing
+Allow: /docs
+Allow: /contact
+Allow: /signup
+Allow: /login
+Allow: /terms
+Allow: /privacy
+
+Disallow: /home
+Disallow: /projects
+Disallow: /documentations
+Disallow: /logs
+Disallow: /profile
+Disallow: /settings
+Disallow: /billing
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /verify
+Disallow: /auth/
+Disallow: /cli-auth
+Disallow: /share/
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /github/
+Disallow: /gitlab/
+Disallow: /bitbucket/
+Disallow: /azure/
+
+Sitemap: https://docnineai.com/sitemap.xml

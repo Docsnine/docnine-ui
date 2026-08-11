@@ -1,15 +1,11 @@
 import { SeoConfig } from "@/types/SeoTypes";
 import { useEffect, useRef } from "react";
 
-// ─── Defaults ─────────────────────────────────────────────────────
-
-const DEFAULT_SITE_NAME = "Docnine";
+const DEFAULT_SITE_NAME = "Docnine"
 const DEFAULT_DESCRIPTION =
-  "Ship better documentations, faster. Stop writing documentation by hand. Create and maintain developer documentation with AI. Docnine generates docs from your codebase, then keeps them up to date as your code evolves.";
-const DEFAULT_IMAGE_PATH = "/web-app-manifest-512x512.png";
-const TITLE_SUFFIX = "";
-
-// ─── URL helpers ──────────────────────────────────────────────────
+  "Generate and maintain developer documentation with AI. Docnine creates docs from your codebase and keeps them up to date as your code evolves."
+const DEFAULT_IMAGE_PATH = "/web-app-manifest-512x512.png"
+const TITLE_SUFFIX = " | Docnine"
 
 function trimSlash(value: string): string {
   return value.replace(/\/+$/, "");
@@ -32,7 +28,6 @@ function toAbsoluteUrl(
   return `${trimSlash(siteUrl)}${cleanPath}`;
 }
 
-// ─── DOM helpers ──────────────────────────────────────────────────
 
 function upsertMeta(attr: "name" | "property", value: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(
@@ -104,12 +99,12 @@ export function applySeo(config: SeoConfig | null) {
     ) ??
     siteUrl;
 
-  // Build title : append suffix unless the title already contains "Docnine"
-  const appendSuffix = config.appendSiteName ?? true;
+  // Build title: append " | Docnine" unless the title already contains "Docnine"
+  const appendSuffix = config.appendSiteName ?? true
   const fullTitle =
     appendSuffix && !/docnine/i.test(config.title)
       ? `${config.title}${TITLE_SUFFIX}`
-      : config.title;
+      : config.title
 
   const keywords = (config.keywords ?? []).filter(Boolean).join(", ");
 

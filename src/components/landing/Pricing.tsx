@@ -70,7 +70,7 @@ export function Pricing() {
             className="absolute inset-0"
             style={{
               background:
-                "url('/landing/cocoon/floral3.webp') center/cover no-repeat",
+                "url('https://cdn.pixabay.com/photo/2023/03/18/01/44/desert-7859694_1280.jpg') center/cover no-repeat",
             }}
           />
           <div

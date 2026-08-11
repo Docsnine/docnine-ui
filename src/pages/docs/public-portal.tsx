@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils"
 import Loader1 from "@/components/ui/loader1"
 import { PortalSectionKey, PublicPortalData } from "@/types/PortalTypes"
 import { publicPortalApi } from "@/lib/api"
+import { applySeo } from "@/lib/seo"
 import { PORTAL_SECTION_KEYS, PORTAL_SECTION_LABELS } from "@/configs/PortalConfig"
 import { DEFAULT_PORTAL_TEMPLATE_ID, getPortalTemplate, usesLeftSidebar, usesTopNav } from "@/configs/PortalTemplates"
 
@@ -207,29 +208,26 @@ export function PublicPortalPage() {
         if (!data) return
         const { portal, project } = data
         const title = portal.seoTitle || `${project.repoName} Docs`
-        const description = portal.seoDescription || `Documentation for ${project.repoOwner}/${project.repoName}`
+        const description =
+            portal.seoDescription ||
+            `Documentation for ${project.repoOwner}/${project.repoName}`
 
-        document.title = title
-
-        const setMeta = (name: string, content: string) => {
-            let el = document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`)
-            if (!el) { el = document.createElement("meta"); el.name = name; document.head.appendChild(el) }
-            el.content = content
-        }
-        const setOg = (property: string, content: string) => {
-            let el = document.querySelector<HTMLMetaElement>(`meta[property="${property}"]`)
-            if (!el) { el = document.createElement("meta"); el.setAttribute("property", property); document.head.appendChild(el) }
-            el.content = content
-        }
-
-        setMeta("description", description)
-        setOg("og:title", title)
-        setOg("og:description", description)
-        setOg("og:type", "website")
+        applySeo({
+            title,
+            description,
+            pathname: `/docs/${portal.slug}`,
+            appendSiteName: false,
+            type: "article",
+            siteName: portal.branding?.headerText || project.repoName || "Docs",
+        })
 
         if (portal.branding?.favicon) {
             let favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
-            if (!favicon) { favicon = document.createElement("link"); favicon.rel = "icon"; document.head.appendChild(favicon) }
+            if (!favicon) {
+                favicon = document.createElement("link")
+                favicon.rel = "icon"
+                document.head.appendChild(favicon)
+            }
             favicon.href = portal.branding.favicon
         }
     }, [data])
